@@ -1,10 +1,10 @@
 Technologies in general = python + mysql + virtualenv.
 
 Firstly, set up mysql, create database "cragapp" and user for work with this database.
-In ./dbinit.py, ./cragapp.py and ./cragloop.py are line like
+In ./database.py are line like
 
 ```python
-db = MySQLdb.connect(host="localhost", user="root", passwd="passwd", db="cragapp", charset='utf8')
+engine = create_engine('mysql+mysqldb://user:passwd@localhost/cragapp', convert_unicode=True)
 ```
 Change user and passwd attributes to user you create.
 
