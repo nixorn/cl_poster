@@ -32,7 +32,7 @@ CREATE TABLE `ads` (
   `idads` int(11) NOT NULL AUTO_INCREMENT,
   `description` mediumtext,
   `title` varchar(45) DEFAULT NULL,
-  `image` longtext,
+  `idimages` int(11) DEFAULT NULL,
   `posting_time` varchar(10) DEFAULT NULL,
   `status` varchar(45) DEFAULT 'not_sended',
   `idusers` int(11) DEFAULT NULL,
@@ -41,7 +41,14 @@ CREATE TABLE `ads` (
   `replymail` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`idads`),
   UNIQUE KEY `idads_UNIQUE` (`idads`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+
+CREATE TABLE `images` (
+  `idimages` int(11) NOT NULL AUTO_INCREMENT,
+  `idads` int(11) DEFAULT NULL,
+  `image` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`idimages`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `users` (
   `idusers` int(11) NOT NULL AUTO_INCREMENT,

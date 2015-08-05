@@ -31,7 +31,7 @@ def render(replymail,
             acountID,
             category,
             area,
-            image=None):
+            images=None):
     #root elem
     rdf = Element('rdf:RDF')
     rdf.attrib = {"xmlns":"http://purl.org/rss/1.0/", 
@@ -66,8 +66,10 @@ def render(replymail,
     cl_description = SubElement(item, "description")
     cl_description.text = "<![CDATA[" + description + "]]>"
 
-    if image:
-        cl_image = SubElement(item, "cl:image")
-        cl_image.attrib = {"position":"1"}
-        cl_image.text = image
+    if images:
+        images = images[:24] # only 24 imageas is possible
+        for image in images:
+            cl_image = SubElement(item, "cl:image")
+            cl_image.attrib = {"position":"1"}
+            cl_image.text = image
     return prettify(rdf)
