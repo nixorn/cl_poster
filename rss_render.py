@@ -11,18 +11,7 @@ def prettify(elem):
     reparsed = minidom.parseString(rough_string)
     return reparsed.toprettyxml(indent="  ")
 
-"""
-from rss_render import render
-print render(replymail="bolik@lelik.com",
-            title="title",
-            description="many\nline\ndescription",
-            username="bolik",
-            password="lelik",
-            accountID="1",
-            category="npo",
-            area="atl",
-            image="base/64/image")
-""" 
+
 def render(replymail,
             title,
             description,

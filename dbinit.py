@@ -18,7 +18,7 @@ db.autocommit(True)
 cursor = db.cursor()
 
 #drop database
-sql = "DROP TABLE `ads`; DROP TABLE `users`; DROP TABLE `vpss`;"
+sql = "DROP TABLE `ads`; DROP TABLE `users`; DROP TABLE `vpss`; DROP TABLE `images`;"
 try:
     cursor.execute(sql)
     
@@ -58,13 +58,14 @@ CREATE TABLE `users` (
   `accountID` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`idusers`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 CREATE TABLE `vpss` (
   `idvpss` int(11) NOT NULL AUTO_INCREMENT,
   `ip` varchar(45) DEFAULT NULL,
-  `port` varchar(45) DEFAULT  '1080',
+  `port` varchar(45) DEFAULT '1080',
+  `login` varchar(45) DEFAULT NULL,
+  `password` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`idvpss`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 """
 cursor.execute(sql)
 cursor.close()
@@ -77,8 +78,8 @@ VPS = [('127.0.0.1', 5000, None, None),
        ('23.105.132.100', 8091, None, None)]
 
 sql = """
-INSERT INTO `cragapp`.`vpss`  (`ip`, `port`)
-VALUES (%s, %s);"""
+INSERT INTO `cragapp`.`vpss`  (`ip`, `port`, `login`, `password`)
+VALUES (%s, %s, %s, %s);"""
 
 cursor.executemany(sql, VPS)
 
@@ -104,7 +105,6 @@ cursor = db.cursor()
 ads = [('murchendaize@gmail.com',             #replymail
         'I want nothing',                     #title
         'Just a guy who dont want see anyone',#description
-        encoded_image,                        #base64 image
         '13:50',                              #posting time
         'not_sended',                         #status
         1,                                    #users.idusers
@@ -113,7 +113,6 @@ ads = [('murchendaize@gmail.com',             #replymail
     ),('murchendaize@gmail.com',             #replymail
         'I want nothing',                     #title
         'Just a guy who dont want see anyone',#description
-        encoded_image,                        #base64 image
         '13:50',                              #posting time
         'not_sended',                         #status
         1,                                    #users.idusers
@@ -122,8 +121,8 @@ ads = [('murchendaize@gmail.com',             #replymail
     )]
 
 sql = """
-INSERT INTO ads (replymail, title, description, image, posting_time, status, idusers,category, area) 
-VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s);"""
+INSERT INTO ads (replymail, title, description, posting_time, status, idusers,category, area) 
+VALUES (%s,%s,%s,%s,%s,%s,%s,%s);"""
 
 cursor.executemany(sql, ads)
 cursor.close()
