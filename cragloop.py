@@ -66,4 +66,4 @@ def loop():
 
 while 1:
     loop()
-    time.sleep(60)
+    time.sleep(30)

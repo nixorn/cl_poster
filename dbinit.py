@@ -66,8 +66,8 @@ cursor.close()
 #test rows
 #VPS's
 cursor = db.cursor()
-VPS = [('127.0.0.1', 5000),
-       ('89.98.99.88', 4000)]
+VPS = [('127.0.0.1', 5000, None, None),
+       ('23.105.132.100', 8091, None, None)]
 
 sql = """
 INSERT INTO `cragapp`.`vpss`  (`ip`, `port`)

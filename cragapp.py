@@ -1,10 +1,10 @@
 #!./bin/python 
-from flask import Flask, render_template
+from flask import Flask, render_template, url_for
 
 import MySQLdb
 import base64
 import subprocess
-from rss.render import render_rss
+import sys
 
 
 #run loop
@@ -28,7 +28,8 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+
+        return render_template('index.html')
 
 @app.route('/adlist')
 def adlist():

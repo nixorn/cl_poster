@@ -3,20 +3,25 @@
   <head>
     <meta charset="utf-8">
     <title>CragApp</title>
-  
+    <link href="/static/css/jquery-ui.css" rel="stylesheet">
   </head>
   <body>
-    <div class="ads"> </div>
-    list of ads here
-    <div class="current_ad">
-      User<br>
-      <div class="description">
-	<p> Description </p>
-	<input> </input>
-      </div>
-      Image <br>
-      
+    <div id="tabs">
+      <ul>
+	<li><a href="#ads">Ads</a></li>
+	<li><a href="#users">Users</a></li>
+	<li><a href="#vps">VPS</a></li>
+      </ul>
+      <div id="ads"> Ads here</div>
+      <div id="users"> Users here</div>
+      <div id="vps"> Vps here </div>
     </div>
 
+    
+    <script src="/static/js/jquery.js"></script>
+    <script src="/static/js/jquery-ui.js"></script>
+    <script>
+      $( "#tabs" ).tabs();
+    </script>
   </body>
   </html>
