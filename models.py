@@ -9,8 +9,7 @@ class VPS(Base):
     login    = Column(String(50))
     password = Column(String(50))
     
-    def __init__(self,idvpss,ip,port,login,password ):
-        self.idvpss  = idvpss  
+    def __init__(self,ip,port,login,password ):
         self.ip      = ip      
         self.port    = port    
         self.login   = login   
@@ -27,8 +26,7 @@ class User(Base):
     password   = Column(String(50))
     accountID  = Column(Integer)
     
-    def __init__(self, idusers,idvpss,username,password,accountID):
-        self.idusers  = idusers  
+    def __init__(self, idvpss,username,password,accountID):
         self.idvpss   = idvpss   
         self.username = username 
         self.password = password 
@@ -44,8 +42,7 @@ class Image(Base):
     idads         = Column(Integer)
     image         = Column(Text)
 
-    def __init__(self, idimages, idads, image):
-        self.idimages = idimages
+    def __init__(self, idads, image):
         self.idads    = idads
         self.image    = image
         
@@ -68,7 +65,6 @@ class Ad(Base):
     replymail     = Column(String(50))
     
     def __init__(self,
-                 idads,
                  description,
                  title,
                  posting_time,
@@ -77,7 +73,6 @@ class Ad(Base):
                  category,
                  area,
                  replymail):
-        self.idads         = idads        
         self.description   = description  
         self.title         = title        
         self.posting_time  = posting_time 

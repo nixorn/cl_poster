@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="vps">
+    <div class="property">
+        <div class="label">IP / Address</div><input type="text" value="{{target_vps.ip}}">
+    </div>
+    <div class="property">
+        <div class="label">Port</div><input type="text" value="{{target_vps.port}}">
+    </div>
+    <div class="property">
+        <div class="label">User</div><input type="text" value="{{target_vps.user}}">
+    </div>
+    <div class="property">
+        <div class="label">Password</div><input type="password" value=""><div class="hint">leave blank to keep old password</div>
+    </div>
+</div>
+<div class="buttons">
+    <a href="javascript:history.back()"><div class="button">Back</div></a>
+    <div class="button save">Save</div>
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="vps">
+    <div class="property">
+        <div class="label">IP / Address</div><input id="ip" type="text" value="">
+    </div>
+    <div class="property">
+        <div class="label">Port</div><input id="port" type="text" value="">
+    </div>
+    <div class="property">
+        <div class="label">User</div><input id="user" type="text" value="">
+    </div>
+    <div class="property">
+        <div class="label">Password</div><input id="password" type="password" value="">
+    </div>
+</div>
+<div class="buttons">
+    <a href="javascript:history.back()"><div class="button">Back</div></a>
+    <div id="create" class="button confirm">Create</div>
+</div>
+{% endblock %}
+{% block lastscripts %}
+    <script src="/static/js/vps-create.js"></script>
+{% endblock %}

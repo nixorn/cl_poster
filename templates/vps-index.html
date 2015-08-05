@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+    <table class="vpss">
+        <tbody>
+            <tr>
+                <th>idvpss</th>
+                <th>IP</th>
+                <th>Port</th>
+                <th>User</th>
+                <th>Password</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+            {% for vps in vpss %}
+                <tr class="item">
+                    <td>{{vps.idvpss}}</td>
+                    <td>{{vps.ip}}</td>
+                    <td>{{vps.port}}</td>
+                    <td>{{vps.user}}</td>
+                    <td>{{vps.password}}</td>
+                    <td><a href="/vps/edit/{{vps.idvpss}}">Edit</a></td>
+                    <td><a class="warning" href="/vps/delete/{{vps.idvpss}}">Delete</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="buttons">
+        <a href="/vps/create"><div class="button">New</div></a>
+    </div>
+{% endblock %}
