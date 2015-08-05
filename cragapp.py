@@ -14,12 +14,13 @@ p = subprocess.Popen([sys.executable, './cragloop.py'],
 
 
 #base64 image for RSS 
-with open("test_img.jpg", "rb") as image_file:
-        encoded_image = base64.b64encode(image_file.read())
+#with open("test_img.jpg", "rb") as image_file:
+#        encoded_image = base64.b64encode(image_file.read())
 
-#database init stuff
 db = MySQLdb.connect(host="localhost", user="root", passwd="passwd", db="cragapp", charset='utf8')
-cursor = db.cursor()
+db.autocommit(True)
+
+                            
 
 
     
@@ -42,6 +43,24 @@ def show_ad(ad_num):
 @app.route('/userlist')
 def userlist():
     pass
+
+@app.route('/vps', methods=['GET',])
+def vps():
+        pass
+
+
+@app.route('/vps/add', methods=['POST',])
+def vps_add(ip, port, login, password):
+        pass
+
+@app.route('/vps/delete', methods=['POST',])
+def vps_delete(vps_id):
+        pass
+
+@app.route('/vps/update', methods=['POST',])
+def vps_update(vps_id, ip, port, login, password):
+        pass
+
 
 @app.route('/send/<app_id>')
 def send(app_id=None):

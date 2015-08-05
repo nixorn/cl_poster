@@ -25,6 +25,7 @@ try:
 except: print "Is no database here."
 cursor.close()
 
+'''
 #recreate database.
 cursor = db.cursor()
 sql = """
@@ -69,6 +70,8 @@ CREATE TABLE `vpss` (
 """
 cursor.execute(sql)
 cursor.close()
+'''
+
 
 '''
 #test rows
