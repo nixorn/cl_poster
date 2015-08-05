@@ -18,29 +18,97 @@
 	<div id="table-wrapper">
 	  <div id="table-scroll">
 	    <table>
-	      
 	      <tbody>
 		<tr class="text"> <td>Title</td> <td>Posting time</td> <td>Status</td> </tr>
 		<tr> <td>Lorem</td> <td>22:30</td> <td>not_sended</td> </tr>
-		<tr> <td>Ipsum</td> <td>12:10</td> <td>not_sended</td> </tr>
-	      </tbody>
-	    </table>
-	  </div>
-	</div>
-	<div>
-	</div>
+		<tr> <td>Ipsum</td> <td>12:10</td> <td>not_sended</td> </tr></tbody></table></div></div>
 
+
+	<p><b>Title</b><br>
+	  <input id="ad-title" type="text" size="40"></p>
+
+	<p><b>Posting time in format hour:minute (14:01)</b><br>
+	  <input id="ad-posting_time" type="text" size="40"></p>
 	
+	<p><b>Reply email</b><br>
+	  <input id="ad-replymail" type="text" size="40"></p>
+	
+	<p><b>It should be comboboxes or like</b><br>
+	  Category
+	  Area
+	  User
+	</p>
+	
+	<p><b>Description</b><Br>
+	     <textarea id="ad-description" cols="40" rows="3"></textarea></p>
+
+
+	<p> <b> Images upload form </b> </p>
+
+
+	<p>
+	  <input type="submit" value="New">
+	  <input type="submit" value="Save">
+	  <input type="submit" value="Delete"></p>
+
+
       </div>
 
       
-      <div id="users"> Users here</div>
-      <div id="vps"> Vps here </div>
+      <div id="users">
+	
+	<div id="table-wrapper">
+	  <div id="table-scroll">
+	    <table>
+	      
+	      <tbody>
+		<tr class="text"> <td> Username </td> </tr>
+		<tr> <td>lorem@ipsum.dolor</td>  </tr>
+	      </tbody></table></div></div>
+
+
+	
+	<p><b>It should be comboboxes or like</b><br>
+	  VPS</p>
+	
+	<p><b>Username</b><br>
+	  <input id="user-username" type="text" size="40"></p>
+
+	<p><b>Password </b><br>
+	  <input id="user-password" type="text" size="40"></p>
+
+	<p><b>	accountID </b><br>
+	  <input id="user-accountid" type="text" size="40"></p> </div>
+
+	
+      <div id="vps">
+	
+	<div id="table-wrapper">
+	  <div id="table-scroll">
+	    <table>
+	      
+	      <tbody>
+		<tr class="text"> <td> IP/Hostname </td> </tr>
+		<tr> <td>localhost</td>  </tr>
+		
+	      </tbody></table></div></div>
+
+	<p><b>IP </b><br>
+	  <input id="vps-ip" type="text" size="40"></p>
+	<p><b>Port </b><br>
+	  <input id="vps-port" type="text" size="40"></p>
+	<p><b>Login </b><br>
+	  <input id="vps-login" type="text" size="40"></p>
+	<p><b>Password </b><br>
+	  <input id="vps-password" type="text" size="40"></p>
+	
+      </div>
     </div>
 
     
     <script src="/static/js/jquery.js"></script>
     <script src="/static/js/jquery-ui.js"></script>
+    <script src="/static/js/cragapp.js"></script>
     <script>
       $( "#tabs" ).tabs();
     </script>
