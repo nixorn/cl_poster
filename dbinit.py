@@ -70,7 +70,7 @@ CREATE TABLE `vpss` (
 cursor.execute(sql)
 cursor.close()
 
-
+'''
 #test rows
 #VPS's
 cursor = db.cursor()
@@ -125,5 +125,7 @@ INSERT INTO ads (replymail, title, description, posting_time, status, idusers,ca
 VALUES (%s,%s,%s,%s,%s,%s,%s,%s);"""
 
 cursor.executemany(sql, ads)
-cursor.close()
+cursor.close()'''
+
+
 db.close()
