@@ -1,12 +1,13 @@
 #!./bin/python 
-from flask import Flask, render_template, url_for, request
+from flask import Flask, render_template, url_for, request, redirect
 
 import MySQLdb
 import base64
 import subprocess
 import sys
+import sqlalchemy
 
-from database import db_session
+from database import db_session, engine, md
 from models import VPS, User, Image, Ad
 
 
@@ -36,16 +37,19 @@ def index():
 
 @app.route('/vps')
 def vps():
-    vpss = [{'idvpss':1, 'ip':'34.123.26.33', 'port':'3263', 'user':'user', 'password': 'passw12344567'}, {'idvpss':2, 'ip':'34.123.26.34', 'port':'3263', 'user':'user2', 'password': 'sdggergtg'}]
-    return render_template('vps-index.html', menu='vps', vpss=vpss)
+        vpss_db = VPS.query.all()
+        vpss = [{'idvpss':vps.idvpss,
+                 'ip':vps.ip,
+                 'port':vps.port,
+                 'user':vps.login,
+                 'password': vps.password} for vps in vpss_db]
+        return render_template('vps-index.html', menu='vps', vpss=vpss)
 
-@app.route('/vps/edit/<int:target_id>')
-def vps_edit(target_id):
-    vpss = [{'idvpss':1, 'ip':'34.123.26.33', 'port':'3263', 'user':'user', 'password': 'passw12344567'}, {'idvpss':2, 'ip':'34.123.26.34', 'port':'3263', 'user':'user2', 'password': 'sdggergtg'}]
-    for vps in vpss:
-        if vps.get('idvpss') == target_id:
-            target_vps = vps
-    return render_template('vps-edit.html', menu='vps', target_vps=target_vps)
+@app.route('/vps/edit/<int:vps_id>')
+def vps_edit(vps_id):
+        vps        = VPS.query.filter(VPS.idvpss == vps_id).first()
+        target_vps = {'ip':vps.ip ,'port':vps.port,'user':vps.login}
+        return render_template('vps-edit.html', menu='vps', target_vps=target_vps)
 
 @app.route('/vps/create')
 def vps_create():
@@ -57,15 +61,38 @@ def vps_add():
         v = VPS(ip, port, user, password)
         db_session.add(v)
         db_session.commit()
-        return "Hello dude"
+        return "VPS created"
 
-@app.route('/vps/delete', methods=['POST',])
+
+@app.route('/vps/delete/<vps_id>')
 def vps_delete(vps_id):
-        pass
+        vps = VPS.query.filter(VPS.idvpss == vps_id).first()
+        db_session.delete(vps)
+        db_session.commit()
+        return "VPS deleted"
 
 @app.route('/vps/update', methods=['POST',])
-def vps_update(vps_id, ip, port, login, password):
-        pass
+def vps_update():
+        table = sqlalchemy.Table('vpss',md, autoload=True)
+        
+        vps_id, ip, port, login, password = request.form['idvpss'], request.form['ip'], request.form['port'],request.form['user'], request.form['password']
+        print vps_id, ip, port, login, password 
+        if password:
+                #db_session.execute(update(stuff_table, values={stuff_table.c.foo: stuff_table.c.foo + 1}))
+                
+                db_session.query(VPS).filter(VPS.idvpss == vps_id).\
+                        update({VPS.ip: ip,
+                                VPS.port: port,
+                                VPS.login: login,
+                                VPS.password: password})
+        else:
+                db_session.query(VPS).filter(VPS.idvpss == vps_id).\
+                        update({VPS.ip: ip,
+                                VPS.port: port,
+                                VPS.login: login })
+                
+        db_session.commit()
+        return "UPDATED"
 
 
 @app.route('/send/<app_id>')

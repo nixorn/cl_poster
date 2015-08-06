@@ -1,21 +1,28 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="vps">
-    <div class="property">
-        <div class="label">IP / Address</div><input type="text" value="{{target_vps.ip}}">
+    <div class="property hidden">
+        <div class="label">IDVPSS</div><input id="idvpss" type="text" value="{{target_vps.idvpss}}">
     </div>
     <div class="property">
-        <div class="label">Port</div><input type="text" value="{{target_vps.port}}">
+        <div class="label">IP / Address</div><input id="ip" type="text" value="{{target_vps.ip}}">
     </div>
     <div class="property">
-        <div class="label">User</div><input type="text" value="{{target_vps.user}}">
+        <div class="label">Port</div><input id="port" type="text"         value="{{target_vps.port}}">
     </div>
     <div class="property">
-        <div class="label">Password</div><input type="password" value=""><div class="hint">leave blank to keep old password</div>
+        <div class="label">User</div><input id="user"  type="text"         value="{{target_vps.user}}">
+    </div>
+    <div class="property">
+      <div class="label">Password</div><input id="password" type="password" value=""><div class="hint">leave blank to keep old password</div>
     </div>
 </div>
 <div class="buttons">
     <a href="javascript:history.back()"><div class="button">Back</div></a>
-    <div class="button save">Save</div>
+    <div id="edit_vps" class="button save">Save</div>
 </div>
+{% endblock %}
+
+{% block lastscripts %}
+    <script src="/static/js/vps-edit.js"></script>
 {% endblock %}

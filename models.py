@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Text
+from sqlalchemy import Column, Integer, String, Text, ForeignKey
+from sqlalchemy.orm import relationship
 from database import Base
 
 class VPS(Base):
@@ -8,6 +9,7 @@ class VPS(Base):
     port     = Column(String(5))
     login    = Column(String(50))
     password = Column(String(50))
+    users    = relationship("User", backref="vps")
     
     def __init__(self,ip,port,login,password ):
         self.ip      = ip      
@@ -16,12 +18,16 @@ class VPS(Base):
         self.password= password
         
     def __repr__(self):
-        return '<VPS %r>' % (self.ip+':'+self.port)
-
+        return str({'idvpss':self.idvpss,
+                'ip':self.ip,
+                'port':self.port,
+                'user':self.login,
+                'password': self.password})
+    
 class User(Base):
     __tablename__ = 'users'
     idusers    = Column(Integer, primary_key=True)
-    idvpss     = Column(Integer)                  
+    idvpss     = Column(Integer, ForeignKey('vpss.idvpss'))                  
     username   = Column(String(50), unique = True)
     password   = Column(String(50))
     accountID  = Column(Integer)
@@ -39,7 +45,7 @@ class User(Base):
 class Image(Base):
     __tablename__ = 'images'
     idimages      = Column(Integer, primary_key=True)
-    idads         = Column(Integer)
+    idads         = Column(Integer,ForeignKey('ads.idads'))
     image         = Column(Text)
 
     def __init__(self, idads, image):
@@ -63,7 +69,7 @@ class Ad(Base):
     category      = Column(String(20))
     area          = Column(String(5))
     replymail     = Column(String(50))
-    
+    images        = relationship("Image", backref="ad")
     def __init__(self,
                  description,
                  title,

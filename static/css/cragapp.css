@@ -91,3 +91,7 @@ table.vpss .item:hover {
 .button.confirm:hover {
     background-color: #5ae274;
 }
+
+.hidden {
+    display: none;
+}
