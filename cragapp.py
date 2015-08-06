@@ -48,7 +48,7 @@ def vps():
 @app.route('/vps/edit/<int:vps_id>')
 def vps_edit(vps_id):
         vps        = VPS.query.filter(VPS.idvpss == vps_id).first()
-        target_vps = {'ip':vps.ip ,'port':vps.port,'user':vps.login}
+        target_vps = {'idvpss':vps_id,'ip':vps.ip ,'port':vps.port,'user':vps.login}
         return render_template('vps-edit.html', menu='vps', target_vps=target_vps)
 
 @app.route('/vps/create')
@@ -73,24 +73,17 @@ def vps_delete(vps_id):
 
 @app.route('/vps/update', methods=['POST',])
 def vps_update():
-        table = sqlalchemy.Table('vpss',md, autoload=True)
-        
+                
         vps_id, ip, port, login, password = request.form['idvpss'], request.form['ip'], request.form['port'],request.form['user'], request.form['password']
-        print vps_id, ip, port, login, password 
-        if password:
-                #db_session.execute(update(stuff_table, values={stuff_table.c.foo: stuff_table.c.foo + 1}))
+        vps = VPS.query.filter(VPS.idvpss==vps_id).first()
+        print "THAT IS YOUR ID", request.form['idvpss'],request.form['ip'], request.form['\
+port'],request.form['user']
+        vps.ip = ip          
+        vps.port = port        
+        vps.login= login          
+        if password: vps.password = password
                 
-                db_session.query(VPS).filter(VPS.idvpss == vps_id).\
-                        update({VPS.ip: ip,
-                                VPS.port: port,
-                                VPS.login: login,
-                                VPS.password: password})
-        else:
-                db_session.query(VPS).filter(VPS.idvpss == vps_id).\
-                        update({VPS.ip: ip,
-                                VPS.port: port,
-                                VPS.login: login })
-                
+        db_session.add(vps)
         db_session.commit()
         return "UPDATED"
 
