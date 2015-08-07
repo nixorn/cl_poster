@@ -9,7 +9,7 @@ class VPS(Base):
     port     = Column(String(5))
     login    = Column(String(50))
     password = Column(String(50))
-    users    = relationship("User", backref="vps")
+
     
     def __init__(self,ip,port,login,password ):
         self.ip      = ip      
@@ -27,7 +27,7 @@ class VPS(Base):
 class User(Base):
     __tablename__ = 'users'
     idusers    = Column(Integer, primary_key=True)
-    idvpss     = Column(Integer, ForeignKey('vpss.idvpss'))                  
+    idvpss     = Column(Integer)                  
     username   = Column(String(50), unique = True)
     password   = Column(String(50))
     accountID  = Column(Integer)
@@ -45,7 +45,7 @@ class User(Base):
 class Image(Base):
     __tablename__ = 'images'
     idimages      = Column(Integer, primary_key=True)
-    idads         = Column(Integer,ForeignKey('ads.idads'))
+    idads         = Column(Integer)
     image         = Column(Text)
 
     def __init__(self, idads, image):
@@ -69,7 +69,7 @@ class Ad(Base):
     category      = Column(String(20))
     area          = Column(String(5))
     replymail     = Column(String(50))
-    images        = relationship("Image", backref="ad")
+
     def __init__(self,
                  description,
                  title,

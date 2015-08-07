@@ -86,6 +86,7 @@ port'],request.form['user']
         return "UPDATED"
 
 
+
 @app.route('/users')
 def user():
         users_db = User.query.all()
@@ -122,6 +123,46 @@ def user_delete(user_id):
         db_session.delete(u)
         db_session.commit()
         return "User deleted"
+
+@app.route('/user/edit/<int:user_id>')
+def user_edit(user_id):
+        user        = User.query.filter(User.idusers == user_id).first()
+        target_user = {'idusers':user_id,'username':user.username ,'accountID':user.accountID}
+        vps = VPS.query.filter(VPS.idvpss == user.idvpss).first()
+        current_vps = {'idvpss':vps.idvpss, 'ip':vps.ip, 'port':vps.port}
+        vpss = [{'idvpss':vp.idvpss, 'ip':vp.ip, 'port':vp.port}
+                for vp in VPS.query.filter(VPS.idvpss != vps.idvpss).all()]
+        return render_template('user-edit.html', menu='vps',
+                               target_user=target_user,
+                               vpss=vpss,
+                               current_vps=current_vps)
+
+@app.route('/user/update', methods=['POST',])
+def user_update():
+        idusers   = request.form['idusers'] 
+        idvpss    = request.form['idvpss'] 
+        username  = request.form['username']
+        password  = request.form['password']
+        accountID = request.form['accountID']
+        
+        print "TO UPDATE",\
+                "idusers:",idusers,\
+                "idvpss:",idvpss,\
+                "Username:",username,\
+                "password:",password,\
+                "accountID:",accountID
+
+
+        user = User.query.filter(User.idusers==idusers).first()
+        user.idvpss = idvpss   
+        user.username = username         
+        user.accountID = accountID
+        if password: user.password = password
+        
+        db_session.add(user)
+        db_session.commit()
+        return "UPDATED"
+
 
 
 
