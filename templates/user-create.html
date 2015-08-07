@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="user">
+
+  <div class="property hidden">
+    <div class="label"> idusers</div><input id="idusers" type="text" value=""></div>
+
+  
+  <div class="property">
+    <div class="label"> username</div><input id="username" type="text" value=""></div>
+
+  <div class="property">
+    <div class="label"> password</div><input id="password" type="password" value=""></div>
+
+  <div class="property">
+    <div class="label"> accountID</div><input id="accountID" type="text" value=""></div>
+
+  <select id="vps-select">
+    {% for vps in vpss %}
+    <option value="{{vps.idvpss}}">{{vps.ip}}:{{vps.port}}</option>
+    {% endfor %}
+  </select>
+
+  
+
+</div>
+<div class="buttons">
+    <a href="javascript:history.back()"><div class="button">Back</div></a>
+    <a href="/users"><div id="create_user" class="button confirm">Create</div></a>
+</div>
+{% endblock %}
+{% block lastscripts %}
+    <script src="/static/js/user-create.js"></script>
+{% endblock %}
