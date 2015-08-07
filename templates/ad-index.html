@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+    <table class="ad">
+      <tbody>
+        <tr>
+	  <th class="hidden">idads       </th>
+	  <th>title       </th>
+	  <th>posting_time</th>
+	  <th>status      </th>
+	  <th>category    </th>
+	  <th>replymail   </th>
+	  <th>Edit        </th>
+          <th>Delete      </th>
+
+	  
+        </tr>
+        {% for ad in ads %}
+        <tr class="item">
+	  <td class="hidden">{{ad.idads}}</td>
+	  <td>{{ad.title}}</td>
+	  <td>{{ad.posting_time}}</td>
+	  <td>{{ad.status}}</td>
+	  <td>{{ad.idusers}}</td>
+	  <td>{{ad.category}}</td>
+	  <td>{{ad.replymail}}</td>
+          <td><a href="/ad/edit/{{ad.idads}}">Edit</a></td>
+          <td><a class="warning" href="/ad/delete/{{ad.idads}}">Delete</a></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div class="buttons">
+      <a href="/ad/create"><div class="button">New</div></a>
+    </div>
+    {% endblock %}
+    

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="ad">
+
+
+
+  <div class="property">
+    <div class="label">title </div><input id="title" type="text" value=""></div>
+
+  <div class="property">
+    <div class="label">posting_time </div><input id="posting_time" type="text" value=""></div>
+
+  <div class="property">
+    <div class="label">status</div><input id="status" type="text" value=""></div>
+
+  
+  <div class="property">
+    <div class="label">category</div><input id="category" type="text" value=""></div>
+
+  <div class="property">
+    <div class="label">area</div><input id="area" type="text" value=""></div>
+
+  <div class="property">
+    <div class="label">replymail</div><input id="replymail" type="text" value=""></div>
+
+  <div class="property">
+    <div class="label"> User select </div>
+    <select id="user-select">
+      {% for user in users %}
+      <option value="{{user.idusers}}">{{user.username}}</option>
+      {% endfor %}
+    </select></div>
+  <div class="property">
+    <div class="label"> description </div><textarea id="description" type="text" value="">wht is it?</textarea></div>
+    
+
+</div>
+<div class="buttons">
+    <a href="javascript:history.back()"><div class="button">Back</div></a>
+    <a href="/ads"><div id="create_ad" class="button confirm">Create</div></a>
+</div>
+{% endblock %}
+{% block lastscripts %}
+    <script src="/static/js/ad-create.js"></script>
+{% endblock %}
