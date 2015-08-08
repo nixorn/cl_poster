@@ -2,7 +2,7 @@ $(document).ready(function() {
     $('#edit_ad').on('click', function(){
         var data = {};
 	data["idads"]        = $("#idads").val();
-        data["description"]  = $("#description").val();
+        data["description"]  = document.getElementById('description').value;
         data["title"]        = $("#title").val();
         data["posting_time"] = $("#posting_time").val();
         data["status"]       = $("#status").val();

@@ -33,16 +33,14 @@
       {% endfor %}
     </select></div>
   <div class="property">
-    <div class="label"> description </div><textarea id="description" type="text" value="">wht is it?</textarea></div>
+    <div class="label"> description </div><textarea id="description" type="text">{{target_ad.description}}</textarea></div>
     
   
 
 </div>
 <div class="buttons">
     <a href="javascript:history.back()"><div class="button">Back</div></a>
-    <!--<a href="/ads">-->
-      <div id="edit_ad" class="button confirm">Save</div>
-    <!--</a>-->
+    <a href="/ads"> <div id="edit_ad" class="button confirm">Save</div>    </a>
 </div>
 {% endblock %}
 {% block lastscripts %}

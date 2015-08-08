@@ -184,13 +184,13 @@ def ad_add():
         description   = request.form['description']
         title         = request.form['title']
         posting_time  = request.form['posting_time']
-        status        = request.form['status']
+
         idusers       = request.form['idusers']
         category      = request.form['category']
         area          = request.form['area']
         replymail     = request.form['replymail']
         
-        a = Ad(description,title,posting_time,status,idusers,category,area,replymail)
+        a = Ad(description,title,posting_time,"not_posted",idusers,category,area,replymail)
         db_session.add(a)
         db_session.commit()
         return "Ad created"
