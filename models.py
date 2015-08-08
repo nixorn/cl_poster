@@ -19,10 +19,10 @@ class VPS(Base):
         
     def __repr__(self):
         return str({'idvpss':self.idvpss,
-                'ip':self.ip,
-                'port':self.port,
-                'user':self.login,
-                'password': self.password})
+                    'ip':self.ip,
+                    'port':self.port,
+                    'user':self.login,
+                    'password': self.password})
     
 class User(Base):
     __tablename__ = 'users'

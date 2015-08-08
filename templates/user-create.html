@@ -15,11 +15,17 @@
   <div class="property">
     <div class="label"> accountID</div><input id="accountID" type="text" value=""></div>
 
-  <select id="vps-select">
-    {% for vps in vpss %}
-    <option value="{{vps.idvpss}}">{{vps.ip}}:{{vps.port}}</option>
-    {% endfor %}
-  </select>
+  <div class="property">
+    <div class="label"> VPS </div>
+    <select id="vps-select">
+      {% for vps in vpss %}
+      <option value="{{vps.idvpss}}">{{vps.ip}}:{{vps.port}}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  
+  
 
   
 

@@ -4,6 +4,8 @@
 
 
 
+
+  
   <div class="property">
     <div class="label">title </div><input id="title" type="text" value=""></div>
 
@@ -12,7 +14,6 @@
 
   <div class="property">
     <div class="label">status</div><input id="status" type="text" value=""></div>
-
   
   <div class="property">
     <div class="label">category</div><input id="category" type="text" value=""></div>
@@ -26,13 +27,14 @@
   <div class="property">
     <div class="label"> User select </div>
     <select id="user-select">
+      <option value="{{user.idusers}}">{{user.username}}</option>
       {% for user in users %}
       <option value="{{user.idusers}}">{{user.username}}</option>
       {% endfor %}
     </select></div>
   <div class="property">
     <div class="label"> description </div><textarea id="description" type="text" value="">wht is it?</textarea></div>
-    
+   
 
 </div>
 <div class="buttons">

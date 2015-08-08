@@ -145,14 +145,6 @@ def user_update():
         password  = request.form['password']
         accountID = request.form['accountID']
         
-        print "TO UPDATE",\
-                "idusers:",idusers,\
-                "idvpss:",idvpss,\
-                "Username:",username,\
-                "password:",password,\
-                "accountID:",accountID
-
-
         user = User.query.filter(User.idusers==idusers).first()
         user.idvpss = idvpss   
         user.username = username         
@@ -163,13 +155,123 @@ def user_update():
         db_session.commit()
         return "UPDATED"
 
+@app.route('/ads')
+def ads():
+        ads_db = Ad.query.all()
+        ads = [{'idads'        :ad.idads,
+                'description' :ad.description,
+                'title'       :ad.title,
+                'posting_time':ad.posting_time,
+                'status'      :ad.status,
+                'idusers'     :ad.idusers,
+                'category'    :ad.category,   
+                'area'        :ad.area,
+                'replymail'   :ad.replymail    } for ad in ads_db]
+        return render_template('ad-index.html', menu='ad', ads=ads)
 
 
 
-@app.route('/send/<app_id>')
-def send(app_id=None):
-    if app_id :
-        pass
+@app.route('/ad/create')
+def ad_create():
+        user_db = User.query.all()
+        users = [{'idusers':user.idusers,
+                  'username':user.username} for user in user_db]
+        
+        return render_template('ad-create.html', menu='ad', users=users)
+
+@app.route('/ad/add', methods=['POST',])
+def ad_add():
+        description   = request.form['description']
+        title         = request.form['title']
+        posting_time  = request.form['posting_time']
+        status        = request.form['status']
+        idusers       = request.form['idusers']
+        category      = request.form['category']
+        area          = request.form['area']
+        replymail     = request.form['replymail']
+        
+        a = Ad(description,title,posting_time,status,idusers,category,area,replymail)
+        db_session.add(a)
+        db_session.commit()
+        return "Ad created"
+
+@app.route('/ad/delete/<ad_id>')
+def ad_delete(ad_id):
+        a = Ad.query.filter(Ad.idads == ad_id).first()
+        db_session.delete(a)
+        db_session.commit()
+        return "Ad deleted"
+
+@app.route('/ad/edit/<int:ad_id>')
+def ad_edit(ad_id):
+        ad        = Ad.query.filter(Ad.idads == ad_id).first()
+        
+        target_ad = {'idads'         : ad_id,
+                     'description'   : ad.description,
+                     'title'         : ad.title,
+                     'posting_time'  : ad.posting_time,
+                     'status'        : ad.status,
+                     'idusers'       : ad.idusers,
+                     'category'      : ad.category,
+                     'area'          : ad.area,
+                     'replymail'     : ad.replymail}
+        
+        user = User.query.filter(User.idusers == ad.idusers).first()
+        current_user = {'idusers':user.idusers, 'username':user.username}
+        users = [{'idusers':us.idusers, 'username':us.username}
+                for us in User.query.filter(User.idusers != user.idusers).all()]
+        return render_template('ad-edit.html', menu='ad',
+                               target_ad=target_ad,
+                               users=users,
+                               current_user=current_user)
+
+@app.route('/ad/update', methods=['POST',])
+def ad_update():
+
+        idads        = request.form['idads']
+        description  = request.form['description']
+        title        = request.form['title']
+        posting_time = request.form['posting_time']
+        status       = request.form['status']
+        idusers      = request.form['idusers']
+        category     = request.form['category']
+        area         = request.form['area']
+        replymail    = request.form['replymail']
+
+        print "FORUPDATE",idads,description,title,posting_time,status,idusers,category,area,replymail    
+
+
+        ad = Ad.query.filter(Ad.idads==idads).first()
+
+
+        ad.description = description
+        ad.title       = title
+        ad.posting_time= posting_time
+        ad.status      = status
+        ad.idusers     = idusers
+        ad.category    = category
+        ad.area        = area
+        ad.replymail   = replymail
+        
+        
+        db_session.add(ad)
+        db_session.commit()
+        return "UPDATED"
+
+
+
+'''
+ads = [{'idad'        :ad.idads,
+                'description' :ad.description,
+                'title'       :ad.title,
+                'posting_time':ad.posting_time,
+                'status'      :ad.status,
+                'idusers'     :ad.idusers,
+                'category'    :ad.category,   
+                'area'        :ad.area,
+                'replymail'   :ad.replymail    } for ad in ads_db]'''
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

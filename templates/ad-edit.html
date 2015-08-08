@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="ad">
+
+
+  <div class="property">
+    <div class="label">title </div><input id="title" type="text" value="{{target_ad.idads}}"></div>
+
+  <div class="property">
+    <div class="label">posting_time </div><input id="posting_time" type="text" value="{{target_ad.posting_time}}"></div>
+
+  <div class="property">
+    <div class="label">status</div><input id="status" type="text" value="{{target_ad.status}}"></div>
+
+  
+  <div class="property">
+    <div class="label">category</div><input id="category" type="text" value="{{target_ad.category}}"></div>
+
+  <div class="property">
+    <div class="label">area</div><input id="area" type="text" value="{{target_ad.area}}"></div>
+
+  <div class="property">
+    <div class="label">replymail</div><input id="replymail" type="text" value="{{target_ad.replymail}}"></div>
+
+  <div class="property">
+    <div class="label"> User select </div>
+    <select id="user-select">
+      <option value="{{current_user.idusers}}">{{current_user.username}}</option>
+      {% for user in users %}
+      <option value="{{user.idusers}}">{{user.username}}</option>
+      {% endfor %}
+    </select></div>
+  <div class="property">
+    <div class="label"> description </div><textarea id="description" type="text" value="">wht is it?</textarea></div>
+    
+  
+
+</div>
+<div class="buttons">
+    <a href="javascript:history.back()"><div class="button">Back</div></a>
+    <a href="/ads"><div id="edit_ad" class="button confirm">Save</div></a>
+</div>
+{% endblock %}
+{% block lastscripts %}
+    <script src="/static/js/ad-edit.js"></script>
+{% endblock %}
