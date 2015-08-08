@@ -92,7 +92,7 @@ def user():
         users_db = User.query.all()
         users = [{'idusers'    :user.idusers,
                   'idvpss'     :user.idvpss,
-                  'port'       :user.username,
+                  'username'   :user.username,
                   'password'   :user.password,
                   'accountID'  :user.accountID} for user in users_db]
         return render_template('user-index.html', menu='user', users=users)
