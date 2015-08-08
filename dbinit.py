@@ -6,6 +6,6 @@
 #        encoded_image = base64.b64encode(image_file.read())
 
 
-from database import init_db
+from cragapp.database import init_db
 
 init_db()

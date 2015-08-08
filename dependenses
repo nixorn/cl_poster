@@ -2,3 +2,4 @@ flask
 mysql
 pysocks
 sqlalchemy
+tornado
