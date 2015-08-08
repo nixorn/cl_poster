@@ -174,8 +174,8 @@ def ads():
 @app.route('/ad/create')
 def ad_create():
         user_db = User.query.all()
-        users = [{'idusers':user.idusers,
-                  'username':user.username} for user in user_db]
+        for i in user_db: print dir(i)
+        users = [{'idusers':user.idusers,'username':user.username} for user in user_db]
         
         return render_template('ad-create.html', menu='ad', users=users)
 
