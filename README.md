@@ -21,7 +21,7 @@ Then cd into craigslist-poster directory and type:
 $ virtualenv venv
 $ . venv/bin/activate
 $ pip install flask
-$ pip install mysql
+$ pip install pymysql
 $ pip install pysocks
 $ pip install sqlalchemy
 $ python dbinit.py
