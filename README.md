@@ -24,13 +24,14 @@ $ pip install flask
 $ pip install pymysql
 $ pip install pysocks
 $ pip install sqlalchemy
+$ pip install tornado
 $ python dbinit.py
 ```
 
 Setup is done. Run application:
 
 ```bash
-$ python cragapp.py
+$ python tornado_deploy.py
 ```
 
 And go on http://your.server.ip.adr:5000
