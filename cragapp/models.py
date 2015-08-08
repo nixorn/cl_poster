@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, LargeBinary
 from sqlalchemy.orm import relationship
 from database import Base
 
@@ -45,8 +45,9 @@ class User(Base):
 class Image(Base):
     __tablename__ = 'images'
     idimages      = Column(Integer, primary_key=True)
+    extension     = Column(String(10))
     idads         = Column(Integer)
-    image         = Column(Text)
+    image         = Column(LargeBinary)
 
     def __init__(self, idads, image):
         self.idads    = idads

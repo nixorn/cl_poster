@@ -1,11 +1,12 @@
 #!./bin/python 
 from flask import Flask, render_template, url_for, request, redirect
-
+from werkzeug import secure_filename
 
 import base64
 import subprocess
 import sys
 import sqlalchemy
+
 
 from database import db_session, engine, md
 from models import VPS, User, Image, Ad
@@ -16,10 +17,6 @@ p = subprocess.Popen([sys.executable, './cragloop.py'],
                      stdout=subprocess.PIPE,
                      stderr=subprocess.STDOUT)
 
-
-#base64 image for RSS 
-#with open("test_img.jpg", "rb") as image_file:
-#        encoded_image = base64.b64encode(image_file.read())
 
 
                             
@@ -220,10 +217,14 @@ def ad_edit(ad_id):
         current_user = {'idusers':user.idusers, 'username':user.username}
         users = [{'idusers':us.idusers, 'username':us.username}
                 for us in User.query.filter(User.idusers != user.idusers).all()]
+
+        images = [{'image':image.image, 'extension':image.extension}
+                  for image in Image.query.all()]
         return render_template('ad-edit.html', menu='ad',
                                target_ad=target_ad,
                                users=users,
-                               current_user=current_user)
+                               current_user=current_user,
+                               images=images)
 
 @app.route('/ad/update', methods=['POST'])
 def ad_update():
@@ -259,19 +260,32 @@ def ad_update():
         return "UPDATED"
 
 
+#base64 image for RSS 
+#with open("test_img.jpg", "rb") as image_file:
+#        encoded_image = base64.b64encode(image_file.read())
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
-'''
-ads = [{'idad'        :ad.idads,
-                'description' :ad.description,
-                'title'       :ad.title,
-                'posting_time':ad.posting_time,
-                'status'      :ad.status,
-                'idusers'     :ad.idusers,
-                'category'    :ad.category,   
-                'area'        :ad.area,
-                'replymail'   :ad.replymail    } for ad in ads_db]'''
+def allowed_file(filename):
+        return '.' in filename and \
+                filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
+@app.route('/upload_images', methods=['POST','GET'])
+def upload_images():
 
+        if request.method == 'POST':
+                idads        = request.form['idads']
+                images       = request.files.getlist('images[]')
+                print "IMAGES", images
+                for image in images:
+                        if image and allowed_file(image.filename):
+                                extension = image.filename.split('.')[-1]
+                                i = Image(idads=idads,
+                                          extension=extension,
+                                          image=base64.b64encode(image.read()))
+                                db_session.add(i)
+                                db_session.commit()
+                                
+        return "Images uploaded?"
 
 if __name__ == '__main__':
     app.run(debug=True)

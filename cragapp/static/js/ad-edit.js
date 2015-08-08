@@ -23,4 +23,42 @@ $(document).ready(function() {
             }
         });
     });
+    var form = document.getElementById('images_upload');
+    var fileSelect = document.getElementById('image_to_upload');
+    var uploadButton = document.getElementById('image_upload_submit');
+    form.onsubmit = function(event) {
+	event.preventDefault();
+
+	// Update button text.
+	uploadButton.innerHTML = 'Uploading...';
+
+	// Get the selected files from the input.
+	var files = fileSelect.files;
+
+	// Create a new FormData object.
+	var formData = new FormData();
+	for (var i = 0; i < files.length; i++) {
+	    var file = files[i];
+
+	    // Check the file type.
+	    if (!file.type.match('image.*')) {
+		continue;
+	    };
+
+	    // Add the file to the request.
+	    formData.append('images[]', file, file.name);
+	};
+	var xhr = new XMLHttpRequest();
+	xhr.open('POST', '/upload_images', true);
+	xhr.onload = function () {
+	    if (xhr.status === 200) {
+		// File(s) uploaded.
+		uploadButton.innerHTML = 'Upload';
+	    } else {
+		alert('An error occurred!');
+	    };
+	};
+	formData.append('idads',$("#idads").val());
+	xhr.send(formData);
+    };
 });

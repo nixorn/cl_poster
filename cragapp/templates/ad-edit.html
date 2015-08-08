@@ -33,14 +33,21 @@
       {% endfor %}
     </select></div>
   <div class="property">
-    <div class="label"> description </div><textarea id="description" type="text">{{target_ad.description}}</textarea></div>
-    
-  
+    <div class="label"> description </div><textarea cols=100 rows=40 id="description" type="text">{{target_ad.description}}</textarea></div>
+  <div class="imgallery">
+  {% for image in images %} <img src="data:image/{{image.extension}};base64, {{image.image}}">{% endfor %}</div>
+
+  <form id="images_upload" action="/upload_image" method="post" enctype="multipart/form-data">
+    <br>
+    Select image to upload:
+    <input id="image_to_upload" type="file" name="images[]" multiple/>
+    <input id="image_upload_submit" type="submit" value="Upload" name="submit">
+    </form>
 
 </div>
 <div class="buttons">
     <a href="javascript:history.back()"><div class="button">Back</div></a>
-    <a href="/ads"> <div id="edit_ad" class="button confirm">Save</div>    </a>
+    <a href="/ad/edit/{{target_ad.idads}}"> <div id="edit_ad" class="button confirm">Save</div>    </a>
 </div>
 {% endblock %}
 {% block lastscripts %}
