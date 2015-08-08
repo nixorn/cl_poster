@@ -1,10 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="ad">
+  <div class="property hidden">
+    <div class="label">idads </div><input id="idads" type="text" value="{{target_ad.idads}}"></div>
 
 
   <div class="property">
-    <div class="label">title </div><input id="title" type="text" value="{{target_ad.idads}}"></div>
+    <div class="label">title </div><input id="title" type="text" value="{{target_ad.title}}"></div>
 
   <div class="property">
     <div class="label">posting_time </div><input id="posting_time" type="text" value="{{target_ad.posting_time}}"></div>
@@ -38,7 +40,9 @@
 </div>
 <div class="buttons">
     <a href="javascript:history.back()"><div class="button">Back</div></a>
-    <a href="/ads"><div id="edit_ad" class="button confirm">Save</div></a>
+    <!--<a href="/ads">-->
+      <div id="edit_ad" class="button confirm">Save</div>
+    <!--</a>-->
 </div>
 {% endblock %}
 {% block lastscripts %}

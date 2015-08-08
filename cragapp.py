@@ -225,7 +225,7 @@ def ad_edit(ad_id):
                                users=users,
                                current_user=current_user)
 
-@app.route('/ad/update', methods=['POST',])
+@app.route('/ad/update', methods=['POST'])
 def ad_update():
 
         idads        = request.form['idads']
@@ -238,7 +238,7 @@ def ad_update():
         area         = request.form['area']
         replymail    = request.form['replymail']
 
-        print "FORUPDATE",idads,description,title,posting_time,status,idusers,category,area,replymail    
+        print "FORUPDATE",idads,description,title,posting_time,status,idusers,category,area,replymail
 
 
         ad = Ad.query.filter(Ad.idads==idads).first()

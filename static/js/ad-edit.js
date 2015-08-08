@@ -4,7 +4,7 @@ $(document).ready(function() {
 	data["idads"]        = $("#idads").val();
         data["description"]  = $("#description").val();
         data["title"]        = $("#title").val();
-        data["posting_time"] = $("#posting").val();
+        data["posting_time"] = $("#posting_time").val();
         data["status"]       = $("#status").val();
         data["idusers"]      = $("#user-select").val();
         data["category"]     = $("#category").val();
