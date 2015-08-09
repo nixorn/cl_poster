@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="sync">
+  <form id="scrap_ads" action="/scrap_ads" method="post" enctype="multipart/form-data">
+    <br>
+    Select user which own ad(s) you want to scrape: <br>
+
+    <select id="user-select" name="user-select">
+      {% for user in users %}
+      <option value="{{user.idusers}}">{{user.username}}</option>
+      {% endfor %}
+    </select> 
+
+    <br>Put ids of ads you want to scrape here (Enter is separator) <br>
+    <textarea cols=40 rows=10 id="ad_ids" name="ad_ids" type="text"></textarea>
+    <input id="scrap_ad_submit" type="submit">
+  </form>
+</div>
+{% endblock %}

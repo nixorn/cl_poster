@@ -295,6 +295,25 @@ def delete_image(idimages):
         return "Image deleted"
 
 
+@app.route('/sync')
+def sync():
+        users_db = User.query.all()
+        users = [{'idusers'    :user.idusers,
+                  'username'   :user.username,
+                  'password'   :user.password,
+                  'accountID'  :user.accountID} for user in users_db]
+        return render_template('sync-index.html', menu='sync', users=users)
+
+@app.route('/scrap_ads', methods=['POST'])
+def scrap_ads():
+
+        print dir(request)
+        print request.form
+        print request.form['submit']
+        print request.data
+        return "WHO IS HERE?"
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
