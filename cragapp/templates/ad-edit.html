@@ -4,7 +4,6 @@
   <div class="property hidden">
     <div class="label">idads </div><input id="idads" type="text" value="{{target_ad.idads}}"></div>
 
-
   <div class="property">
     <div class="label">title </div><input id="title" type="text" value="{{target_ad.title}}"></div>
 
@@ -13,7 +12,6 @@
 
   <div class="property">
     <div class="label">status</div><input id="status" type="text" value="{{target_ad.status}}"></div>
-
   
   <div class="property">
     <div class="label">category</div><input id="category" type="text" value="{{target_ad.category}}"></div>
@@ -35,7 +33,11 @@
   <div class="property">
     <div class="label"> description </div><textarea cols=100 rows=40 id="description" type="text">{{target_ad.description}}</textarea></div>
   <div class="imgallery">
-  {% for image in images %} <img src="data:image/{{image.extension}};base64, {{image.image}}">{% endfor %}</div>
+    {% for image in images %}
+    <img src="data:image/{{image.extension}};base64, {{image.image}}">
+    <br> <a href="/delete_image/{{image.idimages}}"> Delete </a>
+    <br><br>
+    {% endfor %}</div>
 
   <form id="images_upload" action="/upload_image" method="post" enctype="multipart/form-data">
     <br>

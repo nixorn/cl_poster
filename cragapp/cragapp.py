@@ -287,5 +287,14 @@ def upload_images():
                                 
         return "Images uploaded?"
 
+@app.route('/delete_image/<idimages>')
+def delete_image(idimages):
+        i = Image.query.filter(Image.idimages == idimages).first()
+        db_session.delete(i)
+        db_session.commit()
+        return "Image deleted"
+
+
+
 if __name__ == '__main__':
     app.run(debug=True)
