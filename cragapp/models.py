@@ -57,12 +57,15 @@ class Image(Base):
     def __repr__(self):
         return '<Image %r>' % (str(self.idimages))
 
+'''
 
+'''
 
 
 class Ad(Base):
     __tablename__ = 'ads'
     idads         = Column(Integer, primary_key=True)
+    idcrag        = Column(Integer, unique = True)
     description   = Column(Text)
     title         = Column(String(100)) 
     posting_time  = Column(String(5))

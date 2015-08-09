@@ -8,9 +8,11 @@ engine = create_engine('mysql+mysqldb://user:passwd@localhost/cragapp', convert_
 ```
 Change user and passwd attributes to user you create.
 
-Then install pip, and virtualenv via pip:
+Then epel,some python dependencies,pip, and virtualenv via pip:
 
 ```bash
+$ yum -y install epel-release
+$ yum -y install gcc python-devel freetds-devel python-pip libffi-devel libssl-devel libxml2-devel libxslt1-devel libxml2-python python-lxml libxslt-devel
 $ yum install python-pip
 $ pip install virtualenv
 ```
@@ -25,6 +27,7 @@ $ pip install pymysql
 $ pip install pysocks
 $ pip install sqlalchemy
 $ pip install tornado
+$ pip install scrapy
 $ python dbinit.py
 ```
 
