@@ -49,9 +49,10 @@ class Image(Base):
     idads         = Column(Integer)
     image         = Column(LargeBinary)
 
-    def __init__(self, idads, image):
-        self.idads    = idads
-        self.image    = image
+    def __init__(self, idads, extension, image):
+        self.idads     = idads
+        self.extension = extension
+        self.image     = image
         
     def __repr__(self):
         return '<Image %r>' % (str(self.idimages))

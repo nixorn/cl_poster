@@ -218,7 +218,7 @@ def ad_edit(ad_id):
         users = [{'idusers':us.idusers, 'username':us.username}
                 for us in User.query.filter(User.idusers != user.idusers).all()]
 
-        images = [{'image':image.image, 'extension':image.extension}
+        images = [{'idimages':image.idimages, 'image':base64.b64encode(image.image), 'extension':image.extension}
                   for image in Image.query.all()]
         return render_template('ad-edit.html', menu='ad',
                                target_ad=target_ad,
@@ -275,13 +275,13 @@ def upload_images():
         if request.method == 'POST':
                 idads        = request.form['idads']
                 images       = request.files.getlist('images[]')
-                print "IMAGES", images
+
                 for image in images:
                         if image and allowed_file(image.filename):
                                 extension = image.filename.split('.')[-1]
                                 i = Image(idads=idads,
                                           extension=extension,
-                                          image=base64.b64encode(image.read()))
+                                          image=image.read())
                                 db_session.add(i)
                                 db_session.commit()
                                 
