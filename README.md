@@ -28,6 +28,7 @@ $ pip install pysocks
 $ pip install sqlalchemy
 $ pip install tornado
 $ pip install scrapy
+$ pip install service_identity
 $ python dbinit.py
 ```
 

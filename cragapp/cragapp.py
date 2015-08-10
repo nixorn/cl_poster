@@ -1,6 +1,7 @@
 #!./bin/python 
 from flask import Flask, render_template, url_for, request, redirect
 from werkzeug import secure_filename
+from scrapy.crawler import CrawlerProcess
 
 import base64
 import subprocess
@@ -8,9 +9,9 @@ import sys
 import sqlalchemy
 
 
-from database import db_session, engine, md
+from database import db_session
 from models import VPS, User, Image, Ad
-
+from syncronizer import CraigSpider
 
 #run loop
 p = subprocess.Popen([sys.executable, './cragloop.py'],
@@ -306,12 +307,19 @@ def sync():
 
 @app.route('/scrap_ads', methods=['POST'])
 def scrap_ads():
-
-        print dir(request)
         print request.form
-        print request.form['submit']
-        print request.data
-        return "WHO IS HERE?"
+        print request.form['ad_ids'] .split('\n')
+        spider = CraigSpider(category = request.form['category'],
+                             area     = request.form['area'],
+                             ad_ids   = request.form['ad_ids'] .split('\n'))
+
+        process = CrawlerProcess({
+                'USER_AGENT': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)'
+        })
+        process.crawl(spider)
+        #process.start() 
+
+        return "Scraped?"
 
 
 
