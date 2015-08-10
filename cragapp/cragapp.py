@@ -354,8 +354,11 @@ def delete_image(idimages):
 
 @app.route('/scrap_ads/<idads>', methods=['POST', 'GET'])
 def scrap_ads(idads):
-        
-        subprocess.call(["python", "syncronizer.py", "--idads", idads])
+        #with python cragapp.py
+        #try:    subprocess.call(["python", "syncronizer.py", "--idads", idads])
+        #with tornado
+        subprocess.call(["python", "cragapp/syncronizer.py", "--idads", idads])
+
         return "Scraped?"
 
 
