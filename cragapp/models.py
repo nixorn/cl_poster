@@ -65,17 +65,18 @@ class Image(Base):
 class Ad(Base):
     __tablename__ = 'ads'
     idads         = Column(Integer, primary_key=True)
-    idcrag        = Column(Integer, unique = True)
+    idcrag        = Column(String(25), unique = True)
     description   = Column(Text)
     title         = Column(String(100)) 
     posting_time  = Column(String(5))
     status        = Column(String(30))
     idusers       = Column(Integer)
     category      = Column(String(20))
-    area          = Column(String(5))
+    area          = Column(String(20))
     replymail     = Column(String(50))
 
     def __init__(self,
+                 idcrag,
                  description,
                  title,
                  posting_time,
@@ -84,6 +85,7 @@ class Ad(Base):
                  category,
                  area,
                  replymail):
+        self.idcrag        = idcrag
         self.description   = description  
         self.title         = title        
         self.posting_time  = posting_time 

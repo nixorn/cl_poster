@@ -2,9 +2,8 @@
 {% block content %}
 <div class="ad">
 
-
-
-
+  <div class="property">
+    <div class="label">idcrag </div><input id="idcrag" type="text" value=""></div>
   
   <div class="property">
     <div class="label">title </div><input id="title" type="text" value=""></div>
@@ -14,6 +13,7 @@
 
   
   <div class="property">
+    <div class="label"> Category </div>
     <select id="category" name="category">
       <option value="aos"> automotive services </option>
       <option value="bts"> beauty services </option>
@@ -39,7 +39,8 @@
   </div>
 
 
-    <div class="property">
+  <div class="property">
+    <div class="label"> Area </div>
       <select id="area" name="area">
 	<option value="longisland"> Long island </option>
 	<option value="newyork"> Newyork </option>
@@ -66,7 +67,9 @@
 </div>
 <div class="buttons">
     <a href="javascript:history.back()"><div class="button">Back</div></a>
-    <a href="/ads"><div id="create_ad" class="button confirm">Create</div></a>
+    <a href="/ads">
+      <div id="create_ad" class="button confirm">Create</div>
+    </a>
 </div>
 {% endblock %}
 {% block lastscripts %}

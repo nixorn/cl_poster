@@ -1,7 +1,7 @@
 #!./bin/python 
 from flask import Flask, render_template, url_for, request, redirect
 from werkzeug import secure_filename
-from scrapy.crawler import CrawlerProcess
+
 
 import base64
 import subprocess
@@ -11,7 +11,7 @@ import sqlalchemy
 
 from database import db_session
 from models import VPS, User, Image, Ad
-from syncronizer import CraigSpider
+
 
 #run loop
 p = subprocess.Popen([sys.executable, './cragloop.py'],
@@ -20,8 +20,33 @@ p = subprocess.Popen([sys.executable, './cragloop.py'],
 
 
 
-                            
+CATEGORIES = {
+        'aos':'automotive services',
+        'bts':'beauty services',
+        'cps':'computer services',
+        'crs':'creative services',
+        'cys':'cycle services',
+        'evs':'event services',
+        'fgs':'farm & garden services',
+        'fns':'financial services',
+        'hss':'household services',
+        'lbs':'labor & moving',
+        'lgs':'legal services',
+        'lss':'lessons & tutoring',
+        'mas':'marine services',
+        'pas':'pet services',
+        'rts':'real estate services',
+        'sks':'skilled trade services',
+        'biz':'small biz ads',
+        'ths':'therapeutic services',
+        'trv':'travel/vacation services',
+        'wet':'writing/editing/translation'}
 
+
+AREAS = {"longisland":"Long Island", "newyork":"New York"}
+
+                            
+ 
 
     
 
@@ -73,8 +98,7 @@ def vps_delete(vps_id):
 def vps_update():
         vps_id, ip, port, login, password = request.form['idvpss'], request.form['ip'], request.form['port'],request.form['user'], request.form['password']
         vps = VPS.query.filter(VPS.idvpss==vps_id).first()
-        print "THAT IS YOUR ID", request.form['idvpss'],request.form['ip'], request.form['\
-port'],request.form['user']
+
         vps.ip = ip          
         vps.port = port        
         vps.login= login          
@@ -172,13 +196,14 @@ def ads():
 @app.route('/ad/create')
 def ad_create():
         user_db = User.query.all()
-        for i in user_db: print dir(i)
+
         users = [{'idusers':user.idusers,'username':user.username} for user in user_db]
         
         return render_template('ad-create.html', menu='ad', users=users)
 
 @app.route('/ad/add', methods=['POST',])
 def ad_add():
+        idcrag        = request.form['idcrag']
         description   = request.form['description']
         title         = request.form['title']
         posting_time  = request.form['posting_time']
@@ -187,8 +212,19 @@ def ad_add():
         category      = request.form['category']
         area          = request.form['area']
         replymail     = request.form['replymail']
+
+        print idcrag,description,title,posting_time,idusers,category,area,replymail     
         
-        a = Ad(description,title,posting_time,"not_posted",idusers,category,area,replymail)
+        a = Ad(idcrag,
+               description,
+               title,
+               posting_time,
+               "not_posted",
+               idusers,
+               category,
+               area,
+               replymail)
+        
         db_session.add(a)
         db_session.commit()
         return "Ad created"
@@ -205,6 +241,7 @@ def ad_edit(ad_id):
         ad        = Ad.query.filter(Ad.idads == ad_id).first()
         
         target_ad = {'idads'         : ad_id,
+                     'idcrag'        : ad.idcrag,
                      'description'   : ad.description,
                      'title'         : ad.title,
                      'posting_time'  : ad.posting_time,
@@ -218,19 +255,36 @@ def ad_edit(ad_id):
         current_user = {'idusers':user.idusers, 'username':user.username}
         users = [{'idusers':us.idusers, 'username':us.username}
                 for us in User.query.filter(User.idusers != user.idusers).all()]
+        
+        current_category = {'category':ad.category, 'cat_name':CATEGORIES[ad.category]}
+        categories      = [{'category':cat, 'cat_name':name}
+                           for cat,name in CATEGORIES.items()]
+        categories.remove(current_category)
+        
+        current_area = {'area':ad.area, 'area_name':AREAS[ad.area]}
+        areas        = [{'area':area, 'area_name':ar_name}
+                           for area,ar_name in AREAS.items()]
+        areas.remove(current_area)
 
-        images = [{'idimages':image.idimages, 'image':base64.b64encode(image.image), 'extension':image.extension}
+        images = [{'idimages':image.idimages,
+                   'image':base64.b64encode(image.image),
+                   'extension':image.extension}
                   for image in Image.query.all()]
         return render_template('ad-edit.html', menu='ad',
                                target_ad=target_ad,
                                users=users,
                                current_user=current_user,
-                               images=images)
+                               images=images,
+                               current_category=current_category,
+                               categories=categories,
+                               current_area=current_area,
+                               areas=areas)
 
 @app.route('/ad/update', methods=['POST'])
 def ad_update():
 
         idads        = request.form['idads']
+        idcrag       = request.form['idcrag']
         description  = request.form['description']
         title        = request.form['title']
         posting_time = request.form['posting_time']
@@ -240,13 +294,13 @@ def ad_update():
         area         = request.form['area']
         replymail    = request.form['replymail']
 
-        print "FORUPDATE",idads,description,title,posting_time,status,idusers,category,area,replymail
 
 
         ad = Ad.query.filter(Ad.idads==idads).first()
 
 
         ad.description = description
+        ad.idcrag      = idcrag
         ad.title       = title
         ad.posting_time= posting_time
         ad.status      = status
@@ -296,29 +350,12 @@ def delete_image(idimages):
         return "Image deleted"
 
 
-@app.route('/sync')
-def sync():
-        users_db = User.query.all()
-        users = [{'idusers'    :user.idusers,
-                  'username'   :user.username,
-                  'password'   :user.password,
-                  'accountID'  :user.accountID} for user in users_db]
-        return render_template('sync-index.html', menu='sync', users=users)
 
-@app.route('/scrap_ads', methods=['POST'])
-def scrap_ads():
-        print request.form
-        print request.form['ad_ids'] .split('\n')
-        spider = CraigSpider(category = request.form['category'],
-                             area     = request.form['area'],
-                             ad_ids   = request.form['ad_ids'] .split('\n'))
 
-        process = CrawlerProcess({
-                'USER_AGENT': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)'
-        })
-        process.crawl(spider)
-        #process.start() 
-
+@app.route('/scrap_ads/<idads>', methods=['POST', 'GET'])
+def scrap_ads(idads):
+        
+        subprocess.call(["python", "syncronizer.py", "--idads", idads])
         return "Scraped?"
 
 

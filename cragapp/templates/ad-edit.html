@@ -5,20 +5,36 @@
     <div class="label">idads </div><input id="idads" type="text" value="{{target_ad.idads}}"></div>
 
   <div class="property">
+    <div class="label">idcrag </div><input id="idcrag" type="text" value="{{target_ad.idcrag}}"></div>
+  <div class="property">
     <div class="label">title </div><input id="title" type="text" value="{{target_ad.title}}"></div>
-
+  
   <div class="property">
     <div class="label">posting_time </div><input id="posting_time" type="text" value="{{target_ad.posting_time}}"></div>
-
+  
   <div class="property">
     <div class="label">status</div><input id="status" type="text" value="{{target_ad.status}}"></div>
   
+  
   <div class="property">
-    <div class="label">category</div><input id="category" type="text" value="{{target_ad.category}}"></div>
+    <div class="label"> Category </div>
+    <select id="category" name="category">
+      <option value="{{current_category.category}}">{{current_category.cat_name}}</option>
+      {% for category in categories %}
+      <option value="{{category.category}}">{{category.cat_name}}</option>
+      {% endfor %}
+    </select>
+  </div>
 
+  
   <div class="property">
-    <div class="label">area</div><input id="area" type="text" value="{{target_ad.area}}"></div>
-
+    <div class="label"> Area </div>
+      <select id="area" name="area">
+	<option value="longisland"> Long Island </option>
+	<option value="newyork"> New York </option>
+      </select>
+  </div>
+  
   <div class="property">
     <div class="label">replymail</div><input id="replymail" type="text" value="{{target_ad.replymail}}"></div>
 
@@ -29,7 +45,8 @@
       {% for user in users %}
       <option value="{{user.idusers}}">{{user.username}}</option>
       {% endfor %}
-    </select></div>
+  </select></div>
+  
   <div class="property">
     <div class="label"> description </div><textarea cols=100 rows=40 id="description" type="text">{{target_ad.description}}</textarea></div>
   <div class="imgallery">
@@ -38,20 +55,23 @@
     <br> <a href="/delete_image/{{image.idimages}}"> Delete </a>
     <br><br>
     {% endfor %}</div>
-
+  
   <form id="images_upload" action="/upload_image" method="post" enctype="multipart/form-data">
     <br>
     Select image to upload:
     <input id="image_to_upload" type="file" name="images[]" multiple/>
     <input id="image_upload_submit" type="submit" value="Upload" name="submit">
-    </form>
-
+  </form>
+  
 </div>
 <div class="buttons">
-    <a href="javascript:history.back()"><div class="button">Back</div></a>
-    <a href="/ad/edit/{{target_ad.idads}}"> <div id="edit_ad" class="button confirm">Save</div>    </a>
+  <a href="javascript:history.back()"><div class="button">Back</div></a>
+  <!--<a href="/ad/edit/{{target_ad.idads}}">-->
+    <div id="edit_ad" class="button confirm">Save</div>
+  <!--</a>-->
+  <a href="/scrap_ads/{{target_ad.idads}}"><div id="edit_ad" class="button confirm">Sync</div></a>
 </div>
 {% endblock %}
 {% block lastscripts %}
-    <script src="/static/js/ad-edit.js"></script>
+<script src="/static/js/ad-edit.js"></script>
 {% endblock %}

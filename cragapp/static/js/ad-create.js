@@ -1,7 +1,7 @@
 $(document).ready(function() {
     $('#create_ad').on('click', function(){
         var data = {};
-
+	data["idcrag"]       = $('#idcrag').val();
 	data["title"]        = $('#title').val();
 	data["description"]  = $('#description').val();
 	data["posting_time"] = $('#posting_time').val();
