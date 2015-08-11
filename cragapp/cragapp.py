@@ -272,6 +272,7 @@ def ad_edit(ad_id):
                    'image':base64.b64encode(image.image),
                    'extension':image.extension}
                   for image in Image.query.all()]
+
         return render_template('ad-edit.html', menu='ad',
                                target_ad=target_ad,
                                users=users,

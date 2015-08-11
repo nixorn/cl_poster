@@ -55,9 +55,27 @@ class CraigSpider(scrapy.Spider):
         self.ad.status      = response.xpath(".//*[@id='pagecontainer']/section/section[2]/div[2]/p[2]/text()").extract()
         db_session.add(self.ad)
         db_session.commit()
+
+        for pic_url in response.xpath(".//*[@id='thumbs']/a/@href").extract():
+            yield scrapy.Request(pic_url, callback=self.parseImage)
+            
          
     def parseImage(self, response):
-        pass
+
+        img = Image(extension=response.url.split('.')[-1],
+                    craglink=response.url,
+                    idads=self.ad.idads,         
+                    image=response.body)         
+        db_session.add(img)
+        db_session.commit()
+
+
+
+
+
+
+
+        
 
     
 process = CrawlerProcess({

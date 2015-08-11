@@ -48,12 +48,15 @@ class Image(Base):
     __tablename__ = 'images'
     idimages      = Column(Integer, primary_key=True)
     extension     = Column(String(10))
+    #link on craiglist to prevent downloading the same picture
+    craglink      = Column(String(255), unique=True) 
     idads         = Column(Integer)
     image         = Column(LargeBinary)
 
-    def __init__(self, idads, extension, image):
+    def __init__(self, idads, extension, craglink, image):
         self.idads     = idads
         self.extension = extension
+        self.craglink  = craglink 
         self.image     = image
         
     def __repr__(self):
