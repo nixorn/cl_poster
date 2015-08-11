@@ -356,9 +356,9 @@ def delete_image(idimages):
 def scrap_ads(idads):
         #pure python27 cragapp.py
 
-        subprocess.call(["python", "syncronizer.py", "--idads", idads])
+        #subprocess.call(["python", "syncronizer.py", "--idads", idads])
         # on tornado
-        #subprocess.call(["python", "cragapp/syncronizer.py", "--idads", idads])
+        subprocess.call(["python", "cragapp/syncronizer.py", "--idads", idads])
 
         return "Scraped?"
 
