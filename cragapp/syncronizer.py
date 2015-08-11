@@ -52,6 +52,7 @@ class CraigSpider(scrapy.Spider):
         self.ad.title       = response.xpath(".//*[@class='postingtitletext']/text()").extract()[0]
         self.ad.area        = response.url.split('/')[2].split('.')[0]
         self.ad.description = description
+        self.ad.status      = response.xpath(".//*[@id='pagecontainer']/section/section[2]/div[2]/p[2]/text()").extract()
         db_session.add(self.ad)
         db_session.commit()
          
