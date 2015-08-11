@@ -1,3 +1,4 @@
+#in fact it is scrapy spider + minimal running logic.
 import scrapy
 import operator
 import argparse
@@ -43,11 +44,12 @@ class CraigSpider(scrapy.Spider):
         
     
     def parse(self, response):
-        description = response.css('#postingbody').extract()
+
+        description = response.xpath(".//*[@id='postingbody']/text()").extract()
         description = [item+'\n' for item in description]
         description = reduce(operator.concat, description[1:], description[0])
         
-        self.ad.title       = response.css('.postingtitletext').extract()[0]
+        self.ad.title       = response.xpath(".//*[@class='postingtitletext']/text()").extract()[0]
         self.ad.area        = response.url.split('/')[2].split('.')[0]
         self.ad.description = description
         db_session.add(self.ad)

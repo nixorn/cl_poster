@@ -1,4 +1,6 @@
-#!./bin/python 
+#!./bin/python27
+#root application. database to interface tie here, running crawler and poster is here also
+
 from flask import Flask, render_template, url_for, request, redirect
 from werkzeug import secure_filename
 
@@ -315,9 +317,7 @@ def ad_update():
         return "UPDATED"
 
 
-#base64 image for RSS 
-#with open("test_img.jpg", "rb") as image_file:
-#        encoded_image = base64.b64encode(image_file.read())
+
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 def allowed_file(filename):
@@ -354,10 +354,11 @@ def delete_image(idimages):
 
 @app.route('/scrap_ads/<idads>', methods=['POST', 'GET'])
 def scrap_ads(idads):
-        #with python cragapp.py
-        #try:    subprocess.call(["python", "syncronizer.py", "--idads", idads])
-        #with tornado
-        subprocess.call(["python", "cragapp/syncronizer.py", "--idads", idads])
+        #pure python27 cragapp.py
+
+        subprocess.call(["python", "syncronizer.py", "--idads", idads])
+        # on tornado
+        #subprocess.call(["python", "cragapp/syncronizer.py", "--idads", idads])
 
         return "Scraped?"
 

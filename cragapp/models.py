@@ -1,3 +1,5 @@
+#database models for autogenerate and manage tables in database
+
 from sqlalchemy import Column, Integer, String, Text, ForeignKey, LargeBinary
 from sqlalchemy.orm import relationship
 from database import Base
