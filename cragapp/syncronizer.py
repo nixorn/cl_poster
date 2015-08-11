@@ -8,7 +8,7 @@ from database import db_session
 
 
 parser = argparse.ArgumentParser(description='Crawl from craiglist ad and store it into database.')
-parser.add_argument('--idads', 
+parser.add_argument('--idads', nargs=1,
                     help='id from internal database')
 
 

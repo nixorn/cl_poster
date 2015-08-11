@@ -62,9 +62,7 @@ class Image(Base):
     def __repr__(self):
         return '<Image %r>' % (str(self.idimages))
 
-'''
 
-'''
 
 
 class Ad(Base):
