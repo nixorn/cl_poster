@@ -1,8 +1,8 @@
 $(document).ready(function() {
     $('#edit_ad').on('click', function(){
         var data = {};
-	data["idads"]        = $("#idads").val();
-	data["idcrag"]       = $("#idcrag").val();
+    	data["idads"]        = $("#idads").val();
+    	data["idcrag"]       = $("#idcrag").val();
         data["description"]  = document.getElementById('description').value;
         data["title"]        = $("#title").val();
         data["posting_time"] = $("#posting_time").val();
@@ -17,9 +17,24 @@ $(document).ready(function() {
             dataType : 'text',
             type: 'post',
             success: function (response) {
-                console.log(response);
+                if (response == 'UPDATED') {
+                    $('#edit_ad').addClass('shrinked');
+                    $('.indicator').addClass('success').addClass('expanded').text('OK!');
+                    setTimeout(function(){
+                        $('#edit_ad').removeClass('shrinked');
+                        $('.indicator').removeClass('success').removeClass('expanded');
+                    }, 400);
+                } else {
+                    console.log(response);
+                }
             },
             error: function(e) {
+                $('#edit_ad').addClass('shrinked');
+                $('.indicator').addClass('error').addClass('expanded').text(':(');
+                setTimeout(function(){
+                    $('#edit_ad').removeClass('shrinked');
+                    $('.indicator').removeClass('error').removeClass('expanded');
+                }, 400);
                 console.log(e.message);
             }
         });

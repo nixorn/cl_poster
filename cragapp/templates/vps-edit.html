@@ -1,4 +1,4 @@
-+{% extends "base.html" %}
+{% extends "base.html" %}
 {% block content %}
 <div class="vps">
     <div class="property hidden">
@@ -19,10 +19,10 @@
 </div>
 <div class="buttons">
     <a href="javascript:history.back()"><div class="button">Back</div></a>
-    <div id="edit_vps" class="button save">Save</div>
+    <div id="edit_vps" class="button save confirm">Save</div><!--
+ --><div class="indicator">OK!</div>
 </div>
 {% endblock %}
-
 {% block lastscripts %}
     <script src="/static/js/vps-edit.js"></script>
 {% endblock %}

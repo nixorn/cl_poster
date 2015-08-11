@@ -1,35 +1,33 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="user">
-
-  <div class="property hidden">
-    <div class="label"> idusers</div><input id="idusers" type="text" value="{{target_user.idusers}}"></div>
-
-  
-  <div class="property">
-    <div class="label"> username</div><input id="username" type="text" value="{{target_user.username}}"></div>
-
-  <div class="property">
-    <div class="label"> password</div><input id="password" type="password" value="{{target_user.password}}"></div>
-
-  <div class="property">
-    <div class="label"> accountID</div><input id="accountID" type="text" value="{{target_user.accountID}}"></div>
-  
-  <div class="property">
-    <div class="label"> VPS </div>
-    <select id="vps-select">
-      <option value="{{current_vps.idvpss}}"> {{current_vps.ip}}:{{current_vps.port}}</option>
-      {% for vps in vpss %}
-      <option value="{{vps.idvpss}}">{{vps.ip}}:{{vps.port}}</option>
-      {% endfor %}
-    </select>
+    <div class="property hidden">
+        <div class="label">idusers</div><input id="idusers" type="text" value="{{target_user.idusers}}">
     </div>
-  
-
+    <div class="property">
+        <div class="label">username</div><input id="username" type="text" value="{{target_user.username}}">
+    </div>
+    <div class="property">
+        <div class="label">password</div><input id="password" type="password" value="{{target_user.password}}">
+    </div>
+    <div class="property">
+        <div class="label">accountID</div><input id="accountID" type="text" value="{{target_user.accountID}}">
+    </div>
+    <div class="property">
+        <div class="label">VPS</div><!--
+     --><select id="vps-select">
+            <option value="{{current_vps.idvpss}}"> {{current_vps.ip}}:{{current_vps.port}}</option>
+            {% for vps in vpss %}
+                <option value="{{vps.idvpss}}">{{vps.ip}}:{{vps.port}}</option>
+            {% endfor %}
+        </select>
+    </div>
 </div>
+
 <div class="buttons">
     <a href="javascript:history.back()"><div class="button">Back</div></a>
-    <a href="/users"><div id="edit_user" class="button confirm">Save</div></a>
+    <div id="edit_user" class="button confirm">Save</div><!--
+ --><div class="indicator">OK!</div>
 </div>
 {% endblock %}
 {% block lastscripts %}

@@ -2,74 +2,71 @@
 {% block content %}
 <div class="ad">
 
-  <div class="property">
-    <div class="label">idcrag </div><input id="idcrag" type="text" value=""></div>
-  
-  <div class="property">
-    <div class="label">title </div><input id="title" type="text" value=""></div>
-
-  <div class="property">
-    <div class="label">posting_time </div><input id="posting_time" type="text" value=""></div>
-
-  
-  <div class="property">
-    <div class="label"> Category </div>
-    <select id="category" name="category">
-      <option value="aos"> automotive services </option>
-      <option value="bts"> beauty services </option>
-      <option value="cps"> computer services </option>
-      <option value="crs"> creative services </option>
-      <option value="cys"> cycle services </option>
-      <option value="evs"> event services </option>
-      <option value="fgs"> farm & garden services </option>
-      <option value="fns"> financial services </option>
-      <option value="hss"> household services </option>
-      <option value="lbs"> labor & moving </option>
-      <option value="lgs"> legal services </option>
-      <option value="lss"> lessons & tutoring </option>
-      <option value="mas"> marine services </option>
-      <option value="pas"> pet services </option>
-      <option value="rts"> real estate services </option>
-      <option value="sks"> skilled trade services </option>
-      <option value="biz"> small biz ads </option>
-      <option value="ths"> therapeutic services </option>
-      <option value="trv"> travel/vacation services </option>
-      <option value="wet"> Writing/editing/translation </option>
-    </select>
-  </div>
-
-
-  <div class="property">
-    <div class="label"> Area </div>
-      <select id="area" name="area">
-	<option value="longisland"> Long island </option>
-	<option value="newyork"> Newyork </option>
-      </select>
+    <div class="property">
+        <div class="label">idcrag </div><input id="idcrag" type="text" value="">
+    </div>
+    <div class="property">
+        <div class="label">title </div><input id="title" type="text" value="">
+    </div>
+    <div class="property">
+        <div class="label">posting_time </div><input id="posting_time" type="text" value="">
     </div>
 
+    <div class="property">
+        <div class="label"> Category </div><!--
+     --><select id="category" name="category">
+            <option value="aos"> automotive services </option>
+            <option value="bts"> beauty services </option>
+            <option value="cps"> computer services </option>
+            <option value="crs"> creative services </option>
+            <option value="cys"> cycle services </option>
+            <option value="evs"> event services </option>
+            <option value="fgs"> farm & garden services </option>
+            <option value="fns"> financial services </option>
+            <option value="hss"> household services </option>
+            <option value="lbs"> labor & moving </option>
+            <option value="lgs"> legal services </option>
+            <option value="lss"> lessons & tutoring </option>
+            <option value="mas"> marine services </option>
+            <option value="pas"> pet services </option>
+            <option value="rts"> real estate services </option>
+            <option value="sks"> skilled trade services </option>
+            <option value="biz"> small biz ads </option>
+            <option value="ths"> therapeutic services </option>
+            <option value="trv"> travel/vacation services </option>
+            <option value="wet"> Writing/editing/translation </option>
+        </select>
+    </div>
 
+    <div class="property">
+        <div class="label"> Area </div><!--
+     --><select id="area" name="area">
+            <option value="longisland"> Long island </option>
+            <option value="newyork"> Newyork </option>
+        </select>
+    </div>
 
-  <div class="property">
-    <div class="label">replymail</div><input id="replymail" type="text" value=""></div>
+    <div class="property">
+        <div class="label">replymail</div><input id="replymail" type="text" value="">
+    </div>
 
-  <div class="property">
-    <div class="label"> User select </div>
-    <select id="user-select">
+    <div class="property">
+        <div class="label"> User select </div><!--
+     --><select id="user-select">
+            {% for user in users %}
+                <option value="{{user.idusers}}">{{user.username}}</option>
+            {% endfor %}
+        </select>
+    </div>
 
-      {% for user in users %}
-      <option value="{{user.idusers}}">{{user.username}}</option>
-      {% endfor %}
-    </select></div>
-  <div class="property">
-    <div class="label"> description </div><textarea cols=100 rows=40 id="description" type="text"></textarea></div>
-   
-
+    <div class="property">
+        <div class="label"> description </div><textarea cols=70 rows=15 id="description" type="text"></textarea>
+    </div>
 </div>
 <div class="buttons">
     <a href="javascript:history.back()"><div class="button">Back</div></a>
-    <a href="/ads">
-      <div id="create_ad" class="button confirm">Create</div>
-    </a>
+    <div id="create_ad" class="button confirm">Create</div><!--
+ --><div class="indicator">OK!</div>
 </div>
 {% endblock %}
 {% block lastscripts %}
