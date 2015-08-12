@@ -31,11 +31,6 @@ class CraigSpider(scrapy.Spider):
         
         self.ad = Ad.query.filter(Ad.idads == args.idads).first()
 
-        #with open("fiha", "w") as f:
-        #     f.write(str(self.ad)+'\n')
-        #    f.write(args.idads+'\n')
-        #    f.write(type(args.idads))
-        #    f.flush()
         
         self.start_urls = ['http://' + str(self.ad.area) + '.craigslist.org/'
                            + str(self.ad.category) + '/' + str(self.ad.idcrag) + '.html',]

@@ -71,10 +71,14 @@ class CraigSpider(scrapy.Spider):
             callback=self.delete1)
 
     def delete1(self, response):
-        crypt_form = response.xpath("//form[./input[@name='crypt' and @type='hidden']]").extract()[0]
         #second CL magic. every action contains crypt sequence. need to push this
         #sequence to server in form data.
-        self.crypt = crypt_form.split('crypt" value="')[1].split('"')[0]
+
+        self.crypt = response.\
+                     xpath("//form[./input[@name='crypt']]/input[@name='crypt']/@value").\
+                     extract()[0]
+        
+
         return scrapy.FormRequest.from_response(
             response=response,
             url='https://post.craigslist.org/manage/'
@@ -86,12 +90,46 @@ class CraigSpider(scrapy.Spider):
             method='POST',
             callback=self.finalize)
 
+    def repost(self, response):
+        with open("logs/repost_step_1.html", 'w') as f:
+            f.write(response.body)
+            f.flush()
+
+        repost_form = filter(lambda x: self.ad.idcrag in x ,
+                             response.xpath("//form[./input[@value='repost']]").extract())[0]
+        
+        self.row_code    = repost_form.split(self.ad.idcrag+'/')[1].split('"')[0]
+        
+            
+        return scrapy.Request(
+            url='https://post.craigslist.org/manage/'
+            +self.ad.idcrag+'/'+self.row_code+'?action=repost&go=repost',
+            method='GET',
+            callback=self.repost1)
+
+    def repost1(self, response):
+        with open("logs/repost_step_2.html", 'w') as f:
+            f.write(response.body)
+            f.flush()
+        self.crypt = response.\
+                xpath("//form[./input[@name='cryptedStepCheck']]/input[@name='cryptedStepCheck']/@value").extract()[0]
+        
+        '''return scrapy.FormRequest.from_response(
+            response=response,
+            url='https://post.craigslist.org/manage/'
+            + self.ad.idcrag + '/' + self.row_code,
+            formdata ={
+                "action":"delete",
+                "crypt":self.crypt,
+                "go":"delete"},
+            method='POST',
+            callback=self.finalize)'''
+
+
     
     def renew(self, response):
         print response.body
     
-    def repost(self, response):
-        pass
 
     def add(self, response):
         pass

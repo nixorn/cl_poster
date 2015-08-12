@@ -23,6 +23,7 @@ p = subprocess.Popen([sys.executable, './cragloop.py'],
 
 
 CATEGORIES = {
+        'res':'resumes/job wanted',
         'aos':'automotive services',
         'bts':'beauty services',
         'cps':'computer services',
@@ -45,7 +46,7 @@ CATEGORIES = {
         'wet':'writing/editing/translation'}
 
 
-AREAS = {"longisland":"Long Island", "newyork":"New York"}
+AREAS = {"longisland":"Long Island", "newyork":"New York", "moscow":"Moscow"}
 
                             
  
@@ -182,7 +183,7 @@ def user_update():
 @app.route('/ads')
 def ads():
         ads_db = Ad.query.all()
-        ads = [{'idads'        :ad.idads,
+        ads = [{'idads'       :ad.idads,
                 'description' :ad.description,
                 'title'       :ad.title,
                 'posting_time':ad.posting_time,
@@ -200,8 +201,13 @@ def ad_create():
         user_db = User.query.all()
 
         users = [{'idusers':user.idusers,'username':user.username} for user in user_db]
+        categories = [{"category":category, "cat_name":cat_name}
+                      for category, cat_name in CATEGORIES.items()]
+        areas = [{"area":area, "area_name":area_name}
+                 for area, area_name in AREAS.items()]
         
-        return render_template('ad-create.html', menu='ad', users=users)
+        return render_template('ad-create.html', menu='ad', users=users,
+                               categories=categories, areas=areas)
 
 @app.route('/ad/add', methods=['POST',])
 def ad_add():
@@ -209,13 +215,10 @@ def ad_add():
         description   = request.form['description']
         title         = request.form['title']
         posting_time  = request.form['posting_time']
-
         idusers       = request.form['idusers']
         category      = request.form['category']
         area          = request.form['area']
         replymail     = request.form['replymail']
-
-        print idcrag,description,title,posting_time,idusers,category,area,replymail     
         
         a = Ad(idcrag,
                description,
@@ -297,10 +300,7 @@ def ad_update():
         area         = request.form['area']
         replymail    = request.form['replymail']
 
-
-
         ad = Ad.query.filter(Ad.idads==idads).first()
-
 
         ad.description = description
         ad.idcrag      = idcrag
@@ -311,7 +311,6 @@ def ad_update():
         ad.category    = category
         ad.area        = area
         ad.replymail   = replymail
-        
         
         db_session.add(ad)
         db_session.commit()
@@ -361,8 +360,12 @@ def scrap_ads(idads):
         # on tornado
         subprocess.call(["python", "cragapp/syncronizer.py", "--idads", idads])
 
-        return "Scraped?"
+        return "Ad scraped"
 
+@app.route('/manage/<action>/<idads>')
+def manage_ad(action, idads):
+        subprosess.call(["python", "cragapp/admanager.py", "--idads", idads, "--action", action])
+        return "Ad deleted"
 
 
 if __name__ == '__main__':

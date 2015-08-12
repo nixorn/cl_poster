@@ -14,14 +14,14 @@ Then epel, scl, python27,change system python to 2.7, install python dependencie
 yum -y install epel-release
 yum install centos-release-SCL
 yum install python27
-
 yum -y install gcc python-devel freetds-devel python-pip libffi-devel libssl-devel libxml2-devel libxslt1-devel libxml2-python python-lxml libxslt-devel
 yum install python-pip
 pip install virtualenv
 ```
 
-Then cd into craigslist-poster directory and type:
 
+
+Then cd into craigslist-poster directory and type:
 ```bash
 virtualenv venv
 . venv/bin/activate
@@ -35,13 +35,19 @@ pip install service_identity
 python2.7 dbinit.py
 ```
 
-Setup is done. Run application:
-
+Setup python 2.7 for this session and reactivate virtualenv after source command:
 ```bash
 scl enable python27 'which python'
 scl enable python27 'python --version'
 scl enable python27 bash
 source /opt/rh/python27/enable
+. venv/bin/activate
+```
+
+Run application:
+
+```bash
+
 python2.7 tornado_deploy.py
 ```
 
