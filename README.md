@@ -14,10 +14,7 @@ Then epel, scl, python27,change system python to 2.7, install python dependencie
 yum -y install epel-release
 yum install centos-release-SCL
 yum install python27
-scl enable python27 'which python'
-scl enable python27 'python --version'
-scl enable python27 bash
-source /opt/rh/python27/enable
+
 yum -y install gcc python-devel freetds-devel python-pip libffi-devel libssl-devel libxml2-devel libxslt1-devel libxml2-python python-lxml libxslt-devel
 yum install python-pip
 pip install virtualenv
@@ -41,6 +38,10 @@ python2.7 dbinit.py
 Setup is done. Run application:
 
 ```bash
+scl enable python27 'which python'
+scl enable python27 'python --version'
+scl enable python27 bash
+source /opt/rh/python27/enable
 python2.7 tornado_deploy.py
 ```
 

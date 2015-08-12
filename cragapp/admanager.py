@@ -38,6 +38,11 @@ class CraigSpider(scrapy.Spider):
 
 
     def parse(self, response):
+        if   args.action == "renew"  : callback = self.renew
+        elif args.action == "delete" : callback = self.delete
+        elif args.action == "repost" : callback = self.repost
+        elif args.action == "add"    : callback = self.add
+        else: raise Exception("incorrect action option. must be renew|delete|repost|add")
         
         return scrapy.FormRequest.from_response(
             response,
@@ -48,30 +53,54 @@ class CraigSpider(scrapy.Spider):
                 'p':"0",
                 'inputEmailHandle': self.user.username,
                 'inputPassword': self.user.password},
-            callback=self.after_login)
-        
+            callback=callback)
 
-    def after_login(self, response):
-        print args.action
-        if   args.action == "renew"  : self.renew(response)
-        elif args.action == "delete" : self.delete(response)
-        elif args.action == "repost" : self.repost(response)
-        elif args.action == "add"    : self.add(response)
-        else: raise Exception("incorrect option")
-
-    def renew(self, response):
-        print response.body
 
     def delete(self, response):
-        pass
+        delete_form = filter(lambda x: self.ad.idcrag in x ,
+                             response.xpath("//form[./input[@value='delete']]").extract())[0]
+        #first CL magic. in urls like https://post.craigslist.org/manage/5163849759/kytja
+        #kytja - row code. on even ad action (delete,renew,repost) this code the same.
+        self.row_code    = delete_form.split(self.ad.idcrag+'/')[1].split('"')[0]
+        
+        
+        return scrapy.Request(
+            url='https://post.craigslist.org/manage/'
+            +self.ad.idcrag+'/'+self.row_code+'?action=delete&go=delete',
+            method='GET',
+            callback=self.delete1)
 
+    def delete1(self, response):
+        crypt_form = response.xpath("//form[./input[@name='crypt' and @type='hidden']]").extract()[0]
+        #second CL magic. every action contains crypt sequence. need to push this
+        #sequence to server in form data.
+        self.crypt = crypt_form.split('crypt" value="')[1].split('"')[0]
+        return scrapy.FormRequest.from_response(
+            response=response,
+            url='https://post.craigslist.org/manage/'
+            + self.ad.idcrag + '/' + self.row_code,
+            formdata ={
+                "action":"delete",
+                "crypt":self.crypt,
+                "go":"delete"},
+            method='POST',
+            callback=self.finalize)
+
+    
+    def renew(self, response):
+        print response.body
+    
     def repost(self, response):
         pass
 
     def add(self, response):
         pass
-
-        
+    
+    #testing function which should output in file final response
+    def finalize(self,response):
+        with open("finalize.html", 'w') as f:
+            f.write(response.body)
+            f.flush()
 
     
 process = CrawlerProcess({
