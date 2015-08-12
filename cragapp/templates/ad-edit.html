@@ -52,16 +52,37 @@
         </select>
     </div>
 
-<div class="property">
-    <div class="label"> description </div><textarea cols=70 rows=15 id="description" type="text">{{target_ad.description}}</textarea>
-</div>
-  <div class="imgallery">
-    {% for image in images %}
-    <img src="data:image/{{image.extension}};base64, {{image.image}}">
-    <br> <a href="/delete_image/{{image.idimages}}"> Delete </a>
-    <br><br>
-    {% endfor %}</div>
+    <div class="property">
+      <div class="label">Contact phone</div>
+      <input id="contact_phone" type="text" value="{{target_ad.contact_phone}}">
+    </div>
 
+    <div class="property">
+      <div class="label">Contact name</div>
+      <input id="contact_name" type="text" value="{{target_ad.contact_name}}">
+    </div>
+
+    <div class="property">
+      <div class="label">Postal</div>
+      <input id="postal" type="text" value="{{target_ad.postal}}">
+    </div>
+
+    <div class="property">
+      <div class="label">Specific location</div>
+      <input id="specific_location" type="text" value="{{target_ad.specific_location}}">
+    </div>
+
+    
+    <div class="property">
+      <div class="label"> description </div><textarea cols=70 rows=15 id="description" type="text">{{target_ad.description}}</textarea>
+    </div>
+    <div class="imgallery">
+      {% for image in images %}
+      <img src="data:image/{{image.extension}};base64, {{image.image}}">
+      <br> <a href="/delete_image/{{image.idimages}}"> Delete </a>
+      <br><br>
+    {% endfor %}</div>
+    
   <form id="images_upload" action="/upload_image" method="post" enctype="multipart/form-data">
     <br>
     Select image to upload:

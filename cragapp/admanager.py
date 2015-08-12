@@ -111,20 +111,44 @@ class CraigSpider(scrapy.Spider):
         with open("logs/repost_step_2.html", 'w') as f:
             f.write(response.body)
             f.flush()
-        self.crypt = response.\
-                xpath("//form[./input[@name='cryptedStepCheck']]/input[@name='cryptedStepCheck']/@value").extract()[0]
+        repost_url = response.xpath("//form[@id='postingForm']/@action").extract()[0]
+        self.cryptedStepCheck = response.\
+                                xpath("//form[./input[@name='cryptedStepCheck']]/input[@name='cryptedStepCheck']/@value").extract()[0]
+        #self.category_id = response
+        print "URL!!!!",'https://post.craigslist.org/manage/'+ self.ad.idcrag + '/' + self.row_code
         
-        '''return scrapy.FormRequest.from_response(
+        return scrapy.FormRequest.from_response(
             response=response,
             url='https://post.craigslist.org/manage/'
             + self.ad.idcrag + '/' + self.row_code,
             formdata ={
-                "action":"delete",
-                "crypt":self.crypt,
-                "go":"delete"},
+                'id2':"1348x860X1348x370X1366x768",
+                #id2 =  $(document).width() + "x" 
+                #+ $(document).height() + "X" 
+                #+ $(window).width() + "x" 
+                #+ $(window).height() + "X" 
+                #+ screen.width + "x" 
+                #+ screen.height
+                'browserinfo':"%7B%0A%09%22plugins%22%3A%20%22Plugin%200%3A%20Shockwave%20Flash%3B%20Shockwave%20Flash%2011.2%20r202%3B%20libflashplayer.so%3B%20%28Shockwave%20Flash%3B%20application/x-shockwave-flash%3B%20swf%29%20%28FutureSplash%20Player%3B%20application/futuresplash%3B%20spl%29.%20%22%2C%0A%09%22timezone%22%3A%20-180%2C%0A%09%22video%22%3A%20%221366x768x24%22%2C%0A%09%22supercookies%22%3A%20%22DOM%20localStorage%3A%20Yes%2C%20DOM%20sessionStorage%3A%20Yes%2C%20IE%20userData%3A%20No%22%0A%7D",
+                #browserinfo = escape(JSON.stringify(fetch_client_info(), null, ""))
+                'FromEMail':self.user.username,
+                'Privacy':"C",
+                'contact_phone':self.ad.contact_phone,
+                'contact_name':self.ad.contact_name,
+                'CategoryID':"10",#self.category_id,
+                'PostingTitle': self.ad.title.replace(' ','+'),
+                'GeographicArea':self.ad.specific_location,
+                'postal': self.ad.postal,
+                'PostingBody':self.ad.description.replace(' ', '+'),
+                'go':"Continue",
+                'cryptedStepCheck':self.cryptedStepCheck},
             method='POST',
-            callback=self.finalize)'''
+            callback=self.repost2)
 
+    def repost2(self, response):
+        with open("logs/repost_step_3.html", 'w') as f:
+            f.write(response.body)
+            f.flush()
 
     
     def renew(self, response):
@@ -142,7 +166,7 @@ class CraigSpider(scrapy.Spider):
 
     
 process = CrawlerProcess({
-    'USER_AGENT': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)'
+    "USER-AGENT":"Mozilla/5.0 (X11; Linux x86_64; rv:31.0) Gecko/20100101 Firefox/31.0"
 })
 
 process.crawl(CraigSpider)

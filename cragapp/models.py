@@ -77,6 +77,10 @@ class Ad(Base):
     category      = Column(String(20))
     area          = Column(String(20))
     replymail     = Column(String(50))
+    contact_phone = Column(String(50))
+    contact_name  = Column(String(255))
+    postal        = Column(String(25))
+    specific_location = Column(String(50))
 
     def __init__(self,
                  idcrag,
@@ -87,16 +91,25 @@ class Ad(Base):
                  idusers,
                  category,
                  area,
-                 replymail):
-        self.idcrag        = idcrag
-        self.description   = description  
-        self.title         = title        
-        self.posting_time  = posting_time 
-        self.status        = status       
-        self.idusers       = idusers      
-        self.category      = category     
-        self.area          = area         
-        self.replymail     = replymail    
+                 replymail,
+                 contact_phone, 
+                 contact_name,  
+                 postal,
+                 specific_location):
+        self.idcrag            = idcrag
+        self.description       = description  
+        self.title             = title        
+        self.posting_time      = posting_time 
+        self.status            = status       
+        self.idusers           = idusers      
+        self.category          = category     
+        self.area              = area         
+        self.replymail         = replymail
+        self.contact_phone     = contact_phone 
+        self.contact_name      = contact_name  
+        self.postal            = postal
+        self.specific_location = specific_location
+        
 
     def __repr__(self):
         return '<Ad %r>' % (self.title)

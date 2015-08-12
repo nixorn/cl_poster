@@ -211,14 +211,18 @@ def ad_create():
 
 @app.route('/ad/add', methods=['POST',])
 def ad_add():
-        idcrag        = request.form['idcrag']
-        description   = request.form['description']
-        title         = request.form['title']
-        posting_time  = request.form['posting_time']
-        idusers       = request.form['idusers']
-        category      = request.form['category']
-        area          = request.form['area']
-        replymail     = request.form['replymail']
+        idcrag            = request.form['idcrag']
+        description       = request.form['description']
+        title             = request.form['title']
+        posting_time      = request.form['posting_time']
+        idusers           = request.form['idusers']
+        category          = request.form['category']
+        area              = request.form['area']
+        replymail         = request.form['replymail']
+        contact_phone     = request.form['contact_phone']
+        contact_name      = request.form['contact_name']
+        postal            = request.form['postal']
+        specific_location = request.form['specific_location']
         
         a = Ad(idcrag,
                description,
@@ -228,7 +232,11 @@ def ad_add():
                idusers,
                category,
                area,
-               replymail)
+               replymail,
+               contact_phone,
+               contact_name,     
+               postal,           
+               specific_location)
         
         db_session.add(a)
         db_session.commit()
@@ -245,16 +253,20 @@ def ad_delete(ad_id):
 def ad_edit(ad_id):
         ad        = Ad.query.filter(Ad.idads == ad_id).first()
         
-        target_ad = {'idads'         : ad_id,
-                     'idcrag'        : ad.idcrag,
-                     'description'   : ad.description,
-                     'title'         : ad.title,
-                     'posting_time'  : ad.posting_time,
-                     'status'        : ad.status,
-                     'idusers'       : ad.idusers,
-                     'category'      : ad.category,
-                     'area'          : ad.area,
-                     'replymail'     : ad.replymail}
+        target_ad = {'idads'             : ad_id,
+                     'idcrag'            : ad.idcrag,
+                     'description'       : ad.description,
+                     'title'             : ad.title,
+                     'posting_time'      : ad.posting_time,
+                     'status'            : ad.status,
+                     'idusers'           : ad.idusers,
+                     'category'          : ad.category,
+                     'area'              : ad.area,
+                     'replymail'         : ad.replymail,
+                     'contact_phone'     : ad.contact_phone,
+                     'contact_name'      : ad.contact_name,
+                     'postal'            : ad.postal,
+                     'specific_location' : ad.specific_location}
         
         user = User.query.filter(User.idusers == ad.idusers).first()
         current_user = {'idusers':user.idusers, 'username':user.username}
@@ -299,7 +311,11 @@ def ad_update():
         category     = request.form['category']
         area         = request.form['area']
         replymail    = request.form['replymail']
-
+        contact_phone = request.form['contact_phone']
+        contact_name  = request.form['contact_name']
+        postal        = request.form['postal']
+        specific_location = request.form['specific_location']
+        
         ad = Ad.query.filter(Ad.idads==idads).first()
 
         ad.description = description
@@ -311,6 +327,10 @@ def ad_update():
         ad.category    = category
         ad.area        = area
         ad.replymail   = replymail
+        ad.contact_phone = contact_phone
+        ad.contact_name  = contact_name
+        ad.postal        = postal
+        ad.specific_location = specific_location
         
         db_session.add(ad)
         db_session.commit()
