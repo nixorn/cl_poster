@@ -29,10 +29,12 @@
 
 
     <div class="property">
-        <div class="label"> Area </div><!--
-     --><select id="area" name="area">
-            <option value="longisland"> Long Island </option>
-            <option value="newyork"> New York </option>
+        <div class="label"> Area </div>
+	<select id="area" name="area">
+	  <option value="{{current_area.area}}">{{current_area.area_name}}</option>
+	  {% for area in areas %}
+          <option value="{{area.area}}">{{area.area_name}}</option>
+          {% endfor %}
         </select>
     </div>
 
@@ -72,7 +74,10 @@
   <a href="javascript:history.back()"><div class="button">Back</div></a>
     <div id="edit_ad" class="button confirm">Save</div><!--
  --><div class="indicator">OK!</div>
-  <a href="/scrap_ads/{{target_ad.idads}}"><div id="edit_ad" class="button confirm">Sync</div></a>
+    <a href="/scrap_ads/{{target_ad.idads}}"><div id="sync_ad" class="button confirm">Sync</div></a>
+    <a href="/manage/delete/{{target_ad.idads}}"><div id="delete_ad" class="button confirm">Delete from CL</div></a>
+
+      
 </div>
 {% endblock %}
 {% block lastscripts %}
