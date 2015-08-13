@@ -15,14 +15,26 @@ parser.add_argument('--action',
 
 args = parser.parse_args()
 
-
-
+#output grabed html page to see what happens
+def debug_html_content(response,action_name,step_num):
+    with open("logs/"+str(action_name)+"_step_"+str(step_num)+".html", 'w') as f:
+            f.write("REQUEST\n")
+            f.write(str(response.request.url)+'\n')
+            f.write(str(response.request.headers)+'\n')
+            f.write(str(response.request.cookies)+'\n')
+            f.write(str(response.request.body)+'\n')
+            f.write("\nRESPONSE\n")
+            f.write(str(response.headers)+'\n')
+            f.write(response.body)
+            f.flush()
+            
 
 class CraigSpider(scrapy.Spider):
     name = "craiglist"
     allowed_domains = ['craigslist.org']
     download_delay = 2
     start_urls = ['https://accounts.craigslist.org/login']
+    handle_httpstatus_list = [404]
     
     def __init__(self, name=None, **kwargs):
         if name is not None:
@@ -39,8 +51,8 @@ class CraigSpider(scrapy.Spider):
 
     def parse(self, response):
         if   args.action == "renew"  : callback = self.renew
-        elif args.action == "delete" : callback = self.delete
-        elif args.action == "repost" : callback = self.repost
+        elif args.action == "delete" : callback = self.delete1
+        elif args.action == "repost" : callback = self.repost1
         elif args.action == "add"    : callback = self.add
         else: raise Exception("incorrect action option. must be renew|delete|repost|add")
         
@@ -56,7 +68,8 @@ class CraigSpider(scrapy.Spider):
             callback=callback)
 
 
-    def delete(self, response):
+    def delete1(self, response):
+        debug_html_content(response,"delete",1)
         delete_form = filter(lambda x: self.ad.idcrag in x ,
                              response.xpath("//form[./input[@value='delete']]").extract())[0]
         #first CL magic. in urls like https://post.craigslist.org/manage/5163849759/kytja
@@ -68,9 +81,10 @@ class CraigSpider(scrapy.Spider):
             url='https://post.craigslist.org/manage/'
             +self.ad.idcrag+'/'+self.row_code+'?action=delete&go=delete',
             method='GET',
-            callback=self.delete1)
+            callback=self.delete2)
 
-    def delete1(self, response):
+    def delete2(self, response):
+        debug_html_content(response,"delete",2)
         #second CL magic. every action contains crypt sequence. need to push this
         #sequence to server in form data.
 
@@ -90,11 +104,9 @@ class CraigSpider(scrapy.Spider):
             method='POST',
             callback=self.finalize)
 
-    def repost(self, response):
-        with open("logs/repost_step_1.html", 'w') as f:
-            f.write(response.body)
-            f.flush()
-
+    def repost1(self, response):
+        debug_html_content(response,"repost",1)
+    
         repost_form = filter(lambda x: self.ad.idcrag in x ,
                              response.xpath("//form[./input[@value='repost']]").extract())[0]
         
@@ -105,22 +117,21 @@ class CraigSpider(scrapy.Spider):
             url='https://post.craigslist.org/manage/'
             +self.ad.idcrag+'/'+self.row_code+'?action=repost&go=repost',
             method='GET',
-            callback=self.repost1)
+            callback=self.repost2)
 
-    def repost1(self, response):
-        with open("logs/repost_step_2.html", 'w') as f:
-            f.write(response.body)
-            f.flush()
+    def repost2(self, response):
+        debug_html_content(response,"repost",2)
+
         repost_url = response.xpath("//form[@id='postingForm']/@action").extract()[0]
-        self.cryptedStepCheck = response.\
+        cryptedStepCheck = response.\
                                 xpath("//form[./input[@name='cryptedStepCheck']]/input[@name='cryptedStepCheck']/@value").extract()[0]
-        #self.category_id = response
-        print "URL!!!!",'https://post.craigslist.org/manage/'+ self.ad.idcrag + '/' + self.row_code
+
+        categoryid = response.xpath("//select[@name='CategoryID']/option[@selected]/@value").extract()[0]
+
         
-        return scrapy.FormRequest.from_response(
+        req = scrapy.FormRequest.from_response(
             response=response,
-            url='https://post.craigslist.org/manage/'
-            + self.ad.idcrag + '/' + self.row_code,
+            url=response.request.url,
             formdata ={
                 'id2':"1348x860X1348x370X1366x768",
                 #id2 =  $(document).width() + "x" 
@@ -135,20 +146,32 @@ class CraigSpider(scrapy.Spider):
                 'Privacy':"C",
                 'contact_phone':self.ad.contact_phone,
                 'contact_name':self.ad.contact_name,
-                'CategoryID':"10",#self.category_id,
-                'PostingTitle': self.ad.title.replace(' ','+'),
+                'CategoryID':categoryid,
+                'PostingTitle': self.ad.title,
                 'GeographicArea':self.ad.specific_location,
                 'postal': self.ad.postal,
-                'PostingBody':self.ad.description.replace(' ', '+'),
+                'PostingBody':self.ad.description,
                 'go':"Continue",
-                'cryptedStepCheck':self.cryptedStepCheck},
+                'cryptedStepCheck':cryptedStepCheck},
             method='POST',
-            callback=self.repost2)
+            callback=self.repost3)
+    
+        return req
 
-    def repost2(self, response):
-        with open("logs/repost_step_3.html", 'w') as f:
-            f.write(response.body)
-            f.flush()
+    
+    def repost3(self, response):
+        debug_html_content(response,"repost",3)
+        cryptedStepCheck = response.\
+                                xpath("//form[./input[@name='cryptedStepCheck']]/input[@name='cryptedStepCheck']/@value").extract()[0]
+        return scrapy.FormRequest.from_response(
+            response=response,
+            url=response.request.url,
+            formdata ={
+                'cryptedStepCheck':cryptedStepCheck,
+                'continue':"y",
+                'go':"Continue"},
+            method='POST',
+            callback=self.finalize)
 
     
     def renew(self, response):
