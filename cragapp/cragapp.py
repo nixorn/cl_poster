@@ -151,7 +151,7 @@ def user_delete(user_id):
 @app.route('/user/edit/<int:user_id>')
 def user_edit(user_id):
         user        = User.query.filter(User.idusers == user_id).first()
-        target_user = {'idusers':user_id,'username':user.username ,'accountID':user.accountID}
+        target_user = {'idusers':user_id,'username':user.username}
         vps = VPS.query.filter(VPS.idvpss == user.idvpss).first()
         current_vps = {'idvpss':vps.idvpss, 'ip':vps.ip, 'port':vps.port}
         vpss = [{'idvpss':vp.idvpss, 'ip':vp.ip, 'port':vp.port}
