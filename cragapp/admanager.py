@@ -50,10 +50,11 @@ class CraigSpider(scrapy.Spider):
 
 
     def parse(self, response):
-        if   args.action == "renew"  : callback = self.renew1
-        elif args.action == "delete" : callback = self.delete1
-        elif args.action == "repost" : callback = self.repost1
-        elif args.action == "add"    : callback = self.add1
+        if   args.action == "renew"    : callback = self.renew1
+        elif args.action == "delete"   : callback = self.delete1
+        elif args.action == "repost"   : callback = self.repost1
+        elif args.action == "undelete" : callback = self.undelete1
+        elif args.action == "add"      : callback = self.add1
         else: raise Exception("incorrect action option. must be renew|delete|repost|add")
         
         return scrapy.FormRequest.from_response(

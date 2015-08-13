@@ -118,8 +118,7 @@ def user():
         users = [{'idusers'    :user.idusers,
                   'idvpss'     :user.idvpss,
                   'username'   :user.username,
-                  'password'   :user.password,
-                  'accountID'  :user.accountID} for user in users_db]
+                  'password'   :user.password} for user in users_db]
         return render_template('user-index.html', menu='user', users=users)
 
 @app.route('/user/create')
