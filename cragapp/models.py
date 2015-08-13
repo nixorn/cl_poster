@@ -29,7 +29,7 @@ class VPS(Base):
 class User(Base):
     __tablename__ = 'users'
     idusers    = Column(Integer, primary_key=True)
-    idvpss     = Column(Integer)                  
+    idvpss     = Column(Integer, ForeginKey('vpss.idvpss'))                  
     username   = Column(String(50), unique = True)
     password   = Column(String(50))
 
@@ -50,7 +50,7 @@ class Image(Base):
     extension     = Column(String(10))
     #link on craiglist to prevent downloading the same picture
     craglink      = Column(String(255), unique=True) 
-    idads         = Column(Integer)
+    idads         = Column(Integer, ForeginKey('ads.idads'))
     image         = Column(LargeBinary)
 
     def __init__(self, idads, extension, craglink, image):
@@ -65,6 +65,22 @@ class Image(Base):
 
 
 
+class Area(Base):
+    __tablename__ = "area"
+    idarea    = Column(Integer, primary_key=True)
+    urlname   = Column(String(20), unique = True)
+    fullname  = Column(String(25), unique = True)
+    clcode    = Column(String(4) , unique = True)
+
+    def __init__(self, urlname, fullname, clcode):
+        self.urlname  = urlname
+        self.fullname = fullname
+        self.clcode   = clcode
+        
+
+    def __repr__(self):
+        return '<Area %r>' % (self.fullname)
+
 class Ad(Base):
     __tablename__ = 'ads'
     idads         = Column(Integer, primary_key=True)
@@ -73,9 +89,9 @@ class Ad(Base):
     title         = Column(String(100)) 
     posting_time  = Column(String(5))
     status        = Column(String(30))
-    idusers       = Column(Integer)
+    idusers       = Column(Integer, ForeginKey('users.idusers'))
     category      = Column(String(20))
-    area          = Column(String(20))
+    idarea        = Column(Integer, ForeginKey('area.idarea'))
     replymail     = Column(String(50))
     contact_phone     = Column(String(50))
     contact_name      = Column(String(255))

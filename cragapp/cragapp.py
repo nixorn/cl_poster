@@ -12,7 +12,7 @@ import sqlalchemy
 
 
 from database import db_session
-from models import VPS, User, Image, Ad
+from models import VPS, User, Image, Ad, Area
 
 
 #run loop
@@ -46,7 +46,9 @@ CATEGORIES = {
         'wet':'writing/editing/translation'}
 
 
-AREAS = {"longisland":"Long Island", "newyork":"New York", "moscow":"Moscow"}
+#AREAS = [{"url":"longisland", "name":"Long Island", "clcode":"isp"},
+#         {"url":"newyork"   , "name":"New York"   , "clcode":"nyc"},
+#         {"url":"moscow"    , "name":"Moscow"     , "clcode":"mos"}]
 
                             
  
@@ -168,7 +170,6 @@ def user_update():
         username  = request.form['username']
         password  = request.form['password']
         
-        
         user = User.query.filter(User.idusers==idusers).first()
         user.idvpss = idvpss   
         user.username = username         
@@ -201,8 +202,8 @@ def ad_create():
         users = [{'idusers':user.idusers,'username':user.username} for user in user_db]
         categories = [{"category":category, "cat_name":cat_name}
                       for category, cat_name in CATEGORIES.items()]
-        areas = [{"area":area, "area_name":area_name}
-                 for area, area_name in AREAS.items()]
+        areas = [{"area":area['url'], "area_name":area['name']}
+                 for area in AREAS]
         
         return render_template('ad-create.html', menu='ad', users=users,
                                categories=categories, areas=areas)
@@ -226,7 +227,7 @@ def ad_add():
                description,
                title,
                posting_time,
-               "not_posted",
+               "",
                idusers,
                category,
                area,
@@ -276,9 +277,10 @@ def ad_edit(ad_id):
                            for cat,name in CATEGORIES.items()]
         categories.remove(current_category)
         
-        current_area = {'area':ad.area, 'area_name':AREAS[ad.area]}
-        areas        = [{'area':area, 'area_name':ar_name}
-                           for area,ar_name in AREAS.items()]
+        current_area = {'area':ad.area,
+                        'area_name': filter(lambda a: a['url'] == ad.area, AREAS)[0]['name']}
+        areas        = [{'area':area['url'], 'area_name':area['name']}
+                           for area in AREAS]
         areas.remove(current_area)
 
         images = [{'idimages':image.idimages,
