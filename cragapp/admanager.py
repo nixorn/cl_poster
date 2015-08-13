@@ -11,7 +11,7 @@ parser.add_argument('--idads',
                     help='id from internal database')
 
 parser.add_argument('--action',
-                    help='renew|delete|repost|add')
+                    help='renew|delete|repost|add|undelete')
 
 args = parser.parse_args()
 
@@ -50,10 +50,10 @@ class CraigSpider(scrapy.Spider):
 
 
     def parse(self, response):
-        if   args.action == "renew"  : callback = self.renew
+        if   args.action == "renew"  : callback = self.renew1
         elif args.action == "delete" : callback = self.delete1
         elif args.action == "repost" : callback = self.repost1
-        elif args.action == "add"    : callback = self.add
+        elif args.action == "add"    : callback = self.add1
         else: raise Exception("incorrect action option. must be renew|delete|repost|add")
         
         return scrapy.FormRequest.from_response(
@@ -75,7 +75,6 @@ class CraigSpider(scrapy.Spider):
         #first CL magic. in urls like https://post.craigslist.org/manage/5163849759/kytja
         #kytja - row code. on even ad action (delete,renew,repost) this code the same.
         self.row_code    = delete_form.split(self.ad.idcrag+'/')[1].split('"')[0]
-        
         
         return scrapy.Request(
             url='https://post.craigslist.org/manage/'
@@ -127,7 +126,6 @@ class CraigSpider(scrapy.Spider):
                                 xpath("//form[./input[@name='cryptedStepCheck']]/input[@name='cryptedStepCheck']/@value").extract()[0]
 
         categoryid = response.xpath("//select[@name='CategoryID']/option[@selected]/@value").extract()[0]
-
         
         req = scrapy.FormRequest.from_response(
             response=response,
@@ -173,13 +171,17 @@ class CraigSpider(scrapy.Spider):
             method='POST',
             callback=self.finalize)
 
+    def add1(self, response):
+        pass
+
     
-    def renew(self, response):
+    def renew1(self, response):
+        print response.body
+
+    def undelete1(self, response):
         print response.body
     
 
-    def add(self, response):
-        pass
     
     #testing function which should output in file final response
     def finalize(self,response):

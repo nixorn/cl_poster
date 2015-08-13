@@ -32,13 +32,13 @@ class User(Base):
     idvpss     = Column(Integer)                  
     username   = Column(String(50), unique = True)
     password   = Column(String(50))
-    accountID  = Column(Integer)
+
     
-    def __init__(self, idvpss,username,password,accountID):
+    def __init__(self, idvpss,username,password):
         self.idvpss   = idvpss   
         self.username = username 
         self.password = password 
-        self.accountID= accountID
+
         
     def __repr__(self):
         return '<User %r>' % (str(self.username))
@@ -77,10 +77,11 @@ class Ad(Base):
     category      = Column(String(20))
     area          = Column(String(20))
     replymail     = Column(String(50))
-    contact_phone = Column(String(50))
-    contact_name  = Column(String(255))
-    postal        = Column(String(25))
+    contact_phone     = Column(String(50))
+    contact_name      = Column(String(255))
+    postal            = Column(String(25))
     specific_location = Column(String(50))
+    parent_id         = Column(Integer, ForeignKey('ads.idads'))
 
     def __init__(self,
                  idcrag,

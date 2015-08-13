@@ -134,9 +134,9 @@ def user_add():
         idvpss    = request.form['idvpss'] 
         username  = request.form['username']
         password  = request.form['password']
-        accountID = request.form['accountID']
         
-        u = User(idvpss, username, password, accountID)
+        
+        u = User(idvpss, username, password)
         db_session.add(u)
         db_session.commit()
         return "User created"
@@ -168,12 +168,11 @@ def user_update():
         idvpss    = request.form['idvpss'] 
         username  = request.form['username']
         password  = request.form['password']
-        accountID = request.form['accountID']
+        
         
         user = User.query.filter(User.idusers==idusers).first()
         user.idvpss = idvpss   
         user.username = username         
-        user.accountID = accountID
         if password: user.password = password
         
         db_session.add(user)
@@ -300,24 +299,23 @@ def ad_edit(ad_id):
 
 @app.route('/ad/update', methods=['POST'])
 def ad_update():
-
-        idads        = request.form['idads']
-        idcrag       = request.form['idcrag']
-        description  = request.form['description']
-        title        = request.form['title']
-        posting_time = request.form['posting_time']
-        status       = request.form['status']
-        idusers      = request.form['idusers']
-        category     = request.form['category']
-        area         = request.form['area']
-        replymail    = request.form['replymail']
+        idads         = request.form['idads']
+        idcrag        = request.form['idcrag']
+        description   = request.form['description']
+        title         = request.form['title']
+        posting_time  = request.form['posting_time']
+        status        = request.form['status']
+        idusers       = request.form['idusers']
+        category      = request.form['category']
+        area          = request.form['area']
+        replymail     = request.form['replymail']
         contact_phone = request.form['contact_phone']
         contact_name  = request.form['contact_name']
         postal        = request.form['postal']
         specific_location = request.form['specific_location']
         
         ad = Ad.query.filter(Ad.idads==idads).first()
-
+        
         ad.description = description
         ad.idcrag      = idcrag
         ad.title       = title
