@@ -12,46 +12,13 @@ import sqlalchemy
 
 
 from database import db_session
-from models import VPS, User, Image, Ad, Area
+from models import VPS, User, Image, Ad, Area, Category
 
 
 #run loop
 p = subprocess.Popen([sys.executable, './cragloop.py'],
                      stdout=subprocess.PIPE,
                      stderr=subprocess.STDOUT)
-
-
-
-CATEGORIES = {
-        'res':'resumes/job wanted',
-        'aos':'automotive services',
-        'bts':'beauty services',
-        'cps':'computer services',
-        'crs':'creative services',
-        'cys':'cycle services',
-        'evs':'event services',
-        'fgs':'farm & garden services',
-        'fns':'financial services',
-        'hss':'household services',
-        'lbs':'labor & moving',
-        'lgs':'legal services',
-        'lss':'lessons & tutoring',
-        'mas':'marine services',
-        'pas':'pet services',
-        'rts':'real estate services',
-        'sks':'skilled trade services',
-        'biz':'small biz ads',
-        'ths':'therapeutic services',
-        'trv':'travel/vacation services',
-        'wet':'writing/editing/translation'}
-
-
-#AREAS = [{"url":"longisland", "name":"Long Island", "clcode":"isp"},
-#         {"url":"newyork"   , "name":"New York"   , "clcode":"nyc"},
-#         {"url":"moscow"    , "name":"Moscow"     , "clcode":"mos"}]
-
-                            
- 
 
     
 
@@ -181,16 +148,20 @@ def user_update():
 
 @app.route('/ads')
 def ads():
+
+        #areas  = Area.auery.all()
+        
         ads_db = Ad.query.all()
-        ads = [{'idads'       :ad.idads,
-                'description' :ad.description,
-                'title'       :ad.title,
-                'posting_time':ad.posting_time,
-                'status'      :ad.status,
-                'idusers'     :ad.idusers,
-                'category'    :ad.category,   
-                'area'        :ad.area,
-                'replymail'   :ad.replymail    } for ad in ads_db]
+        ads = [{'idads'       : ad.idads,
+                'description' : ad.description,
+                'title'       : ad.title,
+                'posting_time': ad.posting_time,
+                'status'      : ad.status,
+                'idusers'     : ad.idusers,
+                'category'    : ad.idcategory,   
+                #'area_fname' : filter(lambda ar: ad.idarea==ar.idarea, areas).fullname,
+                #'idarea'     : ad.idarea,
+                'replymail'   : ad.replymail} for ad in ads_db]
         return render_template('ad-index.html', menu='ad', ads=ads)
 
 
@@ -200,42 +171,51 @@ def ad_create():
         user_db = User.query.all()
 
         users = [{'idusers':user.idusers,'username':user.username} for user in user_db]
-        categories = [{"category":category, "cat_name":cat_name}
-                      for category, cat_name in CATEGORIES.items()]
-        areas = [{"area":area['url'], "area_name":area['name']}
-                 for area in AREAS]
-        
+        categories = [{"category":cat.idcategory,
+                       "cat_name":cat.fullname}for cat in Category.query.all()]
+
+        #areas  = Area.auery.all()
+
+
+        areas = [{'idarea'     : area.idarea,
+                  'area_fname' : area.fullname} for area in Area.query.all() ]
+
         return render_template('ad-create.html', menu='ad', users=users,
                                categories=categories, areas=areas)
 
 @app.route('/ad/add', methods=['POST',])
 def ad_add():
+        
         idcrag            = request.form['idcrag']
         description       = request.form['description']
         title             = request.form['title']
         posting_time      = request.form['posting_time']
         idusers           = request.form['idusers']
-        category          = request.form['category']
-        area              = request.form['area']
+        idcategory        = request.form['category']
+        idarea            = request.form['area']
         replymail         = request.form['replymail']
         contact_phone     = request.form['contact_phone']
         contact_name      = request.form['contact_name']
         postal            = request.form['postal']
         specific_location = request.form['specific_location']
+        haslicense        = request.form['has_license']  
+        license_info      = request.form['license']
         
         a = Ad(idcrag,
                description,
                title,
                posting_time,
-               "",
+               "",#status
                idusers,
-               category,
-               area,
+               idcategory,
+               idarea,
                replymail,
                contact_phone,
                contact_name,     
                postal,           
-               specific_location)
+               specific_location,
+               haslicense,  
+               license_info)
         
         db_session.add(a)
         db_session.commit()
@@ -259,8 +239,8 @@ def ad_edit(ad_id):
                      'posting_time'      : ad.posting_time,
                      'status'            : ad.status,
                      'idusers'           : ad.idusers,
-                     'category'          : ad.category,
-                     'area'              : ad.area,
+                     'category'          : ad.idcategory,
+                     'area'              : ad.idarea,
                      'replymail'         : ad.replymail,
                      'contact_phone'     : ad.contact_phone,
                      'contact_name'      : ad.contact_name,
@@ -270,23 +250,33 @@ def ad_edit(ad_id):
         user = User.query.filter(User.idusers == ad.idusers).first()
         current_user = {'idusers':user.idusers, 'username':user.username}
         users = [{'idusers':us.idusers, 'username':us.username}
-                for us in User.query.filter(User.idusers != user.idusers).all()]
+                 for us in User.query.filter(User.idusers != user.idusers).all()]
+
+        category = Category.query.filter(Category.idcategory == ad.idcategory).first()
+        current_category = {'category':ad.idcategory, 'cat_name':category.fullname}
+        categories      = [{'category':cat.idcategory, 'cat_name':cat.fullname}
+                           for cat in Category.query.filter(Category.idcategory
+                                                            != category.idcategory).all()]
+
+        area = Area.query.filter(Area.idarea == ad.idarea).first()
         
-        current_category = {'category':ad.category, 'cat_name':CATEGORIES[ad.category]}
-        categories      = [{'category':cat, 'cat_name':name}
-                           for cat,name in CATEGORIES.items()]
-        categories.remove(current_category)
+        current_area = {'area':ad.idarea,
+                        'area_name': area.fullname}
         
-        current_area = {'area':ad.area,
-                        'area_name': filter(lambda a: a['url'] == ad.area, AREAS)[0]['name']}
-        areas        = [{'area':area['url'], 'area_name':area['name']}
-                           for area in AREAS]
-        areas.remove(current_area)
+        areas        = [{'area':ar.idarea, 'area_name':ar.fullname}
+                         for ar in Area.query.filter(Area.idarea != ad.idarea).all()]
 
         images = [{'idimages':image.idimages,
                    'image':base64.b64encode(image.image),
                    'extension':image.extension}
                   for image in Image.query.all()]
+
+        if ad.haslicense =='1':
+                has   = 'selected'
+                hasno = ''
+        else:
+                has   = ''
+                hasno = 'selected'
 
         return render_template('ad-edit.html', menu='ad',
                                target_ad=target_ad,
@@ -296,7 +286,9 @@ def ad_edit(ad_id):
                                current_category=current_category,
                                categories=categories,
                                current_area=current_area,
-                               areas=areas)
+                               areas=areas,
+                               has=has,
+                               hasno=hasno)
 
 @app.route('/ad/update', methods=['POST'])
 def ad_update():
@@ -307,13 +299,15 @@ def ad_update():
         posting_time  = request.form['posting_time']
         status        = request.form['status']
         idusers       = request.form['idusers']
-        category      = request.form['category']
-        area          = request.form['area']
+        idcategory    = request.form['category']
+        idarea        = request.form['area']
         replymail     = request.form['replymail']
         contact_phone = request.form['contact_phone']
         contact_name  = request.form['contact_name']
         postal        = request.form['postal']
         specific_location = request.form['specific_location']
+        haslicense        = request.form['has_license']  
+        license_info      = request.form['license']
         
         ad = Ad.query.filter(Ad.idads==idads).first()
         
@@ -323,13 +317,16 @@ def ad_update():
         ad.posting_time= posting_time
         ad.status      = status
         ad.idusers     = idusers
-        ad.category    = category
-        ad.area        = area
+        ad.idcategory  = idcategory
+        ad.idarea      = idarea
         ad.replymail   = replymail
         ad.contact_phone = contact_phone
         ad.contact_name  = contact_name
         ad.postal        = postal
         ad.specific_location = specific_location
+        ad.haslicense        = haslicense  
+        ad.license_info      = license_info
+
         
         db_session.add(ad)
         db_session.commit()

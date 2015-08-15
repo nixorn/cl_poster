@@ -53,6 +53,19 @@
     </div>
 
     <div class="property">
+        <div class="label"> Has license? </div>
+	<select id="has_license">
+          <option value="1" {{has}}>  Yes</option>
+	  <option value="0" {{hasno}}>No</option>
+        </select>
+    </div>
+
+    <div class="property">
+      <div class="label"> License info </div>
+      <input id="license" type="text" value="{{target_ad.license_info}}">
+    </div>
+    
+    <div class="property">
       <div class="label">Contact phone</div>
       <input id="contact_phone" type="text" value="{{target_ad.contact_phone}}">
     </div>

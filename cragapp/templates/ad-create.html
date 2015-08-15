@@ -25,7 +25,7 @@
         <div class="label"> Area </div>
 	<select id="area" name="area">
 	  {% for area in areas %}
-          <option value="{{area.area}}">{{area.area_name}}</option>
+          <option value="{{area.idarea}}">{{area.area_fname}}</option>
           {% endfor %}
         </select>
     </div>
@@ -44,6 +44,18 @@
     </div>
 
     <div class="property">
+        <div class="label"> Has license? </div><!--
+     --><select id="has_license">
+          <option value="1">Yes</option>
+	  <option value="0">No</option>
+        </select>
+    </div>
+
+    <div class="property">
+        <div class="label"> License info </div><input id="license" type="text" value="">
+    </div>
+    
+    <div class="property">
       <div class="label">Contact phone</div><input id="contact_phone" type="text" value="">
     </div>
 
@@ -52,15 +64,15 @@
     </div>
 
     <div class="property">
-        <div class="label">Postal</div><input id="postal" type="text" value="">
+      <div class="label">Postal</div><input id="postal" type="text" value="">
     </div>
 
     <div class="property">
-        <div class="label">Specific location</div><input id="specific_location" type="text" value="">
+      <div class="label">Specific location</div><input id="specific_location" type="text" value="">
     </div>
 
     <div class="property">
-        <div class="label"> description </div><textarea cols=70 rows=15 id="description" type="text"></textarea>
+      <div class="label"> description </div><textarea cols=70 rows=15 id="description" type="text"></textarea>
     </div>
 </div>
 <div class="buttons">

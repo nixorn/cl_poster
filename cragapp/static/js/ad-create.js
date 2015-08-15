@@ -13,7 +13,9 @@ $(document).ready(function() {
 	data["contact_phone"]= $('#contact_phone').val();
         data["contact_name"] = $('#contact_name').val();
         data["postal"]       = $('#postal').val();
-        data["specific_location"]= $('#specific_location').val();
+        data["specific_location"] = $('#specific_location').val();
+	data["has_license"]  = $('#has_license').val();   
+	data["license"]      = $('#license').val();
 	
         $.ajax({
             url: '/ad/add',
