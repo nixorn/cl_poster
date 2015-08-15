@@ -1,8 +1,9 @@
 import scrapy
 import operator
 import argparse
+import time 
 from scrapy.crawler import CrawlerProcess
-from models import Ad, User, VPS
+from models import Ad, User, VPS, Area, Image, Category
 from database import db_session
 
 
@@ -35,6 +36,7 @@ class CraigSpider(scrapy.Spider):
     download_delay = 2
     start_urls = ['https://accounts.craigslist.org/login']
     handle_httpstatus_list = [404]
+
     
     def __init__(self, name=None, **kwargs):
         if name is not None:
@@ -46,7 +48,8 @@ class CraigSpider(scrapy.Spider):
         self.ad   = Ad.query.filter(Ad.idads == args.idads).first()
         self.user = User.query.filter(User.idusers == self.ad.idusers).first()
         self.vps  = VPS.query.filter(VPS.idvpss == self.user.idvpss).first()
-        
+        self.area = Area.query.filter(Area.idarea == self.ad.idarea).first()
+        self.category = Category.query.filter(Category.idcategory == self.ad.idcategory).first()
 
 
     def parse(self, response):
@@ -128,7 +131,7 @@ class CraigSpider(scrapy.Spider):
 
         categoryid = response.xpath("//select[@name='CategoryID']/option[@selected]/@value").extract()[0]
         
-        req = scrapy.FormRequest.from_response(
+        return scrapy.FormRequest.from_response(
             response=response,
             url=response.request.url,
             formdata ={
@@ -155,7 +158,7 @@ class CraigSpider(scrapy.Spider):
             method='POST',
             callback=self.repost3)
     
-        return req
+        
 
     
     def repost3(self, response):
@@ -172,10 +175,100 @@ class CraigSpider(scrapy.Spider):
             method='POST',
             callback=self.finalize)
 
-    def add1(self, response):
-        pass
+    def add1(self, response):#go button
+        debug_html_content(response,"add",1)
+        return scrapy.FormRequest.from_response(
+            response=response,
+            url="https://accounts.craigslist.org/login/pstrdr",
+            formdata ={"areaabb":self.area.clcode},
+            method='POST',
+            callback=self.add2,
+            dont_filter=True)
 
+    def add2(self, response):# select services offer
+        debug_html_content(response,"add",2)
+        cryptedStepCheck = response.\
+            xpath("//form[./input[@name='cryptedStepCheck']]/input[@name='cryptedStepCheck']/@value").extract()[0]
+        print cryptedStepCheck
+        return scrapy.FormRequest.from_response(
+            response=response,
+            url=response.request.url.split("?s=")[0],
+            formdata = {"id":"so", 
+                        "cryptedStepCheck":cryptedStepCheck},
+            method='POST',
+            callback=self.add3,
+            dont_filter=True)
+
+    def add3(self, response):#select which servise you want to offers. skilled trade for example
+        debug_html_content(response,"add",3)
+        cryptedStepCheck = response.\
+            xpath("//form[./input[@name='cryptedStepCheck']]/input[@name='cryptedStepCheck']/@value").extract()[0]
+        print cryptedStepCheck
+        print response.request.url.split("?s=")[0]
+        print str(self.category.numcode)
+        url = response.xpath("//form[./input[@name='cryptedStepCheck']]/@action").extract()[0]
+        return scrapy.FormRequest.from_response(
+            response=response,
+            url=response.request.url.split("?s=")[0],
+
+            formdata = {"id":str(self.category.numcode),
+                        "cryptedStepCheck":cryptedStepCheck},
+            method='POST',
+            callback=self.add4)
     
+    def add4(self, response): #title body etc
+        debug_html_content(response,"add",4)
+        cryptedStepCheck = \
+            response.xpath("//form[./input[@name='cryptedStepCheck']]/input[@name='cryptedStepCheck']/@value").extract()[0]
+
+        url = response.xpath("//form[./input[@name='cryptedStepCheck']]/@action").extract()[0]
+
+        print {
+                'id2':"1348x860X1348x370X1366x768",
+                'browserinfo':"%7B%0A%09%22plugins%22%3A%20%22Plugin%200%3A%20Shockwave%20Flash%3B%20Shockwave%20Flash%2011.2%20r202%3B%20libflashplayer.so%3B%20%28Shockwave%20Flash%3B%20application/x-shockwave-flash%3B%20swf%29%20%28FutureSplash%20Player%3B%20application/futuresplash%3B%20spl%29.%20%22%2C%0A%09%22timezone%22%3A%20-180%2C%0A%09%22video%22%3A%20%221366x768x24%22%2C%0A%09%22supercookies%22%3A%20%22DOM%20localStorage%3A%20Yes%2C%20DOM%20sessionStorage%3A%20Yes%2C%20IE%20userData%3A%20No%22%0A%7D",
+                'FromEMail':self.user.username,
+                'Privacy':"C",
+                'contact_phone':self.ad.contact_phone,
+                'contact_name':self.ad.contact_name,
+                'PostingTitle': self.ad.title,
+                'GeographicArea':self.ad.specific_location,
+                'postal': self.ad.postal,
+                'PostingBody':self.ad.description,
+                'has_license':str(self.ad.haslicense),#1 if has
+                'license_info':self.ad.license_info,
+                'go':"Continue",
+                'cryptedStepCheck':cryptedStepCheck}.__str__()
+        
+        return scrapy.FormRequest.from_response(
+            response=response,
+            url = response.request.url.split("?s=")[0],
+            formdata ={
+                'id2':"1348x860X1348x370X1366x768",
+                'browserinfo':"%7B%0A%09%22plugins%22%3A%20%22Plugin%200%3A%20Shockwave%20Flash%3B%20Shockwave%20Flash%2011.2%20r202%3B%20libflashplayer.so%3B%20%28Shockwave%20Flash%3B%20application/x-shockwave-flash%3B%20swf%29%20%28FutureSplash%20Player%3B%20application/futuresplash%3B%20spl%29.%20%22%2C%0A%09%22timezone%22%3A%20-180%2C%0A%09%22video%22%3A%20%221366x768x24%22%2C%0A%09%22supercookies%22%3A%20%22DOM%20localStorage%3A%20Yes%2C%20DOM%20sessionStorage%3A%20Yes%2C%20IE%20userData%3A%20No%22%0A%7D",
+                'FromEMail':self.user.username,
+                'Privacy':"C",
+                'contact_phone':self.ad.contact_phone,
+                'contact_name':self.ad.contact_name,
+                'PostingTitle': self.ad.title,
+                'GeographicArea':self.ad.specific_location,
+                'postal': self.ad.postal,
+                'PostingBody':self.ad.description,
+                'has_license':str(self.ad.haslicense),#1 if has
+                'license_info':self.ad.license_info,
+                'go':"Continue",
+                'cryptedStepCheck':cryptedStepCheck},
+            method='POST',
+            callback=self.add5)
+    
+    def add5(self, response):#images
+        debug_html_content(response,"add",5)
+        #Content-Type:"multipart/form-data; boundary=---------------------------4539698451413990375726589822"
+        #Content-Type:"multipart/form-data; boundary=---------------------------1948884703734441347431899505
+        
+    def add6(self, response):#publish
+        debug_html_content(response,"add",6)
+
+        
     def renew1(self, response):
         print response.body
 
@@ -192,8 +285,10 @@ class CraigSpider(scrapy.Spider):
 
     
 process = CrawlerProcess({
-    "USER-AGENT":"Mozilla/5.0 (X11; Linux x86_64; rv:31.0) Gecko/20100101 Firefox/31.0"
+    "USER-AGENT":"Mozilla/5.0 (X11; Linux x86_64; rv:31.0) Gecko/20100101 Firefox/31.0",
+    "DUPEFILTER_DEBUG": True
 })
+
 
 process.crawl(CraigSpider)
 process.start()
