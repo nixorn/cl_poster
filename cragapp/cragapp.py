@@ -350,8 +350,12 @@ def upload_images():
                 for image in images:
                         if image and allowed_file(image.filename):
                                 extension = image.filename.split('.')[-1]
+                                if extension == "jpg": mime = "image/jpeg"
+                                else: mime = "image/"+extension
                                 i = Image(idads=idads,
                                           extension=extension,
+                                          mime=mime,
+                                          filename=image.filename,
                                           image=image.read())
                                 db_session.add(i)
                                 db_session.commit()

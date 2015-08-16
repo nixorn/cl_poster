@@ -24,7 +24,6 @@ for area in AREAS:
 
 
 CATEGORIES =[
-    {'clcode':'res','fullname':'resumes/job wanted'          ,'numcode':0},
     {'clcode':'aos','fullname':'automotive services'         ,'numcode':106},
     {'clcode':'bts','fullname':'beauty services'             ,'numcode':138},
     {'clcode':'cps','fullname':'computer services'           ,'numcode':76 },

@@ -31,6 +31,7 @@ pip install pysocks
 pip install sqlalchemy
 pip install tornado
 pip install scrapy
+pip install requests
 pip install service_identity
 python2.7 dbinit.py
 ```

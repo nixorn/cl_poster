@@ -48,14 +48,18 @@ class Image(Base):
     __tablename__ = 'images'
     idimages      = Column(Integer, primary_key=True)
     extension     = Column(String(10))
+    mime          = Column(String(15))
+    filename      = Column(String(50))
     #link on craiglist to prevent downloading the same picture
     craglink      = Column(String(255), unique=True) 
     idads         = Column(Integer, ForeignKey('ads.idads'))
     image         = Column(LargeBinary)
 
-    def __init__(self, idads, extension, craglink, image):
+    def __init__(self, idads, extension, mime, filename, image, craglink=''):
         self.idads     = idads
         self.extension = extension
+        self.mime      = mime
+        self.filename  = filename
         self.craglink  = craglink 
         self.image     = image
         
