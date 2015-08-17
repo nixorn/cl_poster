@@ -1,14 +1,7 @@
-Technologies in general = mysql + python + virtualenv + flask + sqlalchemy + scrapy.
+Technologies in general = sqlite + python + virtualenv + flask + sqlalchemy + scrapy + requests.
 
-Firstly, set up mysql, create database "cragapp" and user for work with this database.
-In ./database.py are line like
 
-```python
-engine = create_engine('mysql+mysqldb://user:passwd@localhost/cragapp', convert_unicode=True)
-```
-Change user and passwd attributes to user you create.
-
-Then epel, scl, python27,change system python to 2.7, install python dependencies,pip, and virtualenv via pip:
+Firstly install epel, scl, python27, install python dependencies,pip, and virtualenv via pip:
 
 ```bash
 yum -y install epel-release
@@ -36,7 +29,7 @@ pip install service_identity
 python2.7 dbinit.py
 ```
 
-Setup python 2.7 for this session and reactivate virtualenv after source command:
+Setup python 2.7 for this session and reactivate virtualenv:
 ```bash
 scl enable python27 'which python'
 scl enable python27 'python --version'

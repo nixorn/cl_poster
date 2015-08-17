@@ -32,8 +32,8 @@ def debug_html_content(response,action_name,step_num):
             f.flush()
             
 
-class CraigSpider(scrapy.Spider):
-    name = "craiglist"
+class AdManager(scrapy.Spider):
+    name = "admanager"
     allowed_domains = ['craigslist.org']
     download_delay = 2
     start_urls = ['https://accounts.craigslist.org/login']
@@ -264,21 +264,17 @@ class CraigSpider(scrapy.Spider):
         for image in images:
             boundary = "----moxieboundary" + time.time().__str__().replace('.','') + \
                        random.choice(range(10)).__str__()
-            url=response.request.url.split("?s=")[0],
-            #url = '/'.join(url[0].split('/')[0:-1])
-
+            url = response.request.url.split("?s=")[0],
 
             files = [("name", image.filename),
                      ("cryptedStepCheck", cryptedStepCheck),
                      ("ajax", '1'),
                      ("a", "add"),
                      (image.filename, image.image)]
-
             
             oldheaders = response.request.headers
             cookie =  response.request.headers['Cookie']
             headers = {'Host':"post.craigslist.org",
-                       #'User-Agent':"Mozilla/5.0 (X11; Linux x86_64; rv:31.0) Gecko/20100101 Firefox/31.0",
                        'User-Agent':oldheaders['User-Agent'],
                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
                        'Accept-Language':"en-US,en;q=0.5",
@@ -287,10 +283,7 @@ class CraigSpider(scrapy.Spider):
                        'Cookie': oldheaders['Cookie'],
                        'Connection':"keep-alive",
                        'Pragma':"no-cache",
-                       'Cache-Control':"no-cache"
-                       }
-            
-            
+                       'Cache-Control':"no-cache"}
 
             url = url[0] # WTF? Why string becomes (string,)
             #req = requests.Request('POST',url,files=files,headers=headers)
@@ -305,7 +298,7 @@ class CraigSpider(scrapy.Spider):
             prepared.body = prepared.body.replace(current_boundary, boundary)
             print image.filename + image.mime
             
-
+            #it refuses replase with str. Thats why str->bytearray->do replace->str
             prepared.body = bytearray(prepared.body)
             prepared.body = prepared.body.replace(
                 bytearray('name="'+image.filename+'"; filename="'+image.filename+'"', 'ascii'),
@@ -322,43 +315,62 @@ class CraigSpider(scrapy.Spider):
             )
 
             s = requests.Session()
-
             resp = s.send(prepared)#proxies parameter are here also
-
-
             image.craglink = resp.json()['added']['URL']
             
             db_session.add(image)
             db_session.commit()
-        print resp
-        #return None
 
+        return scrapy.FormRequest.from_response(
+            response=response,
+            url = response.request.url.split("?s=")[0],
+            formdata = {
+                'cryptedStepCheck':cryptedStepCheck,
+                'a':'fin',
+                'go':'Done with Images'},
+            method='POST',
+            callback=self.add6)
 
         
     def add6(self, response):#publish
         debug_html_content(response,"add",6)
+        cryptedStepCheck = \
+            response.xpath("//form[./input[@name='cryptedStepCheck']]/input[@name='cryptedStepCheck']/@value").extract()[0]
+        return scrapy.FormRequest.from_response(
+            response=response,
+            url = response.request.url.split("?s=")[0],
+            formdata = {
+                'cryptedStepCheck':cryptedStepCheck,
+                'continue':"y",
+                'go':"Continue"},
+            method='POST',
+            callback=self.add7)
 
+    def add7(self,response):#get idcrag
+        debug_html_content(response,"add",7)
+        idcrag = response.xpath('//a[@target="_blank"]/@href').extract_first().split('/')[-1].split('.')[0]
+        self.ad.idgrag = idcrag
+        db_session.add(image)
+        db_session.commit()
         
     def renew1(self, response):
-        print response.body
+        debug_html_content(response,"renew",1)
 
     def undelete1(self, response):
-        print response.body
-    
+        debug_html_content(response,"undelete",1)
 
-    
     #testing function which should output in file final response
     def finalize(self,response):
-        with open("finalize.html", 'w') as f:
-            f.write(response.body)
-            f.flush()
+        debug_html_content(response,"finalize",1)
 
+    
+
+        
     
 process = CrawlerProcess({
     "USER-AGENT":"Mozilla/5.0 (X11; Linux x86_64; rv:31.0) Gecko/20100101 Firefox/31.0",
-
 })
 
 
-process.crawl(CraigSpider)
+process.crawl(AdManager)
 process.start()
