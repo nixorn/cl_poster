@@ -260,7 +260,7 @@ class CraigSpider(scrapy.Spider):
 
         cryptedStepCheck = \
             response.xpath("//form[./input[@name='cryptedStepCheck']]/input[@name='cryptedStepCheck']/@value").extract()[0]
-
+        resp = None
         for image in images:
             boundary = "----moxieboundary" + time.time().__str__().replace('.','') + \
                        random.choice(range(10)).__str__()
@@ -284,7 +284,6 @@ class CraigSpider(scrapy.Spider):
                        'Accept-Language':"en-US,en;q=0.5",
                        'Accept-Encoding': 'gzip,deflate',
                        'Referer': oldheaders['Referer'].replace('s=edit', 's=editimage'),
-
                        'Cookie': oldheaders['Cookie'],
                        'Connection':"keep-alive",
                        'Pragma':"no-cache",
@@ -314,22 +313,25 @@ class CraigSpider(scrapy.Spider):
             prepared.body = str(prepared.body)
             prepared.headers["Content-Length"] = len(prepared.body).__str__()
 
-            #print '{}\n{}\n{}\n\n{}'.format(
-            #            '-----------START-----------',
-            #            prepared.method + ' ' + prepared.url,
-            #            '\n'.join('{}: {}'.format(k, v) for k, v in prepared.headers.items()),
-            #            prepared.body,)
+            print '{}\n{}\n{}\n\n{}'.format(
+                '-----------START-----------',
+                prepared.method + ' ' + prepared.url,
+                '\n'.join('{}: {}'.format(k, v) for k, v in prepared.headers.items()),
+                "image"
+                #prepared.body,
+            )
 
             s = requests.Session()
 
             resp = s.send(prepared)#proxies parameter are here also
 
-            print dir(resp)
-            print resp.text
-            print resp.json()
-            print resp.request.url
 
-
+            image.craglink = resp.json()['added']['URL']
+            
+            db_session.add(image)
+            db_session.commit()
+        print resp
+        #return None
 
 
         
