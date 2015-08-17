@@ -2,6 +2,7 @@ import scrapy
 import operator
 import argparse
 import time
+import random
 import requests
 from scrapy.crawler import CrawlerProcess
 from models import Ad, User, VPS, Area, Image, Category
@@ -256,29 +257,16 @@ class CraigSpider(scrapy.Spider):
         images = Image.query.filter(Image.idads == self.ad.idads).all()
 
         #need to send with request. in headers and somewhere in body
-        boundary = "----moxieboundary" + time.time().__str__().replace('.','')
+
         cryptedStepCheck = \
             response.xpath("//form[./input[@name='cryptedStepCheck']]/input[@name='cryptedStepCheck']/@value").extract()[0]
-        hidden_name = response.xpath("//input[@type='hidden' and @value='fin']/@name").extract()[0]
+
         for image in images:
+            boundary = "----moxieboundary" + time.time().__str__().replace('.','') + \
+                       random.choice(range(10)).__str__()
             url=response.request.url.split("?s=")[0],
             #url = '/'.join(url[0].split('/')[0:-1])
-            headers = {"Content-Type":"multipart/form-data; boundary="+boundary},
-            
-            '''body = bytearray(boundary + '\n'
-                             + 'Content-Disposition: form-data; name="name"'+'\n\n'
-                             + image.filename + '\n'
-                             + boundary + '\n'
-                             + 'Content-Disposition: form-data; name="cryptedStepCheck"' + '\n\n'
-                             + cryptedStepCheck + '\n'
-                             + boundary + '\n'
-                             + 'Content-Disposition: form-data; name="ajax"'+'\n\n'+'1'
-                             + boundary + '\n'
-                             + 'Content-Disposition: form-data; name="'+'"'+hidden_name+'"' + '\n\n'
-                             + 'add' +'\n'
-                             + boundary + '\n'
-                             + 'Content-Disposition: form-data; name="file"; filename="'+image.filename+'"' + '\n'
-                             + 'Content-Type: '+ image.mime + '\n\n', 'ascii')+ image.image + b'\n' +  bytearray(boundary + '\n', 'ascii')'''
+
 
             files = [("name", image.filename),
                      ("cryptedStepCheck", cryptedStepCheck),
@@ -286,23 +274,60 @@ class CraigSpider(scrapy.Spider):
                      ("a", "add"),
                      (image.filename, image.image)]
 
-
-
+            
+            oldheaders = response.request.headers
             cookie =  response.request.headers['Cookie']
+            headers = {'Host':"post.craigslist.org",
+                       #'User-Agent':"Mozilla/5.0 (X11; Linux x86_64; rv:31.0) Gecko/20100101 Firefox/31.0",
+                       'User-Agent':oldheaders['User-Agent'],
+                       'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                       'Accept-Language':"en-US,en;q=0.5",
+                       'Accept-Encoding': 'gzip,deflate',
+                       'Referer': oldheaders['Referer'].replace('s=edit', 's=editimage'),
 
+                       'Cookie': oldheaders['Cookie'],
+                       'Connection':"keep-alive",
+                       'Pragma':"no-cache",
+                       'Cache-Control':"no-cache"
+                       }
+            
+            
 
             url = url[0] # WTF? Why string becomes (string,)
-            req = requests.Request('POST',url,files=files,headers={'Cookie':cookie, })
+            #req = requests.Request('POST',url,files=files,headers=headers)
+            req = requests.Request('POST',url,files=files,headers=headers)
             prepared = req.prepare()
-            print '{}\n{}\n{}\n\n{}'.format(
-                        '-----------START-----------',
-                        prepared.method + ' ' + prepared.url,
-                        '\n'.join('{}: {}'.format(k, v) for k, v in prepared.headers.items()),
-                        prepared.body,
-                    )
-            #resp = requests.post(url,files=files,headers={'Cookie':cookie, })
-            #print resp.text
-            #print resp.request.url
+            prepared.body = prepared.body.replace('; filename="name"','')
+            prepared.body = prepared.body.replace('; filename="ajax"','')
+            prepared.body = prepared.body.replace('; filename="cryptedStepCheck"','')
+            prepared.body = prepared.body.replace('; filename="a"','')
+            current_boundary = prepared.headers["Content-Type"].split('boundary=')[1]
+            prepared.headers["Content-Type"] = prepared.headers["Content-Type"].replace(current_boundary, boundary)
+            prepared.body = prepared.body.replace(current_boundary, boundary)
+            print image.filename + image.mime
+            
+
+            prepared.body = bytearray(prepared.body)
+            prepared.body = prepared.body.replace(
+                bytearray('name="'+image.filename+'"; filename="'+image.filename+'"', 'ascii'),
+                bytearray('name="file"; filename="'+image.filename+'"\nContent-Type: '+image.mime, 'ascii'))#
+            prepared.body = str(prepared.body)
+            prepared.headers["Content-Length"] = len(prepared.body).__str__()
+
+            #print '{}\n{}\n{}\n\n{}'.format(
+            #            '-----------START-----------',
+            #            prepared.method + ' ' + prepared.url,
+            #            '\n'.join('{}: {}'.format(k, v) for k, v in prepared.headers.items()),
+            #            prepared.body,)
+
+            s = requests.Session()
+
+            resp = s.send(prepared)#proxies parameter are here also
+
+            print dir(resp)
+            print resp.text
+            print resp.json()
+            print resp.request.url
 
 
 
@@ -329,7 +354,7 @@ class CraigSpider(scrapy.Spider):
     
 process = CrawlerProcess({
     "USER-AGENT":"Mozilla/5.0 (X11; Linux x86_64; rv:31.0) Gecko/20100101 Firefox/31.0",
-    "DUPEFILTER_DEBUG": True
+
 })
 
 
