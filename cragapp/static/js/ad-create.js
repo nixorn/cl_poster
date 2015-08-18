@@ -10,32 +10,31 @@ $(document).ready(function() {
     	data["category"]     = $('#category').val();
     	data["area"]         = $('#area').val();
     	data["replymail"]    = $('#replymail').val();
-	data["contact_phone"]= $('#contact_phone').val();
+        data["contact_phone"]= $('#contact_phone').val();
         data["contact_name"] = $('#contact_name').val();
         data["postal"]       = $('#postal').val();
         data["specific_location"] = $('#specific_location').val();
-	data["has_license"]  = $('#has_license').val();   
-	data["license"]      = $('#license').val();
-	
+        data["has_license"]  = $('#has_license').val();
+        data["license"]      = $('#license').val();
+
         $.ajax({
             url: '/ad/add',
             data: data,
             dataType : 'text',
             type: 'post',
             success: function (response) {
-                if (response == 'Ad created') {
-                    $('#create_ad').addClass('shrinked');
-                    $('.indicator').addClass('success').addClass('expanded').text('OK!');
-                    setTimeout(function(){
-                        $('.content').fadeOut(100, function(){
-                            window.location = '/ads';
-                        });
-                    }, 300);
-                } else {
-                    console.log(response);
-                }
+                console.log('OK');
+                console.log(response);
+                $('#create_ad').addClass('shrinked');
+                $('.indicator').addClass('success').addClass('expanded').text('OK!');
+                setTimeout(function(){
+                    $('.content').fadeOut(100, function(){
+                        window.location = '/ad/edit/'+response;
+                    });
+                }, 300);
             },
             error: function(e) {
+                console.log('ERROR');
                 console.log(e.message);
                 $('#create_ad').addClass('shrinked');
                 $('.indicator').addClass('error').addClass('expanded').text(':(');

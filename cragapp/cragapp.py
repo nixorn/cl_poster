@@ -20,7 +20,7 @@ p = subprocess.Popen([sys.executable, './cragloop.py'],
                      stdout=subprocess.PIPE,
                      stderr=subprocess.STDOUT)
 
-    
+
 
 app = Flask(__name__)
 
@@ -71,9 +71,9 @@ def vps_update():
         vps_id, ip, port, login, password = request.form['idvpss'], request.form['ip'], request.form['port'],request.form['user'], request.form['password']
         vps = VPS.query.filter(VPS.idvpss==vps_id).first()
 
-        vps.ip = ip          
-        vps.port = port        
-        vps.login= login          
+        vps.ip = ip
+        vps.port = port
+        vps.login= login
         if password: vps.password = password
         db_session.add(vps)
         db_session.commit()
@@ -99,11 +99,11 @@ def user_create():
 @app.route('/user/add', methods=['POST',])
 def user_add():
 
-        idvpss    = request.form['idvpss'] 
+        idvpss    = request.form['idvpss']
         username  = request.form['username']
         password  = request.form['password']
-        
-        
+
+
         u = User(idvpss, username, password)
         db_session.add(u)
         db_session.commit()
@@ -132,16 +132,16 @@ def user_edit(user_id):
 
 @app.route('/user/update', methods=['POST',])
 def user_update():
-        idusers   = request.form['idusers'] 
-        idvpss    = request.form['idvpss'] 
+        idusers   = request.form['idusers']
+        idvpss    = request.form['idvpss']
         username  = request.form['username']
         password  = request.form['password']
-        
+
         user = User.query.filter(User.idusers==idusers).first()
-        user.idvpss = idvpss   
-        user.username = username         
+        user.idvpss = idvpss
+        user.username = username
         if password: user.password = password
-        
+
         db_session.add(user)
         db_session.commit()
         return "UPDATED"
@@ -150,7 +150,7 @@ def user_update():
 def ads():
 
         #areas  = Area.auery.all()
-        
+
         ads_db = Ad.query.all()
         ads = [{'idads'       : ad.idads,
                 'description' : ad.description,
@@ -158,7 +158,8 @@ def ads():
                 'posting_time': ad.posting_time,
                 'status'      : ad.status,
                 'idusers'     : ad.idusers,
-                'category'    : ad.idcategory,   
+                'category'    : ad.idcategory,
+                'allowed_actions': ad.allowed_actions,
                 #'area_fname' : filter(lambda ar: ad.idarea==ar.idarea, areas).fullname,
                 #'idarea'     : ad.idarea,
                 'replymail'   : ad.replymail} for ad in ads_db]
@@ -185,7 +186,7 @@ def ad_create():
 
 @app.route('/ad/add', methods=['POST',])
 def ad_add():
-        
+
         idcrag            = request.form['idcrag']
         description       = request.form['description']
         title             = request.form['title']
@@ -194,32 +195,35 @@ def ad_add():
         idcategory        = request.form['category']
         idarea            = request.form['area']
         replymail         = request.form['replymail']
+        allowed_actions   = "add"
         contact_phone     = request.form['contact_phone']
         contact_name      = request.form['contact_name']
         postal            = request.form['postal']
         specific_location = request.form['specific_location']
-        haslicense        = request.form['has_license']  
+        haslicense        = request.form['has_license']
         license_info      = request.form['license']
-        
+
         a = Ad(idcrag,
                description,
                title,
                posting_time,
-               "",#status
+               "Not posted",
                idusers,
                idcategory,
                idarea,
                replymail,
+               allowed_actions,
                contact_phone,
-               contact_name,     
-               postal,           
+               contact_name,
+               postal,
                specific_location,
-               haslicense,  
+               haslicense,
                license_info)
-        
+
         db_session.add(a)
         db_session.commit()
-        return "Ad created"
+
+        return a.idads.__str__()
 
 @app.route('/ad/delete/<ad_id>')
 def ad_delete(ad_id):
@@ -231,7 +235,7 @@ def ad_delete(ad_id):
 @app.route('/ad/edit/<int:ad_id>')
 def ad_edit(ad_id):
         ad        = Ad.query.filter(Ad.idads == ad_id).first()
-        
+
         target_ad = {'idads'             : ad_id,
                      'idcrag'            : ad.idcrag,
                      'description'       : ad.description,
@@ -246,7 +250,7 @@ def ad_edit(ad_id):
                      'contact_name'      : ad.contact_name,
                      'postal'            : ad.postal,
                      'specific_location' : ad.specific_location}
-        
+
         user = User.query.filter(User.idusers == ad.idusers).first()
         current_user = {'idusers':user.idusers, 'username':user.username}
         users = [{'idusers':us.idusers, 'username':us.username}
@@ -259,10 +263,10 @@ def ad_edit(ad_id):
                                                             != category.idcategory).all()]
 
         area = Area.query.filter(Area.idarea == ad.idarea).first()
-        
+
         current_area = {'area':ad.idarea,
                         'area_name': area.fullname}
-        
+
         areas        = [{'area':ar.idarea, 'area_name':ar.fullname}
                          for ar in Area.query.filter(Area.idarea != ad.idarea).all()]
 
@@ -306,11 +310,11 @@ def ad_update():
         contact_name  = request.form['contact_name']
         postal        = request.form['postal']
         specific_location = request.form['specific_location']
-        haslicense        = request.form['has_license']  
+        haslicense        = request.form['has_license']
         license_info      = request.form['license']
-        
+
         ad = Ad.query.filter(Ad.idads==idads).first()
-        
+
         ad.description = description
         ad.idcrag      = idcrag
         ad.title       = title
@@ -324,10 +328,10 @@ def ad_update():
         ad.contact_name  = contact_name
         ad.postal        = postal
         ad.specific_location = specific_location
-        ad.haslicense        = haslicense  
+        ad.haslicense        = haslicense
         ad.license_info      = license_info
 
-        
+
         db_session.add(ad)
         db_session.commit()
         return "UPDATED"
@@ -359,7 +363,7 @@ def upload_images():
                                           image=image.read())
                                 db_session.add(i)
                                 db_session.commit()
-                                
+
         return "Images uploaded?"
 
 @app.route('/delete_image/<idimages>')
@@ -372,20 +376,31 @@ def delete_image(idimages):
 
 
 
-@app.route('/scrap_ads/<idads>', methods=['POST', 'GET'])
-def scrap_ads(idads):
+@app.route('/scrap_ads/<idusers>', methods=['POST', 'GET'])
+def scrap_ads(idusers):
         #pure python27 cragapp.py
 
         #subprocess.call(["python", "syncronizer.py", "--idads", idads])
         # on tornado
-        subprocess.call(["python", "cragapp/syncronizer.py", "--idads", idads])
+        subprocess.call(["python", "cragapp/syncronizer.py", "userscrap","--idusers", idusers])
+
+        return "Ad scraped"
+
+app.route('/scrap_ad/<idads>', methods=['POST', 'GET'])
+def scrap_ads(idusers):
+        #pure python27 cragapp.py
+
+        #subprocess.call(["python", "syncronizer.py", "--idads", idads])
+        # on tornado
+
+        subprocess.call(["python", "cragapp/syncronizer.py", "adscrap","--idads", idads])
 
         return "Ad scraped"
 
 @app.route('/manage/<action>/<idads>')
 def manage_ad(action, idads):
-        subprosess.call(["python", "cragapp/admanager.py", "--idads", idads, "--action", action])
-        return "Ad deleted"
+        subprocess.call(["python", "cragapp/admanager.py", "--idads", idads, "--action", action])
+        return "Success"
 
 
 if __name__ == '__main__':

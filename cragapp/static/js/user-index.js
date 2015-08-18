@@ -14,4 +14,22 @@ $(document).ready(function() {
             }
         });
     });
+
+    $('.sync').on('click', function(e){
+        e.preventDefault();
+        $('.overlay').css('display','flex').hide().fadeIn();
+        $.get( $(this).attr('href'), function(data) {
+            $('.overlay').fadeOut();
+            if (data = "Ad scraped") {
+                $('.indicator').addClass('expanded').addClass('success').text('Scraped!');
+                setTimeout(function(){
+                    $('.indicator').removeClass('expanded').removeClass('success');
+                }, 600);
+                setTimeout(function(){
+                    window.location = '/ads';
+                }, 700);
+            }
+        });
+    });
+
 });

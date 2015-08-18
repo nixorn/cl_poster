@@ -10,6 +10,7 @@
                 <th>accountID</th>
                 <th>Edit</th>
                 <th>Delete</th>
+                <th>Sync</th>
             </tr>
             {% for user in users %}
             <tr class="item">
@@ -20,6 +21,7 @@
               <td>{{user.accountID}}</td>
               <td><a href="/user/edit/{{user.idusers}}">Edit</a></td>
               <td><a class="warning" href="/user/delete/{{user.idusers}}">Delete</a></td>
+              <td><a class="sync" href="/scrap_ads/{{user.idusers}}">Sync</a></td>
                 </tr>
             {% endfor %}
         </tbody>

@@ -29,12 +29,12 @@
 
 
     <div class="property">
-        <div class="label"> Area </div>
-	<select id="area" name="area">
-	  <option value="{{current_area.area}}">{{current_area.area_name}}</option>
-	  {% for area in areas %}
-          <option value="{{area.area}}">{{area.area_name}}</option>
-          {% endfor %}
+        <div class="label"> Area </div><!--
+     --><select id="area" name="area">
+            <option value="{{current_area.area}}">{{current_area.area_name}}</option>
+            {% for area in areas %}
+                <option value="{{area.area}}">{{area.area_name}}</option>
+            {% endfor %}
         </select>
     </div>
 
@@ -53,39 +53,39 @@
     </div>
 
     <div class="property">
-        <div class="label"> Has license? </div>
-	<select id="has_license">
-          <option value="1" {{has}}>  Yes</option>
-	  <option value="0" {{hasno}}>No</option>
+        <div class="label"> Has license? </div><!--
+     --><select id="has_license">
+            <option value="1" {{has}}>  Yes</option>
+            <option value="0" {{hasno}}>No</option>
         </select>
     </div>
 
     <div class="property">
-      <div class="label"> License info </div>
-      <input id="license" type="text" value="{{target_ad.license_info}}">
-    </div>
-    
-    <div class="property">
-      <div class="label">Contact phone</div>
-      <input id="contact_phone" type="text" value="{{target_ad.contact_phone}}">
+      <div class="label"> License info </div><!--
+   --><input id="license" type="text" value="{{target_ad.license_info}}">
     </div>
 
     <div class="property">
-      <div class="label">Contact name</div>
-      <input id="contact_name" type="text" value="{{target_ad.contact_name}}">
+      <div class="label">Contact phone</div><!--
+   --><input id="contact_phone" type="text" value="{{target_ad.contact_phone}}">
     </div>
 
     <div class="property">
-      <div class="label">Postal</div>
-      <input id="postal" type="text" value="{{target_ad.postal}}">
+      <div class="label">Contact name</div><!--
+   --><input id="contact_name" type="text" value="{{target_ad.contact_name}}">
     </div>
 
     <div class="property">
-      <div class="label">Specific location</div>
-      <input id="specific_location" type="text" value="{{target_ad.specific_location}}">
+      <div class="label">Postal</div><!--
+   --><input id="postal" type="text" value="{{target_ad.postal}}">
     </div>
 
-    
+    <div class="property">
+      <div class="label">Specific location</div><!--
+   --><input id="specific_location" type="text" value="{{target_ad.specific_location}}">
+    </div>
+
+
     <div class="property">
       <div class="label"> description </div><textarea cols=70 rows=15 id="description" type="text">{{target_ad.description}}</textarea>
     </div>
@@ -95,7 +95,7 @@
       <br> <a href="/delete_image/{{image.idimages}}"> Delete </a>
       <br><br>
     {% endfor %}</div>
-    
+
   <form id="images_upload" action="/upload_image" method="post" enctype="multipart/form-data">
     <br>
     Select image to upload:
@@ -105,13 +105,9 @@
 
 </div>
 <div class="buttons">
-  <a href="javascript:history.back()"><div class="button">Back</div></a>
+    <a href="javascript:history.back()"><div class="button">Back</div></a>
     <div id="edit_ad" class="button confirm">Save</div><!--
  --><div class="indicator">OK!</div>
-    <a href="/scrap_ads/{{target_ad.idads}}"><div id="sync_ad" class="button confirm">Sync</div></a>
-    <a href="/manage/delete/{{target_ad.idads}}"><div id="delete_ad" class="button confirm">Delete from CL</div></a>
-
-      
 </div>
 {% endblock %}
 {% block lastscripts %}

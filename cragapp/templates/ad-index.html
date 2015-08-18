@@ -12,6 +12,7 @@
             <th>replymail</th>
             <th>Edit</th>
             <th>Delete</th>
+            <th>CL Actions</th>
         </tr>
         {% for ad in ads %}
         <tr class="item">
@@ -24,6 +25,7 @@
             <td>{{ad.replymail}}</td>
             <td><a href="/ad/edit/{{ad.idads}}">Edit</a></td>
             <td><a class="warning" href="/ad/delete/{{ad.idads}}">Delete</a></td>
+            <td>{% for action in ad.allowed_actions.split(',') %}<a href="/manage/{{action}}/{{ad.idads}}" class="action">{{action|capitalize}}</a> {% endfor %}</td>
         </tr>
         {% endfor %}
         </tbody>

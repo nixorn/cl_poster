@@ -10,7 +10,7 @@ from database import db_session
 
 
 parser = argparse.ArgumentParser(description='Crawl from craiglist ad and store it into database.')
-parser.add_argument('--idads', 
+parser.add_argument('--idads',
                     help='id from internal database')
 
 parser.add_argument('--action',
@@ -30,7 +30,7 @@ def debug_html_content(response,action_name,step_num):
             f.write(str(response.headers)+'\n')
             f.write(response.body)
             f.flush()
-            
+
 
 class AdManager(scrapy.Spider):
     name = "admanager"
@@ -39,14 +39,14 @@ class AdManager(scrapy.Spider):
     start_urls = ['https://accounts.craigslist.org/login']
     handle_httpstatus_list = [404]
 
-    
+
     def __init__(self, name=None, **kwargs):
         if name is not None:
             self.name = name
         elif not getattr(self, 'name', None):
             raise ValueError("%s must have a name" % type(self).__name__)
         self.__dict__.update(kwargs)
-        
+
         self.ad   = Ad.query.filter(Ad.idads == args.idads).first()
         self.user = User.query.filter(User.idusers == self.ad.idusers).first()
         self.vps  = VPS.query.filter(VPS.idvpss == self.user.idvpss).first()
@@ -60,8 +60,9 @@ class AdManager(scrapy.Spider):
         elif args.action == "repost"   : callback = self.repost1
         elif args.action == "undelete" : callback = self.undelete1
         elif args.action == "add"      : callback = self.add1
+        elif args.action == "edit"     : callback = self.edit1
         else: raise Exception("incorrect action option. must be renew|delete|repost|add")
-        
+
         return scrapy.FormRequest.from_response(
             response,
             formdata={
@@ -81,7 +82,7 @@ class AdManager(scrapy.Spider):
         #first CL magic. in urls like https://post.craigslist.org/manage/5163849759/kytja
         #kytja - row code. on even ad action (delete,renew,repost) this code the same.
         self.row_code    = delete_form.split(self.ad.idcrag+'/')[1].split('"')[0]
-        
+
         return scrapy.Request(
             url='https://post.craigslist.org/manage/'
             +self.ad.idcrag+'/'+self.row_code+'?action=delete&go=delete',
@@ -96,7 +97,7 @@ class AdManager(scrapy.Spider):
         self.crypt = response.\
                      xpath("//form[./input[@name='crypt']]/input[@name='crypt']/@value").\
                      extract()[0]
-        
+
 
         return scrapy.FormRequest.from_response(
             response=response,
@@ -111,13 +112,13 @@ class AdManager(scrapy.Spider):
 
     def repost1(self, response):
         debug_html_content(response,"repost",1)
-    
+
         repost_form = filter(lambda x: self.ad.idcrag in x ,
                              response.xpath("//form[./input[@value='repost']]").extract())[0]
-        
+
         self.row_code    = repost_form.split(self.ad.idcrag+'/')[1].split('"')[0]
-        
-            
+
+
         return scrapy.Request(
             url='https://post.craigslist.org/manage/'
             +self.ad.idcrag+'/'+self.row_code+'?action=repost&go=repost',
@@ -132,17 +133,17 @@ class AdManager(scrapy.Spider):
                                 xpath("//form[./input[@name='cryptedStepCheck']]/input[@name='cryptedStepCheck']/@value").extract()[0]
 
         categoryid = response.xpath("//select[@name='CategoryID']/option[@selected]/@value").extract()[0]
-        
+
         return scrapy.FormRequest.from_response(
             response=response,
             url=response.request.url,
             formdata ={
                 'id2':"1348x860X1348x370X1366x768",
-                #id2 =  $(document).width() + "x" 
-                #+ $(document).height() + "X" 
-                #+ $(window).width() + "x" 
-                #+ $(window).height() + "X" 
-                #+ screen.width + "x" 
+                #id2 =  $(document).width() + "x"
+                #+ $(document).height() + "X"
+                #+ $(window).width() + "x"
+                #+ $(window).height() + "X"
+                #+ screen.width + "x"
                 #+ screen.height
                 'browserinfo':"%7B%0A%09%22plugins%22%3A%20%22Plugin%200%3A%20Shockwave%20Flash%3B%20Shockwave%20Flash%2011.2%20r202%3B%20libflashplayer.so%3B%20%28Shockwave%20Flash%3B%20application/x-shockwave-flash%3B%20swf%29%20%28FutureSplash%20Player%3B%20application/futuresplash%3B%20spl%29.%20%22%2C%0A%09%22timezone%22%3A%20-180%2C%0A%09%22video%22%3A%20%221366x768x24%22%2C%0A%09%22supercookies%22%3A%20%22DOM%20localStorage%3A%20Yes%2C%20DOM%20sessionStorage%3A%20Yes%2C%20IE%20userData%3A%20No%22%0A%7D",
                 #browserinfo = escape(JSON.stringify(fetch_client_info(), null, ""))
@@ -159,10 +160,10 @@ class AdManager(scrapy.Spider):
                 'cryptedStepCheck':cryptedStepCheck},
             method='POST',
             callback=self.repost3)
-    
-        
 
-    
+
+
+
     def repost3(self, response):
         debug_html_content(response,"repost",3)
         cryptedStepCheck = response.\
@@ -191,14 +192,14 @@ class AdManager(scrapy.Spider):
     def add2(self, response):# select services offer
         debug_html_content(response,"add",2)
 
-        
+
         cryptedStepCheck = response.\
             xpath("//form[./input[@name='cryptedStepCheck']]/input[@name='cryptedStepCheck']/@value").extract()[0]
 
         return scrapy.FormRequest.from_response(
             response=response,
             url=response.request.url.split("?s=")[0],
-            formdata = {"id":"so", 
+            formdata = {"id":"so",
                         "cryptedStepCheck":cryptedStepCheck},
             method='POST',
             callback=self.add3,
@@ -220,7 +221,7 @@ class AdManager(scrapy.Spider):
                         "cryptedStepCheck":cryptedStepCheck},
             method='POST',
             callback=self.add4)
-    
+
     def add4(self, response): #title body etc
         debug_html_content(response,"add",4)
 
@@ -229,7 +230,7 @@ class AdManager(scrapy.Spider):
 
         url = response.xpath("//form[./input[@name='cryptedStepCheck']]/@action").extract()[0]
 
-        
+
         return scrapy.FormRequest.from_response(
             response=response,
             url = response.request.url.split("?s=")[0],
@@ -250,7 +251,7 @@ class AdManager(scrapy.Spider):
                 'cryptedStepCheck':cryptedStepCheck},
             method='POST',
             callback=self.add5)
-    
+
     def add5(self, response):#images
         debug_html_content(response,"add",5)
 
@@ -271,7 +272,7 @@ class AdManager(scrapy.Spider):
                      ("ajax", '1'),
                      ("a", "add"),
                      (image.filename, image.image)]
-            
+
             oldheaders = response.request.headers
             cookie =  response.request.headers['Cookie']
             headers = {'Host':"post.craigslist.org",
@@ -297,7 +298,7 @@ class AdManager(scrapy.Spider):
             prepared.headers["Content-Type"] = prepared.headers["Content-Type"].replace(current_boundary, boundary)
             prepared.body = prepared.body.replace(current_boundary, boundary)
             print image.filename + image.mime
-            
+
             #it refuses replase with str. Thats why str->bytearray->do replace->str
             prepared.body = bytearray(prepared.body)
             prepared.body = prepared.body.replace(
@@ -317,7 +318,7 @@ class AdManager(scrapy.Spider):
             s = requests.Session()
             resp = s.send(prepared)#proxies parameter are here also
             image.craglink = resp.json()['added']['URL']
-            
+
             db_session.add(image)
             db_session.commit()
 
@@ -331,7 +332,7 @@ class AdManager(scrapy.Spider):
             method='POST',
             callback=self.add6)
 
-        
+
     def add6(self, response):#publish
         debug_html_content(response,"add",6)
         cryptedStepCheck = \
@@ -350,23 +351,26 @@ class AdManager(scrapy.Spider):
         debug_html_content(response,"add",7)
         idcrag = response.xpath('//a[@target="_blank"]/@href').extract_first().split('/')[-1].split('.')[0]
         self.ad.idgrag = idcrag
-        db_session.add(image)
+        db_session.add(self.ad)
         db_session.commit()
-        
+
     def renew1(self, response):
         debug_html_content(response,"renew",1)
 
     def undelete1(self, response):
         debug_html_content(response,"undelete",1)
 
+    def edit1(self, response):
+        debug_html_content(response,"undelete",1)
+
     #testing function which should output in file final response
     def finalize(self,response):
         debug_html_content(response,"finalize",1)
 
-    
 
-        
-    
+
+
+
 process = CrawlerProcess({
     "USER-AGENT":"Mozilla/5.0 (X11; Linux x86_64; rv:31.0) Gecko/20100101 Firefox/31.0",
 })
