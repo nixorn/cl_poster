@@ -3,7 +3,7 @@ import scrapy
 import operator
 import argparse
 from scrapy.crawler import CrawlerProcess
-from models import Ad, Image, User, VPS
+from models import Ad, Image, User, VPS, Category, Area
 from database import db_session
 
 
@@ -48,7 +48,7 @@ class Synchronizer(scrapy.Spider):
     
     def parse(self, response):
         
-        return scrapy.FormRequest.from_response(
+        return scrapy.FormRequest.from_response (
             response,
             formdata={
                 'step':"confirmation",
@@ -62,39 +62,80 @@ class Synchronizer(scrapy.Spider):
     
     def parse_home(self, response):
         debug_html_content(response,"parse_home",1)
-        rows = response.xpath('//tr')
-        for row in rows:
-            status = row.xpath('/td[@class="status Z"]/small/text()').extract_first()
-            allowed_actions = row.xpath('/td[@class="buttons Z"]'+
-                                        '/form/input[@class="managebtn"]'+
-                                        '/@value').extract()
-            url = row.xpath('/td[@class="title Z"]/a/@href').extract_first()
-            idcrag = row.xpath('/td[@class="postingID Z"]/text()').extract_first().strip()
-            print status, allowed_actions, url, idcrag
-    
-    def parse_ad(self, response):
+        sel = scrapy.Selector(text=response.body, type='html')
+        for row in sel.xpath('//tr')[2:]: # crrop table head
+            status = row.xpath('./td[contains(@class,"status")]/small/text()').extract_first()
+            allowed_categories = [cat.fullname for cat in Category.query.all()]
 
+            rawcatname = row.xpath('./td[contains(@class,"areacat")]/text()').extract()
+            cat_name = filter(lambda x: x.strip()!='', rawcatname)[0].strip()
+            
+            if cat_name in allowed_categories:
+                
+                allowed_actions = row.xpath('./td[contains(@class,"buttons")]'+
+                                            '/form/input[@class="managebtn"]'+
+                                            '/@value').extract()
+                url = row.xpath('./td[contains(@class,"title")]/a/@href').extract_first()
+                idcrag = row.xpath('./td[contains(@class,"postingID")]/text()').extract_first().strip()
+                title = row.xpath('./td[contains(@class,"title")]/text()').extract_first().strip()
+                rawcatname = row.xpath('./td[contains(@class,"areacat")]/text()').extract()
+                area_code = row.xpath('./td[contains(@class,"areacat")]/b/text()').extract_first().strip()
+                area = Area.query.filter(Area.clcode == area_code).first()
+                print "CATNAME",cat_name
+                category = Category.query.filter(Category.fullname == cat_name).first()
+                ad = Ad.query.filter(Ad.idcrag == idcrag).first()
+                if not ad:
+
+                    ad = Ad(
+                        idcrag = idcrag,
+                        description=None,
+                        title=title,
+                        posting_time=None,
+                        status=status,
+                        idusers=self.user.idusers,
+                        idcategory=category.idcategory,
+                        idarea=area.idarea,
+                        replymail=None,
+                        contact_phone=None, 
+                        contact_name=None,  
+                        postal=None,
+                        specific_location=None,
+                        haslicense=None,
+                        license_info=None)
+                    db_session.add(ad)
+                    db_session.commit()
+
+                if url:
+                    print "RUNNING OUT AD", ad.idads
+                    yield scrapy.Request(
+                        url=url,
+                        meta={'idads':ad.idads},
+                        callback=self.parse_ad)
+
+             
+    def parse_ad(self, response):
+        debug_html_content(response,"parse_ad",1)
+        print "COMMING AD", response.meta['idads'] 
+
+        ad = Ad.query.filter(Ad.idads == response.meta['idads']).first()
         description = response.xpath(".//*[@id='postingbody']/text()").extract()
         description = [item+'\n' for item in description]
         description = reduce(operator.concat, description[1:], description[0])
-        
-        self.ad.title       = response.xpath(".//*[@class='postingtitletext']/text()").extract()[0]
-        self.ad.area        = response.url.split('/')[2].split('.')[0]
-        self.ad.description = description
-        self.ad.status      = response.xpath('.//*[@id="pagecontainer"]'+
-                                             '/section/section[2]/div[2]/p[2]/text()').extract()
-        db_session.add(self.ad)
+
+        ad.area        = response.url.split('/')[2].split('.')[0]
+        ad.description = description
+        ad.title       = response.xpath('//span[@class="postingtitletext"]/text()').extract_first().strip() 
+        db_session.add(ad)
         db_session.commit()
 
         for pic_url in response.xpath(".//*[@id='thumbs']/a/@href").extract():
-            yield scrapy.Request(pic_url, callback=self.parseImage)
-            
+            yield scrapy.Request(pic_url, callback=self.parseImage, meta={'idads',ad.idads})
          
     def parseImage(self, response):
-
+        idads = response.meta['idads']
         img = Image(extension=response.url.split('.')[-1],
                     craglink=response.url,
-                    idads=self.ad.idads,         
+                    idads=idads,         
                     image=response.body)         
         db_session.add(img)
         db_session.commit()

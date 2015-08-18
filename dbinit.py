@@ -43,7 +43,16 @@ CATEGORIES =[
     {'clcode':'biz','fullname':'small biz ads'               ,'numcode':4  },
     {'clcode':'ths','fullname':'therapeutic services'        ,'numcode':148},
     {'clcode':'trv','fullname':'travel/vacation services'    ,'numcode':140},
+    {'clcode':'wet','fullname':'writing/editing/translation' ,'numcode':139},
+    {'clcode':'wet','fullname':'writing/editing/translation' ,'numcode':139},
+    {'clcode':'wet','fullname':'writing/editing/translation' ,'numcode':139},
+    {'clcode':'wet','fullname':'writing/editing/translation' ,'numcode':139},
+    {'clcode':'wet','fullname':'writing/editing/translation' ,'numcode':139},
+    {'clcode':'wet','fullname':'writing/editing/translation' ,'numcode':139},
     {'clcode':'wet','fullname':'writing/editing/translation' ,'numcode':139}]
+
+
+
 
 #insert categories into db
 for category in CATEGORIES:
