@@ -148,15 +148,37 @@ class Synchronizer(scrapy.Spider):
             db_session.rollback()
             raise Exception("DB commit is not OK")
 
-        for pic_url in response.xpath(".//*[@id='thumbs']/a/@href").extract():
-            yield scrapy.Request(pic_url, callback=self.parseImage, meta={'idads',ad.idads})
+        img_urls = response.xpath('//*[@href]').re('http://images.craigslist.org/[0-9a-zA-Z_]+[0-9]{2,3}x[0-9]{2,3}.jpg') + response.xpath('//*[@src]').re('http://images.craigslist.org/[0-9a-zA-Z_]+[0-9]{2,3}x[0-9]{2,3}.jpg') 
+        
+        img_urls = list(set(img_urls))
+        
+        for pic_url in img_urls:
+            yield scrapy.Request(pic_url, meta={'idads':ad.idads}, callback=self.parseImage)
 
     def parseImage(self, response):
+
         idads = response.meta['idads']
-        img = Image(extension=response.url.split('.')[-1],
-                    craglink=response.url,
-                    idads=idads,
-                    image=response.body)
+
+        craglink = response.url
+        img      = Image.query.filter(Image.craglink == craglink).first()
+        if img: raise Exception("Image already is")
+        
+        extension = craglink.split('.')[-1]
+        filename  = craglink.split('/')[-1]
+        
+        if extension == "jpg": mime = "image/jpeg"
+        else:                  mime = "image/" + extension
+
+        image = response.body
+
+        img = Image(extension  = extension,
+                    mime       = mime,          
+                    filename   = filename,      
+                    craglink   = craglink,        
+                    idads      = idads,         
+                    image      = image)
+                            
+
         db_session.add(img)
         try:
             db_session.commit()

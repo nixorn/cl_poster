@@ -301,7 +301,7 @@ def ad_edit(ad_id):
         images = [{'idimages':image.idimages,
                    'image':base64.b64encode(image.image),
                    'extension':image.extension}
-                  for image in Image.query.all()]
+                  for image in Image.query.filter(Image.idads == ad.idads).all()]
 
         if ad.haslicense =='1':
                 has   = 'selected'
