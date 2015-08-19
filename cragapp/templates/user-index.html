@@ -10,6 +10,7 @@
                 <th>accountID</th>
                 <th>Edit</th>
                 <th>Delete</th>
+                <th>Sync</th>
             </tr>
             {% for user in users %}
             <tr class="item">
@@ -20,11 +21,16 @@
               <td>{{user.accountID}}</td>
               <td><a href="/user/edit/{{user.idusers}}">Edit</a></td>
               <td><a class="warning" href="/user/delete/{{user.idusers}}">Delete</a></td>
+              <td><a class="sync" href="/scrap_ads/{{user.idusers}}">Sync</a></td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
     <div class="buttons">
+        <div class="indicator"></div>
         <a href="/user/create"><div class="button">New</div></a>
     </div>
+{% endblock %}
+{% block lastscripts %}
+    <script src="/static/js/user-index.js"></script>
 {% endblock %}

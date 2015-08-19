@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="ad">
+
+    <div class="property">
+        <div class="label">idcrag </div><input id="idcrag" type="text" value="">
+    </div>
+    <div class="property">
+        <div class="label">title </div><input id="title" type="text" value="">
+    </div>
+    <div class="property">
+        <div class="label">posting_time </div><input id="posting_time" type="text" value="">
+    </div>
+
+    <div class="property">
+        <div class="label"> Category </div>
+	<select id="category" name="category">
+	  {% for category in categories %}
+          <option value="{{category.category}}">{{category.cat_name}}</option>
+          {% endfor %}
+        </select>
+    </div>
+
+    <div class="property">
+        <div class="label"> Area </div>
+	<select id="area" name="area">
+	  {% for area in areas %}
+          <option value="{{area.idarea}}">{{area.area_fname}}</option>
+          {% endfor %}
+        </select>
+    </div>
+
+    <div class="property">
+        <div class="label"> replymail</div><input id="replymail" type="text" value="">
+    </div>
+
+    <div class="property">
+        <div class="label"> User select </div><!--
+     --><select id="user-select">
+            {% for user in users %}
+                <option value="{{user.idusers}}">{{user.username}}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="property">
+        <div class="label"> Has license? </div><!--
+     --><select id="has_license">
+          <option value="1">Yes</option>
+	  <option value="0">No</option>
+        </select>
+    </div>
+
+    <div class="property">
+        <div class="label"> License info </div><input id="license" type="text" value="">
+    </div>
+    
+    <div class="property">
+      <div class="label">Contact phone</div><input id="contact_phone" type="text" value="">
+    </div>
+
+    <div class="property">
+      <div class="label">Contact name</div><input id="contact_name" type="text" value="">
+    </div>
+
+    <div class="property">
+      <div class="label">Postal</div><input id="postal" type="text" value="">
+    </div>
+
+    <div class="property">
+      <div class="label">Specific location</div><input id="specific_location" type="text" value="">
+    </div>
+
+    <div class="property">
+      <div class="label"> description </div><textarea cols=70 rows=15 id="description" type="text"></textarea>
+    </div>
+</div>
+<div class="buttons">
+    <a href="javascript:history.back()"><div class="button">Back</div></a>
+    <div id="create_ad" class="button confirm">Create</div><!--
+ --><div class="indicator">OK!</div>
+</div>
+{% endblock %}
+{% block lastscripts %}
+    <script src="/static/js/ad-create.js"></script>
+{% endblock %}

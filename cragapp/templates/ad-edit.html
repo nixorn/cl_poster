@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="ad">
+    <div class="property hidden">
+        <div class="label">idads </div><input id="idads" type="text" value="{{target_ad.idads}}">
+    </div>
+    <div class="property">
+        <div class="label">idcrag </div><input id="idcrag" type="text" value="{{target_ad.idcrag}}">
+    </div>
+    <div class="property">
+        <div class="label">title </div><input id="title" type="text" value="{{target_ad.title}}">
+    </div>
+    <div class="property">
+        <div class="label">posting_time </div><input id="posting_time" type="text" value="{{target_ad.posting_time}}">
+    </div>
+    <div class="property">
+        <div class="label">status</div><input id="status" type="text" value="{{target_ad.status}}">
+    </div>
+
+    <div class="property">
+        <div class="label"> Category </div><!--
+     --><select id="category" name="category">
+            <option value="{{current_category.category}}">{{current_category.cat_name}}</option>
+            {% for category in categories %}
+                <option value="{{category.category}}">{{category.cat_name}}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+
+    <div class="property">
+        <div class="label"> Area </div><!--
+     --><select id="area" name="area">
+            <option value="{{current_area.area}}">{{current_area.area_name}}</option>
+            {% for area in areas %}
+                <option value="{{area.area}}">{{area.area_name}}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="property">
+        <div class="label">replymail</div><input id="replymail" type="text" value="{{target_ad.replymail}}">
+    </div>
+
+    <div class="property">
+        <div class="label"> User select </div><!--
+     --><select id="user-select">
+            <option value="{{current_user.idusers}}">{{current_user.username}}</option>
+            {% for user in users %}
+                <option value="{{user.idusers}}">{{user.username}}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="property">
+        <div class="label"> Has license? </div><!--
+     --><select id="has_license">
+            <option value="1" {{has}}>  Yes</option>
+            <option value="0" {{hasno}}>No</option>
+        </select>
+    </div>
+
+    <div class="property">
+      <div class="label"> License info </div><!--
+   --><input id="license" type="text" value="{{target_ad.license_info}}">
+    </div>
+
+    <div class="property">
+      <div class="label">Contact phone</div><!--
+   --><input id="contact_phone" type="text" value="{{target_ad.contact_phone}}">
+    </div>
+
+    <div class="property">
+      <div class="label">Contact name</div><!--
+   --><input id="contact_name" type="text" value="{{target_ad.contact_name}}">
+    </div>
+
+    <div class="property">
+      <div class="label">Postal</div><!--
+   --><input id="postal" type="text" value="{{target_ad.postal}}">
+    </div>
+
+    <div class="property">
+      <div class="label">Specific location</div><!--
+   --><input id="specific_location" type="text" value="{{target_ad.specific_location}}">
+    </div>
+
+
+    <div class="property">
+      <div class="label"> description </div><textarea cols=70 rows=15 id="description" type="text">{{target_ad.description}}</textarea>
+    </div>
+    <div class="imgallery">
+      {% for image in images %}
+      <img src="data:image/{{image.extension}};base64, {{image.image}}">
+      <br> <a href="/delete_image/{{image.idimages}}"> Delete </a>
+      <br><br>
+    {% endfor %}</div>
+
+  <form id="images_upload" action="/upload_image" method="post" enctype="multipart/form-data">
+    <br>
+    Select image to upload:
+    <input id="image_to_upload" type="file" name="images[]" multiple/>
+    <input id="image_upload_submit" type="submit" value="Upload" name="submit">
+  </form>
+
+</div>
+<div class="buttons">
+    <a href="javascript:history.back()"><div class="button">Back</div></a>
+    <div id="edit_ad" class="button confirm">Save</div><!--
+ --><div class="indicator">OK!</div>
+</div>
+{% endblock %}
+{% block lastscripts %}
+<script src="/static/js/ad-edit.js"></script>
+{% endblock %}
