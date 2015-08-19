@@ -213,6 +213,7 @@ def ad_add():
         description       = request.form['description']
         title             = request.form['title']
         posting_time      = request.form['posting_time']
+        status            = "Not posted"
         idusers           = request.form['idusers']
         idcategory        = request.form['category']
         idarea            = request.form['area']
@@ -229,7 +230,7 @@ def ad_add():
                description,
                title,
                posting_time,
-               "Not posted",
+               status,
                idusers,
                idcategory,
                idarea,
