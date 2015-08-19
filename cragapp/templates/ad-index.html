@@ -13,6 +13,7 @@
             <th>Edit</th>
             <th>Delete</th>
             <th>CL Actions</th>
+	    <th>Scheduler</th>
         </tr>
         {% for ad in ads %}
         <tr class="item">
@@ -26,6 +27,21 @@
             <td><a href="/ad/edit/{{ad.idads}}">Edit</a></td>
             <td><a class="warning" href="/ad/delete/{{ad.idads}}">Delete</a></td>
             <td>{% for action in ad.allowed_actions.split(',') %}<a href="/manage/{{action}}/{{ad.idads}}" class="action">{{action|capitalize}}</a> {% endfor %}</td>
+	    <td>
+	      <div class="well">
+		<div id="datetimepicker{{ad.idads}}" class="input-append date">
+		  <input data-format="dd/MM/yyyy hh:mm:ss" type="text"></input>
+		  <span class="add-on">
+		    <i data-time-icon="icon-time" data-date-icon="icon-calendar">
+		    </i>
+		  </span>
+		</div>
+	      </div>
+	      <script type="text/javascript">
+		$(function() {
+		$('#datetimepicker{{ad.idads}}').datetimepicker({language: 'pt-BR'});});
+	      </script>
+	    </td>
         </tr>
         {% endfor %}
         </tbody>
@@ -37,4 +53,5 @@
 {% endblock %}
 {% block lastscripts %}
     <script src="/static/js/ad-index.js"></script>
+    <script src="/static/js/bootstrap-datetimepicker.min.js"></script>
 {% endblock %}
