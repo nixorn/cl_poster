@@ -55,7 +55,11 @@ def vps_add():
         ip, port, user, password = request.form['ip'], request.form['port'],request.form['user'], request.form['password']
         v = VPS(ip, port, user, password)
         db_session.add(v)
-        db_session.commit()
+        
+        try: db_session.commit()
+        except:
+                db_session.rollback()
+                raise Exception('DB commit is not OK')
         return "VPS created"
 
 
@@ -63,7 +67,12 @@ def vps_add():
 def vps_delete(vps_id):
         vps = VPS.query.filter(VPS.idvpss == vps_id).first()
         db_session.delete(vps)
-        db_session.commit()
+        
+        try:
+                db_session.commit()
+        except:
+                db_session.rollback()
+                raise Exception('DB commit is not OK')
         return "VPS deleted"
 
 @app.route('/vps/update', methods=['POST',])
@@ -76,7 +85,11 @@ def vps_update():
         vps.login= login
         if password: vps.password = password
         db_session.add(vps)
-        db_session.commit()
+        try:
+                db_session.commit()
+        except:
+                db_session.rollback()
+                raise Exception('DB commit is not OK')
         return "UPDATED"
 
 
@@ -106,7 +119,10 @@ def user_add():
 
         u = User(idvpss, username, password)
         db_session.add(u)
-        db_session.commit()
+        try:db_session.commit()
+        except:
+                db_session.rollback()
+                raise Exception('DB commit is not OK')
         return "User created"
 
 
@@ -114,7 +130,10 @@ def user_add():
 def user_delete(user_id):
         u = User.query.filter(User.idusers == user_id).first()
         db_session.delete(u)
-        db_session.commit()
+        try:db_session.commit()
+        except:
+                db_session.rollback()
+                raise Exception('DB commit is not OK')
         return "User deleted"
 
 @app.route('/user/edit/<int:user_id>')
@@ -143,7 +162,10 @@ def user_update():
         if password: user.password = password
 
         db_session.add(user)
-        db_session.commit()
+        try:db_session.commit()
+        except:
+                db_session.rollback()
+                raise Exception('DB commit is not OK')
         return "UPDATED"
 
 @app.route('/ads')
@@ -221,7 +243,10 @@ def ad_add():
                license_info)
 
         db_session.add(a)
-        db_session.commit()
+        try:db_session.commit()
+        except:
+                db_session.rollback()
+                raise Exception('DB commit is not OK')
 
         return a.idads.__str__()
 
@@ -229,7 +254,10 @@ def ad_add():
 def ad_delete(ad_id):
         a = Ad.query.filter(Ad.idads == ad_id).first()
         db_session.delete(a)
-        db_session.commit()
+        try:db_session.commit()
+        except:
+                db_session.rollback()
+                raise Exception('DB commit is not OK')
         return "Ad deleted"
 
 @app.route('/ad/edit/<int:ad_id>')
@@ -333,7 +361,10 @@ def ad_update():
 
 
         db_session.add(ad)
-        db_session.commit()
+        try:db_session.commit()
+        except:
+                db_session.rollback()
+                raise Exception('DB commit is not OK')
         return "UPDATED"
 
 
@@ -362,7 +393,11 @@ def upload_images():
                                           filename=image.filename,
                                           image=image.read())
                                 db_session.add(i)
-                                db_session.commit()
+                                try:
+                                        db_session.commit()
+                                except:
+                                        db_session.rollback()
+                                        raise Exception('DB commit is not OK')
 
         return "Images uploaded?"
 
@@ -370,7 +405,12 @@ def upload_images():
 def delete_image(idimages):
         i = Image.query.filter(Image.idimages == idimages).first()
         db_session.delete(i)
-        db_session.commit()
+        
+        try:
+                db_session.commit()
+        except:
+                db_session.rollback()
+                raise Exception("DB commit is not OK")
         return "Image deleted"
 
 

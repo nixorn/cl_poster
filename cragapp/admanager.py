@@ -320,7 +320,11 @@ class AdManager(scrapy.Spider):
             image.craglink = resp.json()['added']['URL']
 
             db_session.add(image)
-            db_session.commit()
+            try:
+                db_session.commit()
+            except:
+                db_session.rollback()
+                raise Exception("DB commit is not OK")
 
         return scrapy.FormRequest.from_response(
             response=response,
@@ -352,7 +356,12 @@ class AdManager(scrapy.Spider):
         idcrag = response.xpath('//a[@target="_blank"]/@href').extract_first().split('/')[-1].split('.')[0]
         self.ad.idgrag = idcrag
         db_session.add(self.ad)
-        db_session.commit()
+        
+        try:
+            db_session.commit()
+        except:
+            db_session.rollback()
+            raise Exception("DB commit is not OK")
 
     def renew1(self, response):
         debug_html_content(response,"renew",1)

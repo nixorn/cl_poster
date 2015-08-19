@@ -115,7 +115,11 @@ class Synchronizer(scrapy.Spider):
                         haslicense=None,
                         license_info=None)
                     db_session.add(ad)
-                    db_session.commit()
+                    try:
+                        db_session.commit()
+                    except:
+                        db_session.rollback()
+                        raise Exception("DB commit is not OK")
 
                 if url:
                     print "RUNNING OUT AD", ad.idads
@@ -138,7 +142,11 @@ class Synchronizer(scrapy.Spider):
         ad.description = description
         ad.title       = response.xpath('//span[@class="postingtitletext"]/text()').extract_first().strip()
         db_session.add(ad)
-        db_session.commit()
+        try:
+            db_session.commit()
+        except:
+            db_session.rollback()
+            raise Exception("DB commit is not OK")
 
         for pic_url in response.xpath(".//*[@id='thumbs']/a/@href").extract():
             yield scrapy.Request(pic_url, callback=self.parseImage, meta={'idads',ad.idads})
@@ -150,7 +158,11 @@ class Synchronizer(scrapy.Spider):
                     idads=idads,
                     image=response.body)
         db_session.add(img)
-        db_session.commit()
+        try:
+            db_session.commit()
+        except:
+            db_session.rollback()
+            raise Exception("DB commit is not OK")
 
 
 
