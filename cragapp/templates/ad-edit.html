@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<script src="/static/js/datepicker/jquery-2.js"></script>
+<!--<script src="/static/js/datepicker/jquery-2.js"></script>-->
 <link href="/static/css/datepicker/bootstrap.css" rel="stylesheet">                   
 <link href="/static/css/datepicker/bootstrap-datetimepicker.css" rel="stylesheet">    
 
@@ -9,30 +9,45 @@
     <div class="property hidden">
         <div class="label">idads </div><input id="idads" type="text" value="{{target_ad.idads}}">
     </div>
+
     <div class="property">
         <div class="label">idcrag </div><input id="idcrag" type="text" value="{{target_ad.idcrag}}">
     </div>
+    
     <div class="property">
         <div class="label">title </div><input id="title" type="text" value="{{target_ad.title}}">
     </div>
 
+    <div class="hidden">
+      <div class="label">previous_posting_time </div><input id="previous_posting_time" type="text" value="{{target_ad.posting_time}}"></div>
+    
     <div class="property"><div class="row">
       <div class='col-sm-6'>
 	<div class="form-group">
 	  <div class='input-group date' id='datetimepicker1'>
-	    <input type='text' class="form-control" />
+	    <input type='text' class="form-control" name="posting_time" />
 	    <span class="input-group-addon">
 	      <span class="glyphicon glyphicon-calendar"></span>
 	    </span>
 	  </div>
 	</div>
       </div>
-    <script type="text/javascript">
+<!--    <script type="text/javascript">
       $(function() {
       $('#datetimepicker1').datetimepicker();});
-    </script>
+    </script>-->
     </div>
 
+      <div class="property">
+        <div class="label">Scheduled action</div><!--
+     --><select id="scheduled_action" name="scheduled_action">
+            <option value="{{scheduled_action.action}}">{{scheduled_action.name}}</option>
+            {% for action in allowed_actions %}
+                <option value="{{action.action}}">{{action.name}}</option>
+            {% endfor %}
+        </select>
+    </div>
+      
     <div class="property">
         <div class="label">status</div><input id="status" type="text" value="{{target_ad.status}}">
     </div>
@@ -132,9 +147,6 @@
 {% endblock %}
 {% block lastscripts %}
 <script src="/static/js/ad-edit.js"></script>
-
-<script src="/static/js/datepicker/analytics.js"></script>                    
-
 
 <script src="/static/js/datepicker/moment-with-locales.js"></script>
 <script src="/static/js/datepicker/bootstrap.js"></script>                    

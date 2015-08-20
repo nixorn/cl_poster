@@ -4,7 +4,7 @@
 from flask import Flask, render_template, url_for, request, redirect
 from werkzeug import secure_filename
 
-
+import datetime
 import base64
 import subprocess
 import sys
@@ -213,6 +213,7 @@ def ad_add():
         description       = request.form['description']
         title             = request.form['title']
         posting_time      = request.form['posting_time']
+        scheduled_action  = "None"
         status            = "Not posted"
         idusers           = request.form['idusers']
         idcategory        = request.form['category']
@@ -230,6 +231,7 @@ def ad_add():
                description,
                title,
                posting_time,
+               scheduled_action,
                status,
                idusers,
                idcategory,
@@ -304,6 +306,14 @@ def ad_edit(ad_id):
                    'extension':image.extension}
                   for image in Image.query.filter(Image.idads == ad.idads).all()]
 
+        scheduled_action = {'action':ad.scheduled_action, 'name': ad.scheduled_action.capitalize()}
+
+        allowed_actions = [{'action':action, 'name': action.capitalize()}
+                           for action in
+                           filter(lambda ac: ac !=scheduled_action['action'],
+                                  ad.allowed_actions.split(','))] 
+        #allowed_actions = list(set(allowed_actions))
+
         if ad.haslicense =='1':
                 has   = 'selected'
                 hasno = ''
@@ -321,7 +331,9 @@ def ad_edit(ad_id):
                                current_area=current_area,
                                areas=areas,
                                has=has,
-                               hasno=hasno)
+                               hasno=hasno,
+                               scheduled_action=scheduled_action,
+                               allowed_actions=allowed_actions)
 
 @app.route('/ad/update', methods=['POST'])
 def ad_update():

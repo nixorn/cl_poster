@@ -110,7 +110,8 @@ class Ad(Base):
     idcrag        = Column(VARCHAR(25), unique = True)
     description   = Column(TEXT)
     title         = Column(VARCHAR(100))
-    posting_time  = Column(VARCHAR(5))
+    posting_time  = Column(VARCHAR(50))
+    scheduled_action = Column(VARCHAR(25))  #will happen in posting_time. one of allowed actions or None
     status        = Column(VARCHAR(30))
     idusers       = Column(INTEGER, ForeignKey('users.idusers'))
     idcategory    = Column(INTEGER, ForeignKey('category.idcategory'))
@@ -130,6 +131,7 @@ class Ad(Base):
                  description,
                  title,
                  posting_time,
+                 scheduled_action,
                  status,
                  idusers,
                  idcategory,
@@ -146,6 +148,7 @@ class Ad(Base):
         self.description       = description
         self.title             = title
         self.posting_time      = posting_time
+        self.scheduled_action  = scheduled_action
         self.status            = status
         self.idusers           = idusers
         self.idcategory        = idcategory
