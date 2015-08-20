@@ -42,24 +42,19 @@ class Synchronizer(scrapy.Spider):
     start_urls = ['https://accounts.craigslist.org/login']
     download_delay = 2
 
-    def __init__(self, name=None, **kwargs):
-        if name is not None:
-            self.name = name
-        elif not getattr(self, 'name', None):
-            raise ValueError("%s must have a name" % type(self).__name__)
-        self.__dict__.update(kwargs)
-        self.user = User.query.filter(User.idusers == args.idusers).first()
 
 
 
     def parse(self, response):
+        print dir(args)
         if 'idads' in dir(args):
             ad = Ad.query.filter(Ad.idads == args.idads).first()
             category = Category.query.filter(Category.idcategory == ad.idcategory).first()
             area = Area.query.filter(Area.idarea == ad.idarea).first()
-            url = area.urlname + '.craigslist.org/' + category.clcode + '/' + ad.idcrag + '.html'
+            url = "http://"+area.urlname + '.craigslist.org/' + category.clcode + '/' + ad.idcrag + '.html'
             return scrapy.Request(url, meta={'idads':ad.idads}, callback=self.parse_ad)
         elif 'idusers' in dir(args):
+            self.user = User.query.filter(User.idusers == args.idusers).first()            
             return scrapy.FormRequest.from_response (
                 response,
                 formdata={
@@ -92,9 +87,11 @@ class Synchronizer(scrapy.Spider):
                 title = row.xpath('./td[contains(@class,"title")]/text()').extract_first().strip()
                 area_code = row.xpath('./td[contains(@class,"areacat")]/b/text()').extract_first().strip()
                 area = Area.query.filter(Area.clcode == area_code).first()
-                print "CATNAME",cat_name
+
                 category = Category.query.filter(Category.fullname == cat_name).first()
                 ad = Ad.query.filter(Ad.idcrag == idcrag).first()
+
+
                 if not ad:
 
                     ad = Ad(
@@ -121,7 +118,17 @@ class Synchronizer(scrapy.Spider):
                     except:
                         db_session.rollback()
                         raise Exception("DB commit is not OK")
-
+                    
+                elif ad:
+                    ad.status = status
+                    ad.allowed_actions = ','.join(allowed_actions)
+                    db_session.add(ad)
+                    try:
+                        db_session.commit()
+                    except Exception as e:
+                        db_session.rollback()
+                        raise Exception("DB commit is not OK\n"+e.message)
+                    
                 if url:
                     print "RUNNING OUT AD", ad.idads
                     yield scrapy.Request(
@@ -137,11 +144,16 @@ class Synchronizer(scrapy.Spider):
         ad = Ad.query.filter(Ad.idads == response.meta['idads']).first()
         description = response.xpath(".//*[@id='postingbody']/text()").extract()
         description = [item+'\n' for item in description]
-        description = reduce(operator.concat, description[1:], description[0])
+        if description:
+            description = reduce(operator.concat, description[1:], description[0])
 
-        ad.area        = response.url.split('/')[2].split('.')[0]
-        ad.description = description
-        ad.title       = response.xpath('//span[@class="postingtitletext"]/text()').extract_first().strip()
+        area_urlname       = response.url.split('/')[2].split('.')[0]
+
+        area = Area.query.filter(Area.urlname == area_urlname).first()
+        if area: ad.idarea = area.idarea
+        if description:
+            ad.description = description
+            ad.title       = response.xpath('//span[@class="postingtitletext"]/text()').extract_first().strip()
         db_session.add(ad)
         try:
             db_session.commit()
@@ -162,7 +174,9 @@ class Synchronizer(scrapy.Spider):
 
         craglink = response.url
         img      = Image.query.filter(Image.craglink == craglink).first()
-        if img: raise Exception("Image already is")
+        if img:
+            db_session.delete(img)
+            db_session.commit()
         
         extension = craglink.split('.')[-1]
         filename  = craglink.split('/')[-1]

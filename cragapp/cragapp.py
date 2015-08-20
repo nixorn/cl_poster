@@ -15,10 +15,6 @@ from database import db_session
 from models import VPS, User, Image, Ad, Area, Category
 
 
-#run loop
-p = subprocess.Popen([sys.executable, './cragloop.py'],
-                     stdout=subprocess.PIPE,
-                     stderr=subprocess.STDOUT)
 
 
 
@@ -342,6 +338,7 @@ def ad_update():
         description   = request.form['description']
         title         = request.form['title']
         posting_time  = request.form['posting_time']
+        scheduled_action = request.form['scheduled_action']
         status        = request.form['status']
         idusers       = request.form['idusers']
         idcategory    = request.form['category']
@@ -360,6 +357,7 @@ def ad_update():
         ad.idcrag      = idcrag
         ad.title       = title
         ad.posting_time= posting_time
+        ad.scheduled_action = scheduled_action
         ad.status      = status
         ad.idusers     = idusers
         ad.idcategory  = idcategory
@@ -431,20 +429,13 @@ def delete_image(idimages):
 
 @app.route('/scrap_ads/<idusers>', methods=['POST', 'GET'])
 def scrap_ads(idusers):
-        #pure python27 cragapp.py
 
-        #subprocess.call(["python", "syncronizer.py", "--idads", idads])
-        # on tornado
         subprocess.call(["python", "cragapp/syncronizer.py", "userscrap","--idusers", idusers])
 
         return "Ad scraped"
 
 app.route('/scrap_ad/<idads>', methods=['POST', 'GET'])
 def scrap_ads(idusers):
-        #pure python27 cragapp.py
-
-        #subprocess.call(["python", "syncronizer.py", "--idads", idads])
-        # on tornado
 
         subprocess.call(["python", "cragapp/syncronizer.py", "adscrap","--idads", idads])
 
