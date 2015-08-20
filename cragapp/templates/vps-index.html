@@ -3,7 +3,7 @@
     <table class="vpss">
         <tbody>
             <tr>
-                <th>idvpss</th>
+                <th class="hidden">idvpss</th>
                 <th>IP</th>
                 <th>Port</th>
                 <th>User</th>
@@ -13,7 +13,7 @@
             </tr>
             {% for vps in vpss %}
                 <tr class="item">
-                    <td>{{vps.idvpss}}</td>
+                    <td class="hidden">{{vps.idvpss}}</td>
                     <td>{{vps.ip}}</td>
                     <td>{{vps.port}}</td>
                     <td>{{vps.user}}</td>

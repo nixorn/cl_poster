@@ -94,9 +94,10 @@ def vps_update():
 def user():
         users_db = User.query.all()
         users = [{'idusers'    :user.idusers,
-                  'idvpss'     :user.idvpss,
+                  'vps'        :VPS.query.filter(VPS.idvpss==user.idvpss).first().ip,
                   'username'   :user.username,
                   'password'   :user.password} for user in users_db]
+
         return render_template('user-index.html', menu='user', users=users)
 
 @app.route('/user/create')
@@ -170,17 +171,15 @@ def ads():
         #areas  = Area.auery.all()
 
         ads_db = Ad.query.all()
-        ads = [{'idads'       : ad.idads,
-                'description' : ad.description,
-                'title'       : ad.title,
-                'posting_time': ad.posting_time,
-                'status'      : ad.status,
-                'idusers'     : ad.idusers,
-                'category'    : ad.idcategory,
-                'allowed_actions': ad.allowed_actions,
-                #'area_fname' : filter(lambda ar: ad.idarea==ar.idarea, areas).fullname,
-                #'idarea'     : ad.idarea,
-                'replymail'   : ad.replymail} for ad in ads_db]
+        ads = [{'idads'           : ad.idads,
+                'title'           : ad.title,
+                'posting_time'    : ad.posting_time,
+                'scheduled_action': ad.scheduled_action,
+                'status'          : ad.status,
+                'user'            : User.query.filter(User.idusers == ad.idusers).first().username,
+                'category'        : Category.query.filter(Category.idcategory ==ad.idcategory).first().fullname,
+                'allowed_actions' : ad.allowed_actions}
+               for ad in ads_db]
         return render_template('ad-index.html', menu='ad', ads=ads)
 
 

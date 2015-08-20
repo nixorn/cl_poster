@@ -3,22 +3,18 @@
     <table class="user">
       <tbody>
             <tr>
-                <th>idusers  </th>
-                <th>idvpss   </th>
-                <th>username </th>
-                <th>password </th>
-                <th>accountID</th>
+                <th class="hidden">idusers  </th>
+                <th>VPS   </th>
+                <th>Username </th>
                 <th>Edit</th>
                 <th>Delete</th>
                 <th>Sync</th>
             </tr>
             {% for user in users %}
             <tr class="item">
-	      <td>{{user.idusers}}   </td>
-              <td>{{user.idvpss}}   </td>
+	      <td class="hidden">{{user.idusers}}   </td>
+              <td>{{user.vps}}   </td>
               <td>{{user.username}} </td>
-              <td>{{user.password}} </td>
-              <td>{{user.accountID}}</td>
               <td><a href="/user/edit/{{user.idusers}}">Edit</a></td>
               <td><a class="warning" href="/user/delete/{{user.idusers}}">Delete</a></td>
               <td><a class="sync" href="/scrap_ads/{{user.idusers}}">Sync</a></td>
