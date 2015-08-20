@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
+<script src="/static/js/datepicker/jquery-2.js"></script>
+<link href="/static/css/datepicker/bootstrap.css" rel="stylesheet">                   
+<link href="/static/css/datepicker/bootstrap-datetimepicker.css" rel="stylesheet">    
+
+
 <div class="ad">
     <div class="property hidden">
         <div class="label">idads </div><input id="idads" type="text" value="{{target_ad.idads}}">
@@ -10,6 +15,24 @@
     <div class="property">
         <div class="label">title </div><input id="title" type="text" value="{{target_ad.title}}">
     </div>
+
+    <div class="property"><div class="row">
+      <div class='col-sm-6'>
+	<div class="form-group">
+	  <div class='input-group date' id='datetimepicker1'>
+	    <input type='text' class="form-control" />
+	    <span class="input-group-addon">
+	      <span class="glyphicon glyphicon-calendar"></span>
+	    </span>
+	  </div>
+	</div>
+      </div>
+    <script type="text/javascript">
+      $(function() {
+      $('#datetimepicker1').datetimepicker();});
+    </script>
+    </div>
+
     <div class="property">
         <div class="label">status</div><input id="status" type="text" value="{{target_ad.status}}">
     </div>
@@ -109,4 +132,16 @@
 {% endblock %}
 {% block lastscripts %}
 <script src="/static/js/ad-edit.js"></script>
+
+<script src="/static/js/datepicker/analytics.js"></script>                    
+
+
+<script src="/static/js/datepicker/moment-with-locales.js"></script>
+<script src="/static/js/datepicker/bootstrap.js"></script>                    
+<script src="/static/js/datepicker/bootstrap-datetimepicker.js"></script>     
+
+
+
+
+
 {% endblock %}
