@@ -83,10 +83,10 @@ class Synchronizer(scrapy.Spider):
             cat_name = filter(lambda x: x.strip()!='', rawcatname)[0].strip()
 
             if cat_name in allowed_categories:
-
+                #+ default None action
                 allowed_actions = row.xpath('./td[contains(@class,"buttons")]'+
                                             '/form/input[@class="managebtn"]'+
-                                            '/@value').extract()
+                                            '/@value').extract() + ["None"]
                 url = row.xpath('./td[contains(@class,"title")]/a/@href').extract_first()
                 idcrag = row.xpath('./td[contains(@class,"postingID")]/text()').extract_first().strip()
                 title = row.xpath('./td[contains(@class,"title")]/text()').extract_first().strip()
@@ -102,6 +102,7 @@ class Synchronizer(scrapy.Spider):
                         description=None,
                         title=title,
                         posting_time=None,
+                        scheduled_action="None",
                         status=status,
                         idusers=self.user.idusers,
                         idcategory=category.idcategory,
