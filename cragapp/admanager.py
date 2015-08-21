@@ -379,7 +379,8 @@ class AdManager(scrapy.Spider):
 
         return scrapy.FormRequest.from_response(
             response=response,
-            url='https://post.craigslist.org/manage/'+self.row_code,
+            url='https://post.craigslist.org/manage/'+
+            self.ad.idcrag+'/'+self.row_code,
             formdata ={
                 "action":"undelete",
                 "crypt":self.crypt,
