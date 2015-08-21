@@ -60,13 +60,21 @@ table .item:hover {
 .property {
     padding: 5px;
 }
-.vps .property .label,
-.property .label {
+.vps .property .label1,
+.property  .label1 {
     display: inline-block;
     width: 100px;
     vertical-align: top;
     padding-top: 3px;
 }
+
+.label {
+    display: inline-block;
+    width: 100px;
+    vertical-align: top;
+    padding-top: 3px;
+}
+
 .property select {
     display: inline-block;
     border: 1px solid #bbb;
