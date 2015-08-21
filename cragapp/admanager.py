@@ -79,7 +79,7 @@ class AdManager(scrapy.Spider):
     def delete1(self, response):
         debug_html_content(response,"delete",1)
         delete_form = filter(lambda x: self.ad.idcrag in x ,
-                             response.xpath("//form[./input[@value='delete']]").extract())[0]
+            response.xpath("//form[./input[@value='delete']]").extract())[0]
         #first CL magic. in urls like https://post.craigslist.org/manage/5163849759/kytja
         #kytja - row code. on even ad action (delete,renew,repost) this code the same.
         self.row_code    = delete_form.split(self.ad.idcrag+'/')[1].split('"')[0]
@@ -367,7 +367,26 @@ class AdManager(scrapy.Spider):
 
     def undelete1(self, response):
         debug_html_content(response,"undelete",1)
+        undelete_form = filter(lambda x: self.ad.idcrag in x,
+            response.xpath("//form[./input[@value='delete']]").extract())[0]
+        
+        self.crypt = response.\
+            xpath("//form[./input[@name='crypt']]/input[@name='crypt']/@value").\
+            extract()[0]
 
+        
+        self.row_code    = delete_form.split(self.ad.idcrag+'/')[1].split('"')[0]
+
+        return scrapy.FormRequest.from_response(
+            response=response,
+            url='https://post.craigslist.org/manage/'+self.row_code,
+            formdata ={
+                "action":"undelete",
+                "crypt":self.crypt,
+                "go":"undelete"},
+            method='POST',
+            callback=self.finalize)
+        
     def renew1(self, response):
         debug_html_content(response,"renew",1)
 
