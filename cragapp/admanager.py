@@ -368,7 +368,7 @@ class AdManager(scrapy.Spider):
     def undelete1(self, response):
         debug_html_content(response,"undelete",1)
         undelete_form = filter(lambda x: self.ad.idcrag in x,
-            response.xpath("//form[./input[@value='delete']]").extract())[0]
+            response.xpath("//form[./input[@value='undelete']]").extract())[0]
         
         self.crypt = response.\
             xpath("//form[./input[@name='crypt']]/input[@name='crypt']/@value").\
