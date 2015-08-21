@@ -165,12 +165,18 @@ def user_update():
                 raise Exception('DB commit is not OK')
         return "UPDATED"
 
-@app.route('/ads')
-def ads():
-
-        #areas  = Area.auery.all()
-
-        ads_db = Ad.query.all()
+@app.route('/ads/')
+@app.route('/ads/<params>')
+def ads(params=None):
+        
+        if params:
+                params = [tuple(param.split('=')) for param in
+                           params.split('&')]
+                ads_db = Ad.query.filter(
+                        eval(' and '.join(
+                                ['Ad.'+param[0]+'=='+param[1] for param in params]))).all()
+                
+        else: ads_db = Ad.query.all()
         ads = [{'idads'           : ad.idads,
                 'title'           : ad.title,
                 'posting_time'    : ad.posting_time,
