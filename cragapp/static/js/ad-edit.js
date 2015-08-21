@@ -2,10 +2,9 @@ $(document).ready(function() {
     $(function() {
 	$('#datetimepicker1').datetimepicker();
 	$('#datetimepicker1').data('DateTimePicker').date(
-					     moment(
-						 $('#previous_posting_time').val(),
-						 "YYYY-MM-DD HH:mm"));
-	console.log(moment($('#previous_posting_time').val(), "YYYY-MM-DD HH:mm"));
+	    moment(
+		$('#previous_posting_time').val(),
+		"YYYY-MM-DD HH:mm"));
     });
     $('#edit_ad').on('click', function(){
         var data = {};
@@ -19,7 +18,6 @@ $(document).ready(function() {
         data["idusers"]      = $("#user-select").val();
         data["category"]     = $("#category").val();
         data["area"]         = $("#area").val();
-        data["replymail"]    = $("#replymail").val();
         data["contact_phone"]= $('#contact_phone').val();
         data["contact_name"] = $('#contact_name').val();
         data["postal"]       = $('#postal').val();

@@ -19,24 +19,17 @@
     </div>
 
     <div class="hidden">
-      <div class="label">previous_posting_time </div><input id="previous_posting_time" type="text" value="{{target_ad.posting_time}}"></div>
+      <div class="label">Previous posting time </div><input id="previous_posting_time" type="text" value="{{target_ad.posting_time}}"></div>
     
-    <div class="property"><div class="row">
-      <div class='col-sm-6'>
-	<div class="form-group">
-	  <div class='input-group date' id='datetimepicker1'>
-	    <input type='text' class="form-control" name="posting_time" />
-	    <span class="input-group-addon">
-	      <span class="glyphicon glyphicon-calendar"></span>
-	    </span>
-	  </div>
-	</div>
-      </div>
-<!--    <script type="text/javascript">
-      $(function() {
-      $('#datetimepicker1').datetimepicker();});
-    </script>-->
-    </div>
+    <div class="property">
+      <div class="row">
+	<div class='col-sm-6'>
+	  <div class="form-group">
+	    <div class='input-group date' id='datetimepicker1'>
+	      <input type='text' class="form-control" name="posting_time" />
+	      <span class="input-group-addon">
+		<span class="glyphicon glyphicon-calendar">
+		</span></span></div></div></div> </div></div>
 
       <div class="property">
         <div class="label">Scheduled action</div><!--
@@ -45,8 +38,7 @@
             {% for action in allowed_actions %}
                 <option value="{{action.action}}">{{action.name}}</option>
             {% endfor %}
-        </select>
-    </div>
+        </select></div>
       
     <div class="property">
         <div class="label">status</div><input id="status" type="text" value="{{target_ad.status}}">
@@ -73,9 +65,6 @@
         </select>
     </div>
 
-    <div class="property">
-        <div class="label">replymail</div><input id="replymail" type="text" value="{{target_ad.replymail}}">
-    </div>
 
     <div class="property">
         <div class="label"> User select </div><!--
@@ -122,7 +111,7 @@
 
 
     <div class="property">
-      <div class="label"> description </div><textarea cols=70 rows=15 id="description" type="text">{{target_ad.description}}</textarea>
+      <div class="label"> Description </div><textarea cols=70 rows=15 id="description" type="text">{{target_ad.description}}</textarea>
     </div>
     <div class="imgallery">
       {% for image in images %}
@@ -151,9 +140,5 @@
 <script src="/static/js/datepicker/moment-with-locales.js"></script>
 <script src="/static/js/datepicker/bootstrap.js"></script>                    
 <script src="/static/js/datepicker/bootstrap-datetimepicker.js"></script>     
-
-
-
-
 
 {% endblock %}

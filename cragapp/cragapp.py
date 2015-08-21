@@ -15,10 +15,6 @@ from database import db_session
 from models import VPS, User, Image, Ad, Area, Category
 
 
-#run loop
-p = subprocess.Popen([sys.executable, './cragloop.py'],
-                     stdout=subprocess.PIPE,
-                     stderr=subprocess.STDOUT)
 
 
 
@@ -98,9 +94,10 @@ def vps_update():
 def user():
         users_db = User.query.all()
         users = [{'idusers'    :user.idusers,
-                  'idvpss'     :user.idvpss,
+                  'vps'        :VPS.query.filter(VPS.idvpss==user.idvpss).first().ip,
                   'username'   :user.username,
                   'password'   :user.password} for user in users_db]
+
         return render_template('user-index.html', menu='user', users=users)
 
 @app.route('/user/create')
@@ -174,17 +171,15 @@ def ads():
         #areas  = Area.auery.all()
 
         ads_db = Ad.query.all()
-        ads = [{'idads'       : ad.idads,
-                'description' : ad.description,
-                'title'       : ad.title,
-                'posting_time': ad.posting_time,
-                'status'      : ad.status,
-                'idusers'     : ad.idusers,
-                'category'    : ad.idcategory,
-                'allowed_actions': ad.allowed_actions,
-                #'area_fname' : filter(lambda ar: ad.idarea==ar.idarea, areas).fullname,
-                #'idarea'     : ad.idarea,
-                'replymail'   : ad.replymail} for ad in ads_db]
+        ads = [{'idads'           : ad.idads,
+                'title'           : ad.title,
+                'posting_time'    : ad.posting_time,
+                'scheduled_action': ad.scheduled_action,
+                'status'          : ad.status,
+                'user'            : User.query.filter(User.idusers == ad.idusers).first().username,
+                'category'        : Category.query.filter(Category.idcategory ==ad.idcategory).first().fullname,
+                'allowed_actions' : ad.allowed_actions}
+               for ad in ads_db]
         return render_template('ad-index.html', menu='ad', ads=ads)
 
 
@@ -213,13 +208,13 @@ def ad_add():
         description       = request.form['description']
         title             = request.form['title']
         posting_time      = request.form['posting_time']
-        scheduled_action  = "None"
+        scheduled_action  = request.form['scheduled_action']
         status            = "Not posted"
         idusers           = request.form['idusers']
         idcategory        = request.form['category']
         idarea            = request.form['area']
-        replymail         = request.form['replymail']
-        allowed_actions   = "add"
+        replymail         = None #request.form['replymail']
+        allowed_actions   = "None,add"
         contact_phone     = request.form['contact_phone']
         contact_name      = request.form['contact_name']
         postal            = request.form['postal']
@@ -280,7 +275,9 @@ def ad_edit(ad_id):
                      'contact_phone'     : ad.contact_phone,
                      'contact_name'      : ad.contact_name,
                      'postal'            : ad.postal,
-                     'specific_location' : ad.specific_location}
+                     'specific_location' : ad.specific_location,
+                     'license_info'      : ad.license_info
+        }
 
         user = User.query.filter(User.idusers == ad.idusers).first()
         current_user = {'idusers':user.idusers, 'username':user.username}
@@ -342,11 +339,12 @@ def ad_update():
         description   = request.form['description']
         title         = request.form['title']
         posting_time  = request.form['posting_time']
+        scheduled_action = request.form['scheduled_action']
         status        = request.form['status']
         idusers       = request.form['idusers']
         idcategory    = request.form['category']
         idarea        = request.form['area']
-        replymail     = request.form['replymail']
+        replymail     = None#request.form['replymail']
         contact_phone = request.form['contact_phone']
         contact_name  = request.form['contact_name']
         postal        = request.form['postal']
@@ -360,6 +358,7 @@ def ad_update():
         ad.idcrag      = idcrag
         ad.title       = title
         ad.posting_time= posting_time
+        ad.scheduled_action = scheduled_action
         ad.status      = status
         ad.idusers     = idusers
         ad.idcategory  = idcategory
@@ -431,20 +430,13 @@ def delete_image(idimages):
 
 @app.route('/scrap_ads/<idusers>', methods=['POST', 'GET'])
 def scrap_ads(idusers):
-        #pure python27 cragapp.py
 
-        #subprocess.call(["python", "syncronizer.py", "--idads", idads])
-        # on tornado
         subprocess.call(["python", "cragapp/syncronizer.py", "userscrap","--idusers", idusers])
 
         return "Ad scraped"
 
 app.route('/scrap_ad/<idads>', methods=['POST', 'GET'])
 def scrap_ads(idusers):
-        #pure python27 cragapp.py
-
-        #subprocess.call(["python", "syncronizer.py", "--idads", idads])
-        # on tornado
 
         subprocess.call(["python", "cragapp/syncronizer.py", "adscrap","--idads", idads])
 

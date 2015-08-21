@@ -14,7 +14,7 @@ parser.add_argument('--idads',
                     help='id from internal database')
 
 parser.add_argument('--action',
-                    help='renew|delete|repost|add|undelete')
+                    help='renew|delete|repost|add|undelete|edit|None')
 
 args = parser.parse_args()
 
@@ -61,6 +61,7 @@ class AdManager(scrapy.Spider):
         elif args.action == "undelete" : callback = self.undelete1
         elif args.action == "add"      : callback = self.add1
         elif args.action == "edit"     : callback = self.edit1
+        elif args.action == "None"     : callback = self.none
         else: raise Exception("incorrect action option. must be renew|delete|repost|add")
 
         return scrapy.FormRequest.from_response(
@@ -363,11 +364,12 @@ class AdManager(scrapy.Spider):
             db_session.rollback()
             raise Exception("DB commit is not OK")
 
-    def renew1(self, response):
-        debug_html_content(response,"renew",1)
 
     def undelete1(self, response):
         debug_html_content(response,"undelete",1)
+
+    def renew1(self, response):
+        debug_html_content(response,"renew",1)
 
     def edit1(self, response):
         debug_html_content(response,"undelete",1)
@@ -377,7 +379,8 @@ class AdManager(scrapy.Spider):
         debug_html_content(response,"finalize",1)
 
 
-
+    def none(self, response):#dummy
+        pass
 
 
 process = CrawlerProcess({
