@@ -208,13 +208,13 @@ def ad_add():
         description       = request.form['description']
         title             = request.form['title']
         posting_time      = request.form['posting_time']
-        scheduled_action  = "None"
+        scheduled_action  = request.form['scheduled_action']
         status            = "Not posted"
         idusers           = request.form['idusers']
         idcategory        = request.form['category']
         idarea            = request.form['area']
-        replymail         = request.form['replymail']
-        allowed_actions   = "add"
+        replymail         = None #request.form['replymail']
+        allowed_actions   = "None,add"
         contact_phone     = request.form['contact_phone']
         contact_name      = request.form['contact_name']
         postal            = request.form['postal']
@@ -275,7 +275,9 @@ def ad_edit(ad_id):
                      'contact_phone'     : ad.contact_phone,
                      'contact_name'      : ad.contact_name,
                      'postal'            : ad.postal,
-                     'specific_location' : ad.specific_location}
+                     'specific_location' : ad.specific_location,
+                     'license_info'      : ad.license_info
+        }
 
         user = User.query.filter(User.idusers == ad.idusers).first()
         current_user = {'idusers':user.idusers, 'username':user.username}
@@ -342,7 +344,7 @@ def ad_update():
         idusers       = request.form['idusers']
         idcategory    = request.form['category']
         idarea        = request.form['area']
-        replymail     = request.form['replymail']
+        replymail     = None#request.form['replymail']
         contact_phone = request.form['contact_phone']
         contact_name  = request.form['contact_name']
         postal        = request.form['postal']

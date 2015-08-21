@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
+<link href="/static/css/datepicker/bootstrap.css" rel="stylesheet">                   
+<link href="/static/css/datepicker/bootstrap-datetimepicker.css" rel="stylesheet">    
 <div class="ad">
 
     <div class="property">
@@ -9,20 +11,22 @@
         <div class="label">title </div><input id="title" type="text" value="">
     </div>
 
+    <div class="property">
+      <div class="row">
+	<div class='col-sm-6'>
+	  <div class="form-group">
+	    <div class='input-group date' id='datetimepicker1'>
+	      <input type='text' class="form-control" name="posting_time" />
+	      <span class="input-group-addon">
+		<span class="glyphicon glyphicon-calendar">
+		</span></span></div></div></div> </div></div>
 
-    <div class="well">
-      <div id="datetimepicker1" class="input-append date">
-	<input data-format="dd/MM/yyyy hh:mm:ss" type="text"></input>
-	<span class="add-on">
-	  <i data-time-icon="icon-time" data-date-icon="icon-calendar">
-	  </i>
-	</span>
-      </div>
-    </div>
-    <script type="text/javascript">
-      $(function() {
-      $('#datetimepicker1').datetimepicker();});
-    </script>
+      <div class="property">
+        <div class="label">Scheduled action</div><!--
+     --><select id="scheduled_action" name="scheduled_action">
+            <option value="None">None</option>
+            <option value="add">Add</option>
+        </select></div>
 
 
     <div class="property">
@@ -43,9 +47,6 @@
         </select>
     </div>
 
-    <div class="property">
-        <div class="label"> replymail</div><input id="replymail" type="text" value="">
-    </div>
 
     <div class="property">
         <div class="label"> User select </div><!--
@@ -85,7 +86,7 @@
     </div>
 
     <div class="property">
-      <div class="label"> description </div><textarea cols=70 rows=15 id="description" type="text"></textarea>
+      <div class="label"> Description </div><textarea cols=70 rows=15 id="description" type="text"></textarea>
     </div>
 </div>
 <div class="buttons">
@@ -96,9 +97,10 @@
 {% endblock %}
 {% block lastscripts %}
 <script src="/static/js/ad-create.js"></script>
-<script src="/static/js/datepicker/transition.js"></script>
-<script src="/static/js/datepicker/collapse.js"></script>
-<script src="/static/js/datepicker/bootstrap.min.js"></script>
-<script src="/static/js/datepicker/bootstrap-datetimepicker.min.js"></script>
-<script src="/static/js/datepicker/moment.min.js"></script>
+
+<script src="/static/js/datepicker/moment-with-locales.js"></script>
+<script src="/static/js/datepicker/bootstrap.js"></script>                    
+<script src="/static/js/datepicker/bootstrap-datetimepicker.js"></script>     
+
+
 {% endblock %}

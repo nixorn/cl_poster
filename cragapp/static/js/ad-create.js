@@ -1,19 +1,23 @@
 $(document).ready(function() {
+    $(function() {
+	$('#datetimepicker1').datetimepicker();
+	$('#datetimepicker1').data('DateTimePicker').date(
+	    new Date());
+    });
     $('#create_ad').on('click', function(){
         var data = {};
-    	data["idcrag"]       = $('#idcrag').val();
-    	data["title"]        = $('#title').val();
-    	data["description"]  = $('#description').val();
-    	data["posting_time"] = $('#posting_time').val();
-    	data["status"]       = $('#status').val();
-    	data["idusers"]      = $('#user-select').val();
-    	data["category"]     = $('#category').val();
-    	data["area"]         = $('#area').val();
-    	data["replymail"]    = $('#replymail').val();
+	data["idcrag"]       = $("#idcrag").val();
+        data["description"]  = document.getElementById('description').value;
+        data["title"]        = $("#title").val();
+        data["posting_time"] = $('#datetimepicker1').data("DateTimePicker").date().format("YYYY-MM-DD HH:mm");
+	data["scheduled_action"] = $('#scheduled_action').val();
+        data["idusers"]      = $("#user-select").val();
+        data["category"]     = $("#category").val();
+        data["area"]         = $("#area").val();
         data["contact_phone"]= $('#contact_phone').val();
         data["contact_name"] = $('#contact_name').val();
         data["postal"]       = $('#postal').val();
-        data["specific_location"] = $('#specific_location').val();
+        data["specific_location"]= $('#specific_location').val();
         data["has_license"]  = $('#has_license').val();
         data["license"]      = $('#license').val();
 
