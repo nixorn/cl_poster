@@ -375,7 +375,7 @@ class AdManager(scrapy.Spider):
             extract()[0]
 
         
-        self.row_code    = delete_form.split(self.ad.idcrag+'/')[1].split('"')[0]
+        self.row_code    = undelete_form.split(self.ad.idcrag+'/')[1].split('"')[0]
 
         return scrapy.FormRequest.from_response(
             response=response,
