@@ -165,12 +165,25 @@ def user_update():
                 raise Exception('DB commit is not OK')
         return "UPDATED"
 
-@app.route('/ads')
-def ads():
+@app.route('/ads/')
+@app.route('/ads/<params>')
+def ads(params=None):
+        if params:
+                #if you can write python eval exploit without dots, brackets etc - i want to see it
+                params = params.replace('.','').replace('(','').replace(')','')\
+                        .replace('[','').replace(']','').replace('{','').replace('}','')
 
-        #areas  = Area.auery.all()
+                #[("idads",1), ("idusers",1) ...]
+                params = [tuple(param.split('=')) for param in
+                           params.split('&')]
+                
+                ads_db = eval('Ad.query.filter('+', '.join(
+                                ['Ad.'+param[0]+'=="'+param[1]+'"' for param in params])+').all()')
 
-        ads_db = Ad.query.all()
+        else:
+                params = []
+                ads_db = Ad.query.all()
+        
         ads = [{'idads'           : ad.idads,
                 'title'           : ad.title,
                 'posting_time'    : ad.posting_time,
@@ -180,9 +193,73 @@ def ads():
                 'category'        : Category.query.filter(Category.idcategory ==ad.idcategory).first().fullname,
                 'allowed_actions' : ad.allowed_actions}
                for ad in ads_db]
-        return render_template('ad-index.html', menu='ad', ads=ads)
 
+        
+        #get selected user from parameters and set it selected in response
+        users = [{'idusers':user.idusers,'username':user.username, 'selected':''}
+                 for user in User.query.all()]
 
+        if 'idusers' in [p[0] for p in params]:
+                #p[1] where p[0] == idusers                
+                param_idusers = filter(lambda p: p[0] == "idusers", params)[0][1]
+
+                cur_user = filter(lambda u: str(u['idusers']) == param_idusers
+                                  ,users)[0]
+                cur_user['selected'] = 'selected'
+                users = [cur_user]\
+                        + [{'idusers':'all', 'username':'all', 'selected':''}]\
+                        + filter(lambda u: str(u['idusers']) != param_idusers
+                                 ,users)
+                
+        else:
+                users = [{'idusers':'all'
+                          ,'username':'all'
+                          ,'selected':'selected'}] \
+                        + users
+                
+        #the same for category
+        categories = [{'idcategory':cat.idcategory,
+                       'fullname':cat.fullname,
+                       'selected':''}
+                       for cat in Category.query.all()]
+        
+        if 'idcategory' in [p[0] for p in params]:
+                #p[1] where p[0] == idcategory
+                param_idcategory = filter(lambda p: p[0] == "idcategory",
+                                          params)[0][1]
+                
+                cur_category = \
+                        filter(lambda c: str(c['idcategory']) == param_idcategory,
+                               categories)[0]
+                cur_category['selected'] = 'selected'
+
+                categories =  [{'idcategory':'all',
+                                'fullname':'all',
+                                'selected':''}]\
+                              +  [cur_category]\
+                              + filter(lambda c: str(c['idcategory']) != param_idcategory, categories)
+                
+        else:
+                categories = [{'idcategory':'all',
+                               'fullname':'all',
+                               'selected':'selected'}]\
+                             + categories
+
+        statuses = [{'status':s[0],'selected':''}
+                    for s in db_session.query(Ad.status).distinct().all()]
+
+        if 'status' in [p[0] for p in params]:
+                #p[1] where p[0] == status
+                cur_status = filter(lambda p: p[0] == "status", params)[0][1] #p[1]
+                statuses = [{'status':'all', 'selected':''}]\
+                           + [{'status':cur_status,'selected':'selected'}]\
+                           + filter(lambda s: s['status'] != cur_status, statuses)
+        else: statuses = [{'status':'all', 'selected':'selected'}] + statuses
+        
+        return render_template('ad-index.html', menu='ad', ads=ads
+                               ,users=users
+                               ,categories=categories
+                               ,statuses=statuses)
 
 @app.route('/ad/create')
 def ad_create():
