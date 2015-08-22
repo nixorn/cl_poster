@@ -1,5 +1,32 @@
 {% extends "base.html" %}
 {% block content %}
+<link href="/static/css/datepicker/bootstrap.css" rel="stylesheet">                   
+<link href="/static/css/datepicker/bootstrap-datetimepicker.css" rel="stylesheet">
+
+<div>
+
+
+  <select id="user_select" onmousedown="this.value='';" >
+    {% for user in users %}
+    <option value="{{user.idusers}}" {{user.selected}}>{{user.username}}</option>
+    {% endfor %}
+  </select>
+
+  <select id="category_select">
+    {% for cat in categories %}
+    <option value="{{cat.idcategory}}" {{cat.selected}}>{{cat.fullname}}</option>
+    {% endfor %}
+  </select>
+
+  <select id="status_select">
+    {% for status in statuses %}
+    <option value="{{status.status}}" {{status.selected}}>{{status.status}}</option>
+    {% endfor %}
+  </select>
+
+  <input type="button" value="Filter" id="filter_btn">
+</div>
+
     <table class="ad">
         <tbody>
         <tr>
@@ -39,5 +66,5 @@
 {% endblock %}
 {% block lastscripts %}
     <script src="/static/js/ad-index.js"></script>
-
+    <script src="/static/js/datepicker/bootstrap.js"></script>                    
 {% endblock %}
