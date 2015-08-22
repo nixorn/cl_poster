@@ -57,8 +57,9 @@ $(document).ready(function() {
 
 	window.location.replace(url);
     };
-    $('#filter_btn').click(filter_ads);
 
-
+    $('#user_select').change(filter_ads);
+    $('#category_select').change(filter_ads);
+    $('#status_select').change(filter_ads);
 
 });
