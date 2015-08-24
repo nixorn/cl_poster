@@ -96,22 +96,22 @@ class Synchronizer(scrapy.Spider):
 
                     ad = Ad(
                         idcrag = idcrag,
-                        description=None,
+                        description='',
                         title=title,
-                        posting_time=None,
-                        scheduled_action="None",
+                        posting_time='',
+                        scheduled_action="",
                         status=status,
                         idusers=self.user.idusers,
                         idcategory=category.idcategory,
                         idarea=area.idarea,
-                        replymail=None,
+                        replymail='',
                         allowed_actions = ','.join(allowed_actions),
-                        contact_phone=None,
-                        contact_name=None,
-                        postal=None,
-                        specific_location=None,
-                        haslicense=None,
-                        license_info=None)
+                        contact_phone='',
+                        contact_name='',
+                        postal='',
+                        specific_location='',
+                        haslicense='',
+                        license_info='')
                     db_session.add(ad)
                     try:
                         db_session.commit()
@@ -200,15 +200,6 @@ class Synchronizer(scrapy.Spider):
         except:
             db_session.rollback()
             raise Exception("DB commit is not OK")
-
-
-
-
-
-
-
-
-
 
 process = CrawlerProcess({
     'USER_AGENT': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)'

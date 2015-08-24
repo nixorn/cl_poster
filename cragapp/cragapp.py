@@ -4,6 +4,7 @@
 from flask import Flask, render_template, url_for, request, redirect
 from werkzeug import secure_filename
 
+import logging
 import datetime
 import base64
 import subprocess
@@ -15,7 +16,7 @@ from database import db_session
 from models import VPS, User, Image, Ad, Area, Category
 
 
-
+logging.basicConfig(filename='logs/cragapp.log',level=logging.ERROR)
 
 
 app = Flask(__name__)
@@ -53,9 +54,11 @@ def vps_add():
         db_session.add(v)
         
         try: db_session.commit()
-        except:
+        except Exception  as e:
                 db_session.rollback()
-                raise Exception('DB commit is not OK')
+                logging.error("Application did not create "+v.__repr__()+
+                              " becouse " + e.message)
+                raise Exception
         return "VPS created"
 
 
@@ -66,8 +69,10 @@ def vps_delete(vps_id):
         
         try:
                 db_session.commit()
-        except:
+        except Exception as e:
                 db_session.rollback()
+                logging.error("Application did not delete "+vps.__repr__()+
+                              " becouse " + e.message)
                 raise Exception('DB commit is not OK')
         return "VPS deleted"
 
@@ -83,7 +88,9 @@ def vps_update():
         db_session.add(vps)
         try:
                 db_session.commit()
-        except:
+        except Exception as e:
+                logging.error("Application did not update "+vps.__repr__()+
+                              " becouse " + e.message)
                 db_session.rollback()
                 raise Exception('DB commit is not OK')
         return "UPDATED"
@@ -117,8 +124,10 @@ def user_add():
         u = User(idvpss, username, password)
         db_session.add(u)
         try:db_session.commit()
-        except:
+        except Exception as e:
                 db_session.rollback()
+                logging.error("Application did not create "+u.__repr__()+
+                              " becouse " + e.message)
                 raise Exception('DB commit is not OK')
         return "User created"
 
@@ -128,8 +137,10 @@ def user_delete(user_id):
         u = User.query.filter(User.idusers == user_id).first()
         db_session.delete(u)
         try:db_session.commit()
-        except:
+        except Exception as e:
                 db_session.rollback()
+                logging.error("Application did not delete "+u.__repr__()+
+                              " becouse " + e.message)
                 raise Exception('DB commit is not OK')
         return "User deleted"
 
@@ -160,8 +171,10 @@ def user_update():
 
         db_session.add(user)
         try:db_session.commit()
-        except:
+        except Exception as e:
                 db_session.rollback()
+                logging.error("Application did not update "+user.__repr__()+
+                              " becouse " + e.message)
                 raise Exception('DB commit is not OK')
         return "UPDATED"
 
@@ -171,14 +184,16 @@ def ads(params=None):
         if params:
                 #if you can write python eval exploit without dots, brackets etc - i want to see it
                 params = params.replace('.','').replace('(','').replace(')','')\
-                        .replace('[','').replace(']','').replace('{','').replace('}','')
+                        .replace('[','').replace(']','').replace('{','')\
+                                                        .replace('}','')
 
                 #[("idads",1), ("idusers",1) ...]
                 params = [tuple(param.split('=')) for param in
                            params.split('&')]
                 
                 ads_db = eval('Ad.query.filter('+', '.join(
-                                ['Ad.'+param[0]+'=="'+param[1]+'"' for param in params])+').all()')
+                        ['Ad.'+param[0]+'=="'+param[1]+'"'
+                         for param in params])+').all()')
 
         else:
                 params = []
@@ -189,8 +204,10 @@ def ads(params=None):
                 'posting_time'    : ad.posting_time,
                 'scheduled_action': ad.scheduled_action,
                 'status'          : ad.status,
-                'user'            : User.query.filter(User.idusers == ad.idusers).first().username,
-                'category'        : Category.query.filter(Category.idcategory ==ad.idcategory).first().fullname,
+                'user'            : User.query.\
+                filter(User.idusers == ad.idusers).first().username,
+                'category'        : Category.query.\
+                filter(Category.idcategory ==ad.idcategory).first().fullname,
                 'allowed_actions' : ad.allowed_actions}
                for ad in ads_db]
 
@@ -237,8 +254,9 @@ def ads(params=None):
                                 'fullname':'all',
                                 'selected':''}]\
                               +  [cur_category]\
-                              + filter(lambda c: str(c['idcategory']) != param_idcategory, categories)
-                
+                              + filter(lambda c: str(c['idcategory']) !=
+                                       param_idcategory,
+                                       categories)
         else:
                 categories = [{'idcategory':'all',
                                'fullname':'all',
@@ -250,16 +268,39 @@ def ads(params=None):
 
         if 'status' in [p[0] for p in params]:
                 #p[1] where p[0] == status
-                cur_status = filter(lambda p: p[0] == "status", params)[0][1] #p[1]
+                cur_status = filter(lambda p: p[0] == "status",
+                                    params)[0][1] #p[1]
                 statuses = [{'status':'all', 'selected':''}]\
                            + [{'status':cur_status,'selected':'selected'}]\
                            + filter(lambda s: s['status'] != cur_status, statuses)
         else: statuses = [{'status':'all', 'selected':'selected'}] + statuses
+
+        scheduling = [{'value': 'all',
+                      'name':'all',
+                      'selected':''},
+                     {'value':'scheduled',
+                      'name':'scheduled',
+                      'selected':''},
+                     {'value': 'not_scheduled',
+                      'name':'not scheduled',
+                      'selected':''}]
+        
+        if 'scheduling' in [p[0] for p in params]:
+                #p[1] where p[0] == status
+                cur_scheduling = filter(lambda p: p[0] == "scheduling",
+                                    params)[0][1] #p[1]
+                statuses = [{'value':'all', 'name':'all', 'selected':''}]\
+                           + [{'value':cur_scheduling,
+                               'name':cur_scheduling.replace('_',' '),
+                               'selected':'selected'}]\
+                           + filter(lambda s: s['scheduling'] != cur_scheduling,
+                                    scheduling)
         
         return render_template('ad-index.html', menu='ad', ads=ads
                                ,users=users
                                ,categories=categories
-                               ,statuses=statuses)
+                               ,statuses=statuses
+                               ,scheduling=scheduling)
 
 @app.route('/ad/create')
 def ad_create():
@@ -286,6 +327,10 @@ def ad_add():
         title             = request.form['title']
         posting_time      = request.form['posting_time']
         scheduled_action  = request.form['scheduled_action']
+        repost_timeout    = request.form['scheduled_action']
+        prev_action       = ""
+        prev_act_time     = ""
+        prev_act_stat     = ""
         status            = "Not posted"
         idusers           = request.form['idusers']
         idcategory        = request.form['category']
@@ -304,6 +349,10 @@ def ad_add():
                title,
                posting_time,
                scheduled_action,
+               repost_timeout,    
+               prev_action,       
+               prev_act_time,     
+               prev_act_stat,                    
                status,
                idusers,
                idcategory,
@@ -318,9 +367,12 @@ def ad_add():
                license_info)
 
         db_session.add(a)
+        
         try:db_session.commit()
-        except:
+        except Exception as e:
                 db_session.rollback()
+                logging.error("Application did not create "+a.__repr__()+
+                              " becouse " + e.message)
                 raise Exception('DB commit is not OK')
 
         return a.idads.__str__()
@@ -330,8 +382,10 @@ def ad_delete(ad_id):
         a = Ad.query.filter(Ad.idads == ad_id).first()
         db_session.delete(a)
         try:db_session.commit()
-        except:
+        except Exception as e:
                 db_session.rollback()
+                logging.error("Application did not delete "+a.__repr__()+
+                              " becouse " + e.message)
                 raise Exception('DB commit is not OK')
         return "Ad deleted"
 
@@ -344,6 +398,7 @@ def ad_edit(ad_id):
                      'description'       : ad.description,
                      'title'             : ad.title,
                      'posting_time'      : ad.posting_time,
+                     'repost_timeout'    : ad.repost_timeout,
                      'status'            : ad.status,
                      'idusers'           : ad.idusers,
                      'category'          : ad.idcategory,
@@ -364,8 +419,9 @@ def ad_edit(ad_id):
         category = Category.query.filter(Category.idcategory == ad.idcategory).first()
         current_category = {'category':ad.idcategory, 'cat_name':category.fullname}
         categories      = [{'category':cat.idcategory, 'cat_name':cat.fullname}
-                           for cat in Category.query.filter(Category.idcategory
-                                                            != category.idcategory).all()]
+                           for cat in Category.query.\
+                           filter(Category.idcategory
+                                  != category.idcategory).all()]
 
         area = Area.query.filter(Area.idarea == ad.idarea).first()
 
@@ -380,13 +436,13 @@ def ad_edit(ad_id):
                    'extension':image.extension}
                   for image in Image.query.filter(Image.idads == ad.idads).all()]
 
-        scheduled_action = {'action':ad.scheduled_action, 'name': ad.scheduled_action.capitalize()}
+        scheduled_action = {'action':ad.scheduled_action,
+                            'name': ad.scheduled_action.capitalize()}
 
         allowed_actions = [{'action':action, 'name': action.capitalize()}
                            for action in
                            filter(lambda ac: ac !=scheduled_action['action'],
                                   ad.allowed_actions.split(','))] 
-        #allowed_actions = list(set(allowed_actions))
 
         if ad.haslicense =='1':
                 has   = 'selected'
@@ -395,6 +451,7 @@ def ad_edit(ad_id):
                 has   = ''
                 hasno = 'selected'
 
+        
         return render_template('ad-edit.html', menu='ad',
                                target_ad=target_ad,
                                users=users,
@@ -451,7 +508,9 @@ def ad_update():
 
         db_session.add(ad)
         try:db_session.commit()
-        except:
+        except Exception as e:
+                logging.error("Application did not update "+ad.__repr__()+
+                              " becouse " + e.message)
                 db_session.rollback()
                 raise Exception('DB commit is not OK')
         return "UPDATED"
@@ -484,6 +543,7 @@ def upload_images():
                                 db_session.add(i)
                                 try:
                                         db_session.commit()
+                                
                                 except:
                                         db_session.rollback()
                                         raise Exception('DB commit is not OK')
@@ -508,20 +568,33 @@ def delete_image(idimages):
 @app.route('/scrap_ads/<idusers>', methods=['POST', 'GET'])
 def scrap_ads(idusers):
 
-        subprocess.call(["python", "cragapp/syncronizer.py", "userscrap","--idusers", idusers])
+        subprocess.call(["python",
+                         "cragapp/syncronizer.py",
+                         "userscrap",
+                         "--idusers",
+                         idusers])
 
         return "Ad scraped"
 
 app.route('/scrap_ad/<idads>', methods=['POST', 'GET'])
 def scrap_ads(idusers):
 
-        subprocess.call(["python", "cragapp/syncronizer.py", "adscrap","--idads", idads])
+        subprocess.call(["python",
+                         "cragapp/syncronizer.py",
+                         "adscrap",
+                         "--idads",
+                         idads])
 
         return "Ad scraped"
 
 @app.route('/manage/<action>/<idads>')
 def manage_ad(action, idads):
-        subprocess.call(["python", "cragapp/admanager.py", "--idads", idads, "--action", action])
+        subprocess.call(["python",
+                         "cragapp/admanager.py",
+                         "--idads",
+                         idads,
+                         "--action",
+                         action])
         return "Success"
 
 

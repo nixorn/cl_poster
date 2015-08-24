@@ -24,6 +24,11 @@
     {% endfor %}
   </select>
 
+  <select id="scheduling_select" class="hidden">
+    {% for sch in scheduling %}
+    <option value="{{sch.value}}" {{sch.selected}}>{{sch.name}}</option>
+    {% endfor %}
+  </select>
 
 </div>
 
