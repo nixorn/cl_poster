@@ -31,14 +31,20 @@
 		<span class="glyphicon glyphicon-calendar">
 		</span></span></div></div></div> </div></div>
 
-      <div class="property">
-        <div class="label1">Scheduled action</div><!--
-     --><select id="scheduled_action" name="scheduled_action">
-            <option value="{{scheduled_action.action}}">{{scheduled_action.name}}</option>
-            {% for action in allowed_actions %}
-                <option value="{{action.action}}">{{action.name}}</option>
-            {% endfor %}
-        </select></div>
+    <div class="property">
+      <div class="label1">Scheduled action</div>
+      <select id="scheduled_action" name="scheduled_action">
+        <option value="{{scheduled_action.action}}">
+	  {{scheduled_action.name}}</option>
+        {% for action in allowed_actions %}
+        <option value="{{action.action}}">{{action.name}}</option>
+        {% endfor %}
+    </select></div>
+    
+    <div class="property">
+      <div class="label1">Repost timeout (hours)</div>
+      <input id="repost_timeout" type="text" value="{{target_ad.repost_timeout}}">
+    </div>
       
     <div class="property">
         <div class="label1">Status</div><input id="status" type="text" value="{{target_ad.status}}">

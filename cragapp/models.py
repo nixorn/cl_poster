@@ -65,7 +65,7 @@ class Image(Base):
         self.image     = image
 
     def __repr__(self):
-        return '<Image %r>' % (str(self.idimages))
+        return '<Image %r, id:%r>' % (self.filename, str(self.idimages))
 
 
 
@@ -87,7 +87,7 @@ class Area(Base):
 
 
     def __repr__(self):
-        return '<Area %r>' % (self.fullname)
+        return '<Area %r, id:%r>' % (self.fullname, str(self.idarea))
 
 class Category(Base):
     __tablename__ = 'category'
@@ -102,16 +102,23 @@ class Category(Base):
         self.numcode  = numcode
 
     def __repr__(self):
-        return '<Category %r>' % (self.fullname)
+        return '<Category %r, id:%r >' % (self.fullname,str(self.idcategory))
 
+
+    
+    
 class Ad(Base):
     __tablename__ = 'ads'
     idads         = Column(INTEGER, primary_key=True)
     idcrag        = Column(VARCHAR(25), unique = True)
     description   = Column(TEXT)
     title         = Column(VARCHAR(100))
-    posting_time  = Column(VARCHAR(50))
+    posting_time  = Column(VARCHAR(25))
     scheduled_action = Column(VARCHAR(25))  #will happen in posting_time. one of allowed actions or None
+    repost_timeout  = Column(VARCHAR(10)) #""|"48"|"72" hrs
+    prev_action   = Column(VARCHAR(25))
+    prev_act_time = Column(VARCHAR(25))
+    prev_act_stat = Column(VARCHAR(20))
     status        = Column(VARCHAR(30))
     idusers       = Column(INTEGER, ForeignKey('users.idusers'))
     idcategory    = Column(INTEGER, ForeignKey('category.idcategory'))
@@ -132,6 +139,10 @@ class Ad(Base):
                  title,
                  posting_time,
                  scheduled_action,
+                 repost_timeout,
+                 prev_action,   
+                 prev_act_time, 
+                 prev_act_stat, 
                  status,
                  idusers,
                  idcategory,
@@ -149,6 +160,7 @@ class Ad(Base):
         self.title             = title
         self.posting_time      = posting_time
         self.scheduled_action  = scheduled_action
+        self.repost_timeout    = repost_timeout
         self.status            = status
         self.idusers           = idusers
         self.idcategory        = idcategory
@@ -163,4 +175,4 @@ class Ad(Base):
         self.license_info      = license_info
 
     def __repr__(self):
-        return '<Ad %r>' % (self.title)
+        return '<Ad %r, id:%r>' % (self.title, str(self.idads))

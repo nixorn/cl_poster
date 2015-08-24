@@ -4,10 +4,12 @@ import argparse
 import time
 import random
 import requests
+import logging
 from scrapy.crawler import CrawlerProcess
 from models import Ad, User, VPS, Area, Image, Category
 from database import db_session
 
+logging.basicConfig(filename='cragloop.log',level=logging.ERROR)
 
 parser = argparse.ArgumentParser(description='Crawl from craiglist ad and store it into database.')
 parser.add_argument('--idads',
@@ -140,14 +142,7 @@ class AdManager(scrapy.Spider):
             url=response.request.url,
             formdata ={
                 'id2':"1348x860X1348x370X1366x768",
-                #id2 =  $(document).width() + "x"
-                #+ $(document).height() + "X"
-                #+ $(window).width() + "x"
-                #+ $(window).height() + "X"
-                #+ screen.width + "x"
-                #+ screen.height
                 'browserinfo':"%7B%0A%09%22plugins%22%3A%20%22Plugin%200%3A%20Shockwave%20Flash%3B%20Shockwave%20Flash%2011.2%20r202%3B%20libflashplayer.so%3B%20%28Shockwave%20Flash%3B%20application/x-shockwave-flash%3B%20swf%29%20%28FutureSplash%20Player%3B%20application/futuresplash%3B%20spl%29.%20%22%2C%0A%09%22timezone%22%3A%20-180%2C%0A%09%22video%22%3A%20%221366x768x24%22%2C%0A%09%22supercookies%22%3A%20%22DOM%20localStorage%3A%20Yes%2C%20DOM%20sessionStorage%3A%20Yes%2C%20IE%20userData%3A%20No%22%0A%7D",
-                #browserinfo = escape(JSON.stringify(fetch_client_info(), null, ""))
                 'FromEMail':self.user.username,
                 'Privacy':"C",
                 'contact_phone':self.ad.contact_phone,
@@ -311,7 +306,8 @@ class AdManager(scrapy.Spider):
             print '{}\n{}\n{}\n\n{}'.format(
                 '-----------START-----------',
                 prepared.method + ' ' + prepared.url,
-                '\n'.join('{}: {}'.format(k, v) for k, v in prepared.headers.items()),
+                '\n'.join('{}: {}'.format(k, v)
+                          for k, v in prepared.headers.items()),
                 "image"
                 #prepared.body,
             )
@@ -337,7 +333,6 @@ class AdManager(scrapy.Spider):
             method='POST',
             callback=self.add6)
 
-
     def add6(self, response):#publish
         debug_html_content(response,"add",6)
         cryptedStepCheck = \
@@ -357,13 +352,11 @@ class AdManager(scrapy.Spider):
         idcrag = response.xpath('//a[@target="_blank"]/@href').extract_first().split('/')[-1].split('.')[0]
         self.ad.idgrag = idcrag
         db_session.add(self.ad)
-        
         try:
             db_session.commit()
         except:
             db_session.rollback()
             raise Exception("DB commit is not OK")
-
 
     def undelete1(self, response):
         debug_html_content(response,"undelete",1)
@@ -373,9 +366,8 @@ class AdManager(scrapy.Spider):
         self.crypt = response.\
             xpath("//form[./input[@name='crypt']]/input[@name='crypt']/@value").\
             extract()[0]
-
         
-        self.row_code    = undelete_form.split(self.ad.idcrag+'/')[1].split('"')[0]
+        self.row_code = undelete_form.split(self.ad.idcrag+'/')[1].split('"')[0]
 
         return scrapy.FormRequest.from_response(
             response=response,
@@ -392,21 +384,17 @@ class AdManager(scrapy.Spider):
         debug_html_content(response,"renew",1)
 
     def edit1(self, response):
-        debug_html_content(response,"undelete",1)
+        debug_html_content(response,"edit",1)
 
     #testing function which should output in file final response
     def finalize(self,response):
         debug_html_content(response,"finalize",1)
 
-
     def none(self, response):#dummy
         pass
 
-
 process = CrawlerProcess({
-    "USER-AGENT":"Mozilla/5.0 (X11; Linux x86_64; rv:31.0) Gecko/20100101 Firefox/31.0",
-})
-
+    "USER-AGENT":"Mozilla/5.0 (X11; Linux x86_64; rv:31.0) Gecko/20100101 Firefox/31.0",})
 
 process.crawl(AdManager)
 process.start()
