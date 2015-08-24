@@ -26,7 +26,6 @@ def loop():
         idads  = str(ad.idads)
         posting_time = datetime.datetime.strptime(ad.posting_time,
                                                   "%Y-%m-%d %H:%M")
-        
         os_process_code = subprocess.call(
             ["python","cragapp/admanager.py","--idads", idads, "--action", action,
              "&&",

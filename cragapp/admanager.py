@@ -65,7 +65,6 @@ class AdManager(scrapy.Spider):
         elif args.action == "edit"     : callback = self.edit1
         elif args.action == "None"     : callback = self.none
         else: raise Exception("incorrect action option. must be renew|delete|repost|add")
-
         return scrapy.FormRequest.from_response(
             response,
             formdata={
