@@ -396,6 +396,27 @@ class AdManager(scrapy.Spider):
         
     def renew1(self, response):
         debug_html_content(response,"renew",1)
+        renew_form = filter(lambda x: self.ad.idcrag in x,
+            response.xpath("//form[./input[@value='renew']]").extract())[0]
+        
+        self.crypt = response.\
+            xpath("//form[./input[@name='crypt']]/input[@name='crypt']/@value").\
+            extract()[0]
+        
+        self.row_code = renew_form.split(self.ad.idcrag+'/')[1].split('"')[0]
+
+        return scrapy.FormRequest.from_response(
+            response=response,
+            url='https://post.craigslist.org/manage/'+
+            self.ad.idcrag+'/'+self.row_code,
+            formdata ={
+                "action":"renew",
+                "crypt":self.crypt,
+                "go":"renew"},
+            method='POST',
+            meta={'proxy':self.proxy},
+            callback=self.finalize)
+        
 
     def edit1(self, response):
         debug_html_content(response,"edit",1)

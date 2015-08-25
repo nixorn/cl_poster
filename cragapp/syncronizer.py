@@ -192,7 +192,10 @@ class Synchronizer(scrapy.Spider):
         if area: ad.idarea = area.idarea
         if description:
             ad.description = description
-            ad.title       = response.xpath('//span[@class="postingtitletext"]/text()').extract_first().strip()
+            ad.title       = response\
+              .xpath('//span[@class="postingtitletext"]/text()')\
+              .extract_first().strip()
+
         db_session.add(ad)
         try:
             db_session.commit()
