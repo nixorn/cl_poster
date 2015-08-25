@@ -583,23 +583,35 @@ def scrap_ads(idusers):
 
 app.route('/scrap_ad/<idads>', methods=['POST', 'GET'])
 def scrap_ad(idads):
+        a = Ad.query.filter(Ad.idads == idads).first()
+        u = User.query.filter(User.idusers == a.idusers).first()
+        v = VPS.query.filter(VPS.idvpss == u.idvpss).first()
+        proxy = 'https://' + ':'.join([str(v.ip), str(v.port)])
+        my_env = os.environ.copy()
+        my_env["https_proxy"] = proxy
 
         subprocess.call(["python",
                          "cragapp/syncronizer.py",
                          "adscrap",
                          "--idads",
-                         idads])
+                         idads], env=my_env)
 
         return "Ad scraped"
 
 @app.route('/manage/<action>/<idads>')
 def manage_ad(action, idads):
+        a = Ad.query.filter(Ad.idads == idads).first()
+        u = User.query.filter(User.idusers == a.idusers).first()
+        v = VPS.query.filter(VPS.idvpss == u.idvpss).first()
+        proxy = 'https://' + ':'.join([str(v.ip), str(v.port)])
+        my_env = os.environ.copy()
+        my_env["https_proxy"] = proxy
         subprocess.call(["python",
                          "cragapp/admanager.py",
                          "--idads",
                          idads,
                          "--action",
-                         action])
+                         action],env=my_env)
         return "Success"
 
 
