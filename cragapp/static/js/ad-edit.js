@@ -14,6 +14,7 @@ $(document).ready(function() {
         data["title"]        = $("#title").val();
         data["posting_time"] = $('#datetimepicker1').data("DateTimePicker").date().format("YYYY-MM-DD HH:mm");
 	data["scheduled_action"] = $("#scheduled_action").val();
+	data["repost_timeout"] = $("#repost_timeout").val();
         data["status"]       = $("#status").val();
         data["idusers"]      = $("#user-select").val();
         data["category"]     = $("#category").val();
