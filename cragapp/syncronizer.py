@@ -76,7 +76,6 @@ class Synchronizer(scrapy.Spider):
                   + ad.idcrag + '.html'
             return scrapy.Request(url,
                                   meta={'idads':ad.idads},
-                                  #meta={'idads':ad.idads, 'proxy':proxy},
                                   callback=self.parse_ad)
         
         elif 'idusers' in dir(args):
@@ -90,7 +89,6 @@ class Synchronizer(scrapy.Spider):
                     'p':"0",
                     'inputEmailHandle': self.user.username,
                     'inputPassword': self.user.password},
-                #meta={'proxy':proxy},
                 callback=self.parse_home)
 
 
@@ -171,7 +169,6 @@ class Synchronizer(scrapy.Spider):
                     yield scrapy.Request(
                         url=url,
                         meta={'idads':ad.idads},
-                        #meta={'idads':ad.idads, 'proxy':proxy},
                         callback=self.parse_ad)
 
 
@@ -215,7 +212,6 @@ class Synchronizer(scrapy.Spider):
         for pic_url in img_urls:
             yield scrapy.Request(pic_url,
                 meta={'idads':ad.idads},
-                #meta={'idads':ad.idads, 'proxy':proxy},
                 callback=self.parseImage)
 
     def parseImage(self, response):

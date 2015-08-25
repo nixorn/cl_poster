@@ -24,10 +24,19 @@ def loop():
         idads  = str(ad.idads)
         posting_time = datetime.datetime.strptime(ad.posting_time,
                                                   "%Y-%m-%d %H:%M")
+
+        u = User.query.filter(User.idusers == ad.idusers).first()
+        v = VPS.query.filter(VPS.idvpss == u.idvpss).first()
+        proxy = 'https://' + ':'.join([str(v.ip), str(v.port)])
+        my_env = os.environ.copy()
+        my_env["https_proxy"] = proxy
+        
         os_process_code = subprocess.call(
             ["python","cragapp/admanager.py","--idads", idads, "--action", action,
              "&&",
-             "python","cragapp/syncronizer.py","adscrap","--idads", idads]) 
+             "python","cragapp/syncronizer.py","adscrap","--idads", idads],
+            env=my_env)
+        
         ad.prev_action = ad.scheduled_action
         ad.prev_act_time = ad.posting_time
         if os_process_code == 2:
