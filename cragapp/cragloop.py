@@ -3,8 +3,6 @@
 #while server manipulate database via GUI, mainloop send ads.
 #statuses of ads changes and tracks here
 
-
-
 import time
 import base64
 import datetime
@@ -18,7 +16,7 @@ logging.basicConfig(filename='cragloop.log',level=logging.ERROR)
 
 def loop():
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-
+    #get ads having scheduling actions
     ads = Ad.query.filter(Ad.posting_time == now).all()
 
     for ad in ads:
@@ -41,8 +39,12 @@ def loop():
         else: ad.prev_act_stat = 'OK'
         ad.scheduled_action = ''
         ad.posting_time     = ''
-        
-        if ad.repost_timeout and ad.repost_timeout != 'none':
+
+        #digit repost timeout is sign of necessity of doing reposts
+        #statuses no matter(yet)
+        if ad.repost_timeout \
+           and ad.repost_timeout != 'none'\
+            and ad.repost_timeout.isdigit():
             timeout = int(ad.repost_timeout)*60*60#seconds
             #will try renew, if not possible - try repost,
             #if not possible- log error 
@@ -52,11 +54,17 @@ def loop():
                 logging.error('repost/renew not aviable for '+
                               +ad.__repr__())
                 action = ""
-
+                
+            #(posting_time > now) must be True. 
+            def calc_posting_time(posting_time):
+                while posting_time < datetime.datetime.now():
+                    posting_time = posting_time\
+                        + datetime.timedelta(seconds = timeout)
+                return posting_time
+            
             if action:
                 ad.scheduled_action = action
-                ad.posting_time = (posting_time
-                    + datetime.timedelta(seconds = timeout)).\
+                ad.posting_time = calc_posting_time(posting_time).\
                     strftime("%Y-%m-%d %H:%M")
             
         db_session.add(ad)

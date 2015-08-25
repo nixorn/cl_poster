@@ -51,7 +51,8 @@ class AdManager(scrapy.Spider):
 
         self.ad   = Ad.query.filter(Ad.idads == args.idads).first()
         self.user = User.query.filter(User.idusers == self.ad.idusers).first()
-        self.vps  = VPS.query.filter(VPS.idvpss == self.user.idvpss).first()
+        vps  = VPS.query.filter(VPS.idvpss == self.user.idvpss).first()
+        self.proxy = 'https://' + ':'.join([str(vps.ip), str(vps.port)])
         self.area = Area.query.filter(Area.idarea == self.ad.idarea).first()
         self.category = Category.query.filter(Category.idcategory == self.ad.idcategory).first()
 
@@ -74,6 +75,7 @@ class AdManager(scrapy.Spider):
                 'p':"0",
                 'inputEmailHandle': self.user.username,
                 'inputPassword': self.user.password},
+            meta={'proxy':self.proxy},
             callback=callback)
 
 
@@ -89,6 +91,7 @@ class AdManager(scrapy.Spider):
             url='https://post.craigslist.org/manage/'
             +self.ad.idcrag+'/'+self.row_code+'?action=delete&go=delete',
             method='GET',
+            meta={'proxy':self.proxy},
             callback=self.delete2)
 
     def delete2(self, response):
@@ -110,6 +113,7 @@ class AdManager(scrapy.Spider):
                 "crypt":self.crypt,
                 "go":"delete"},
             method='POST',
+            meta={'proxy':self.proxy},
             callback=self.finalize)
 
     def repost1(self, response):
@@ -125,6 +129,7 @@ class AdManager(scrapy.Spider):
             url='https://post.craigslist.org/manage/'
             +self.ad.idcrag+'/'+self.row_code+'?action=repost&go=repost',
             method='GET',
+            meta={'proxy':self.proxy},
             callback=self.repost2)
 
     def repost2(self, response):
@@ -154,6 +159,7 @@ class AdManager(scrapy.Spider):
                 'go':"Continue",
                 'cryptedStepCheck':cryptedStepCheck},
             method='POST',
+            meta={'proxy':self.proxy},
             callback=self.repost3)
 
 
@@ -171,6 +177,7 @@ class AdManager(scrapy.Spider):
                 'continue':"y",
                 'go':"Continue"},
             method='POST',
+            meta={'proxy':self.proxy},
             callback=self.finalize)
 
     def add1(self, response):#go button
@@ -182,6 +189,7 @@ class AdManager(scrapy.Spider):
             formdata ={"areaabb":self.area.clcode},
             method='POST',
             callback=self.add2,
+            meta={'proxy':self.proxy},
             dont_filter=True)
 
     def add2(self, response):# select services offer
@@ -198,6 +206,7 @@ class AdManager(scrapy.Spider):
                         "cryptedStepCheck":cryptedStepCheck},
             method='POST',
             callback=self.add3,
+            meta={'proxy':self.proxy},
             dont_filter=True)
 
     def add3(self, response):#select which servise you want to offers. skilled trade for example
@@ -215,6 +224,7 @@ class AdManager(scrapy.Spider):
             formdata = {"id":str(self.category.numcode),
                         "cryptedStepCheck":cryptedStepCheck},
             method='POST',
+            meta={'proxy':self.proxy},
             callback=self.add4)
 
     def add4(self, response): #title body etc
@@ -245,6 +255,7 @@ class AdManager(scrapy.Spider):
                 'go':"Continue",
                 'cryptedStepCheck':cryptedStepCheck},
             method='POST',
+            meta={'proxy':self.proxy},
             callback=self.add5)
 
     def add5(self, response):#images
@@ -312,7 +323,9 @@ class AdManager(scrapy.Spider):
             )
 
             s = requests.Session()
-            resp = s.send(prepared)#proxies parameter are here also
+            resp = s.send(prepared,
+                          proxies={'https://':self.proxy})
+
             image.craglink = resp.json()['added']['URL']
 
             db_session.add(image)
@@ -344,6 +357,7 @@ class AdManager(scrapy.Spider):
                 'continue':"y",
                 'go':"Continue"},
             method='POST',
+            meta={'proxy':self.proxy},
             callback=self.add7)
 
     def add7(self,response):#get idcrag
@@ -377,10 +391,32 @@ class AdManager(scrapy.Spider):
                 "crypt":self.crypt,
                 "go":"undelete"},
             method='POST',
+            meta={'proxy':self.proxy},
             callback=self.finalize)
         
     def renew1(self, response):
         debug_html_content(response,"renew",1)
+        renew_form = filter(lambda x: self.ad.idcrag in x,
+            response.xpath("//form[./input[@value='renew']]").extract())[0]
+        
+        self.crypt = response.\
+            xpath("//form[./input[@name='crypt']]/input[@name='crypt']/@value").\
+            extract()[0]
+        
+        self.row_code = renew_form.split(self.ad.idcrag+'/')[1].split('"')[0]
+
+        return scrapy.FormRequest.from_response(
+            response=response,
+            url='https://post.craigslist.org/manage/'+
+            self.ad.idcrag+'/'+self.row_code,
+            formdata ={
+                "action":"renew",
+                "crypt":self.crypt,
+                "go":"renew"},
+            method='POST',
+            meta={'proxy':self.proxy},
+            callback=self.finalize)
+        
 
     def edit1(self, response):
         debug_html_content(response,"edit",1)
@@ -393,7 +429,8 @@ class AdManager(scrapy.Spider):
         pass
 
 process = CrawlerProcess({
-    "USER-AGENT":"Mozilla/5.0 (X11; Linux x86_64; rv:31.0) Gecko/20100101 Firefox/31.0",})
+    "USER-AGENT":"Mozilla/5.0 (X11; Linux x86_64; rv:31.0) Gecko/20100101 Firefox/31.0",
+})
 
 process.crawl(AdManager)
 process.start()

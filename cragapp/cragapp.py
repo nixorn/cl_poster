@@ -9,6 +9,7 @@ import datetime
 import base64
 import subprocess
 import sys
+import os
 import sqlalchemy
 
 
@@ -567,17 +568,21 @@ def delete_image(idimages):
 
 @app.route('/scrap_ads/<idusers>', methods=['POST', 'GET'])
 def scrap_ads(idusers):
-
+        u = User.query.filter(User.idusers == idusers).first()
+        v = VPS.query.filter(VPS.idvpss == u.idvpss).first()
+        proxy = 'https://' + ':'.join([str(v.ip), str(v.port)])
+        my_env = os.environ.copy()
+        my_env["https_proxy"] = proxy
         subprocess.call(["python",
                          "cragapp/syncronizer.py",
                          "userscrap",
                          "--idusers",
-                         idusers])
+                         idusers], env=my_env)
 
         return "Ad scraped"
 
 app.route('/scrap_ad/<idads>', methods=['POST', 'GET'])
-def scrap_ads(idusers):
+def scrap_ad(idads):
 
         subprocess.call(["python",
                          "cragapp/syncronizer.py",
