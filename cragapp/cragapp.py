@@ -328,7 +328,7 @@ def ad_add():
         title             = request.form['title']
         posting_time      = request.form['posting_time']
         scheduled_action  = request.form['scheduled_action']
-        repost_timeout    = request.form['scheduled_action']
+        repost_timeout    = request.form['repost_timeout']
         prev_action       = ""
         prev_act_time     = ""
         prev_act_stat     = ""
@@ -475,6 +475,7 @@ def ad_update():
         title         = request.form['title']
         posting_time  = request.form['posting_time']
         scheduled_action = request.form['scheduled_action']
+        repost_timeout   = request.form['repost_timeout']
         status        = request.form['status']
         idusers       = request.form['idusers']
         idcategory    = request.form['category']
@@ -494,6 +495,7 @@ def ad_update():
         ad.title       = title
         ad.posting_time= posting_time
         ad.scheduled_action = scheduled_action
+        ad.repost_timeout   = repost_timeout
         ad.status      = status
         ad.idusers     = idusers
         ad.idcategory  = idcategory
@@ -562,8 +564,6 @@ def delete_image(idimages):
                 db_session.rollback()
                 raise Exception("DB commit is not OK")
         return "Image deleted"
-
-
 
 
 @app.route('/scrap_ads/<idusers>', methods=['POST', 'GET'])
