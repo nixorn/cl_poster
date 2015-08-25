@@ -54,9 +54,6 @@ else:
 proxy = 'https://' + ':'.join([str(vps.ip), str(vps.port)])
     
 
-
-
-
 class Synchronizer(scrapy.Spider):
     name = "synchronizer"
     allowed_domains = ['craigslist.org']
@@ -78,7 +75,8 @@ class Synchronizer(scrapy.Spider):
                   + category.clcode + '/'\
                   + ad.idcrag + '.html'
             return scrapy.Request(url,
-                                  meta={'idads':ad.idads, 'proxy':proxy},
+                                  meta={'idads':ad.idads},
+                                  #meta={'idads':ad.idads, 'proxy':proxy},
                                   callback=self.parse_ad)
         
         elif 'idusers' in dir(args):
@@ -92,7 +90,7 @@ class Synchronizer(scrapy.Spider):
                     'p':"0",
                     'inputEmailHandle': self.user.username,
                     'inputPassword': self.user.password},
-                meta={'idads':ad.idads, 'proxy':proxy},
+                #meta={'proxy':proxy},
                 callback=self.parse_home)
 
 
@@ -172,7 +170,8 @@ class Synchronizer(scrapy.Spider):
                     print "RUNNING OUT AD", ad.idads
                     yield scrapy.Request(
                         url=url,
-                        meta={'idads':ad.idads, 'proxy':proxy},
+                        meta={'idads':ad.idads},
+                        #meta={'idads':ad.idads, 'proxy':proxy},
                         callback=self.parse_ad)
 
 
@@ -203,21 +202,20 @@ class Synchronizer(scrapy.Spider):
             db_session.rollback()
             raise Exception("DB commit is not OK")
 
-        img_urls = response.xpath('//*[@href]')\
-            .re('http://images.craigslist.org/'\
-                +'[0-9a-zA-Z_]+[0-9]{2,3}x[0-9]{2,3}'\
-                +'.(jpg|png|gif|jpeg)')\
-            
-            + response.xpath('//*[@src]')
+        img_urls =\
+            response.xpath('//*[@href or @src]')\
                 .re('http://images.craigslist.org/'\
                     +'[0-9a-zA-Z_]+[0-9]{2,3}x[0-9]{2,3}'\
-                    '.(jpg|png|gif|jpeg)') 
+                    +'.(?:jpg|png|jpeg|gif)')
+
+
         
         img_urls = list(set(img_urls))
-        
+
         for pic_url in img_urls:
             yield scrapy.Request(pic_url,
-                meta={'idads':ad.idads, 'proxy':proxy},
+                meta={'idads':ad.idads},
+                #meta={'idads':ad.idads, 'proxy':proxy},
                 callback=self.parseImage)
 
     def parseImage(self, response):
