@@ -2,10 +2,12 @@
 import scrapy
 import operator
 import argparse
+import logging
 from scrapy.crawler import CrawlerProcess
 from models import Ad, Image, User, VPS, Category, Area
 from database import db_session
 
+logging.basicConfig(filename='cragloop.log',level=logging.ERROR)
 
 parser = argparse.ArgumentParser(description='Crawl from craiglist ad and store it into database.')
 subparsers = parser.add_subparsers(help='Scrap all user ads or concret ad?')
@@ -34,6 +36,25 @@ def debug_html_content(response,action_name,step_num):
             f.flush()
 
 
+#proxy setup
+if 'idads' in dir(args):
+    ad = Ad.query.filter(Ad.idads == args.idads).first()
+    user = User.query.filter(User.idusers == ad.idusers).first()
+    vps = VPS.query.filter(VPS.idvpss == user.idvpss).first()
+    
+    
+elif 'idusers' in dir(args):
+    user = User.query.filter(User.idusers == args.idusers).first()
+    vps = VPS.query.filter(VPS.idvpss == user.idvpss).first()
+
+else:
+    logging.error("Can't work with proxy!")
+    raise Exception("No proxy setted up!")
+
+proxy = 'https://' + ':'.join([str(vps.ip), str(vps.port)])
+    
+
+
 
 
 class Synchronizer(scrapy.Spider):
@@ -42,19 +63,26 @@ class Synchronizer(scrapy.Spider):
     start_urls = ['https://accounts.craigslist.org/login']
     download_delay = 2
 
-
-
-
+    
     def parse(self, response):
-        print dir(args)
+        
         if 'idads' in dir(args):
             ad = Ad.query.filter(Ad.idads == args.idads).first()
-            category = Category.query.filter(Category.idcategory == ad.idcategory).first()
+
+            category = Category.query.\
+                       filter(Category.idcategory == ad.idcategory)\
+                           .first()
             area = Area.query.filter(Area.idarea == ad.idarea).first()
-            url = "http://"+area.urlname + '.craigslist.org/' + category.clcode + '/' + ad.idcrag + '.html'
-            return scrapy.Request(url, meta={'idads':ad.idads}, callback=self.parse_ad)
+            url = "http://"+area.urlname\
+                  + '.craigslist.org/'\
+                  + category.clcode + '/'\
+                  + ad.idcrag + '.html'
+            return scrapy.Request(url,
+                                  meta={'idads':ad.idads, 'proxy':proxy},
+                                  callback=self.parse_ad)
+        
         elif 'idusers' in dir(args):
-            self.user = User.query.filter(User.idusers == args.idusers).first()            
+            self.user = User.query.filter(User.idusers == args.idusers).first()
             return scrapy.FormRequest.from_response (
                 response,
                 formdata={
@@ -64,6 +92,7 @@ class Synchronizer(scrapy.Spider):
                     'p':"0",
                     'inputEmailHandle': self.user.username,
                     'inputPassword': self.user.password},
+                meta={'idads':ad.idads, 'proxy':proxy},
                 callback=self.parse_home)
 
 
@@ -71,10 +100,13 @@ class Synchronizer(scrapy.Spider):
         debug_html_content(response,"parse_home",1)
         sel = scrapy.Selector(text=response.body, type='html')
         for row in sel.xpath('//tr')[2:]: # crrop table head
-            status = row.xpath('./td[contains(@class,"status")]/small/text()').extract_first()
+            status = row.xpath('./td[contains(@class,"status")]/small/text()')\
+                        .extract_first()
             allowed_categories = [cat.fullname for cat in Category.query.all()]
 
-            rawcatname = row.xpath('./td[contains(@class,"areacat")]/text()').extract()
+            rawcatname = row.xpath('./td[contains(@class,"areacat")]/text()')\
+                            .extract()
+            
             cat_name = filter(lambda x: x.strip()!='', rawcatname)[0].strip()
 
             if cat_name in allowed_categories:
@@ -82,18 +114,21 @@ class Synchronizer(scrapy.Spider):
                 allowed_actions = row.xpath('./td[contains(@class,"buttons")]'+
                                             '/form/input[@class="managebtn"]'+
                                             '/@value').extract() + ["None"]
-                url = row.xpath('./td[contains(@class,"title")]/a/@href').extract_first()
-                idcrag = row.xpath('./td[contains(@class,"postingID")]/text()').extract_first().strip()
-                title = row.xpath('./td[contains(@class,"title")]/text()').extract_first().strip()
-                area_code = row.xpath('./td[contains(@class,"areacat")]/b/text()').extract_first().strip()
+                url = row.xpath('./td[contains(@class,"title")]/a/@href')\
+                         .extract_first()
+                idcrag = row.xpath('./td[contains(@class,"postingID")]/text()')\
+                            .extract_first().strip()
+                title = row.xpath('./td[contains(@class,"title")]/text()')\
+                           .extract_first().strip()
+                area_code = row.xpath('./td[contains(@class,"areacat")]/b/text()')\
+                               .extract_first().strip()
                 area = Area.query.filter(Area.clcode == area_code).first()
 
-                category = Category.query.filter(Category.fullname == cat_name).first()
+                category = Category.query.filter(Category.fullname == cat_name)\
+                                         .first()
                 ad = Ad.query.filter(Ad.idcrag == idcrag).first()
 
-
                 if not ad:
-
                     ad = Ad(
                         idcrag = idcrag,
                         description='',
@@ -137,7 +172,7 @@ class Synchronizer(scrapy.Spider):
                     print "RUNNING OUT AD", ad.idads
                     yield scrapy.Request(
                         url=url,
-                        meta={'idads':ad.idads},
+                        meta={'idads':ad.idads, 'proxy':proxy},
                         callback=self.parse_ad)
 
 
@@ -165,12 +200,22 @@ class Synchronizer(scrapy.Spider):
             db_session.rollback()
             raise Exception("DB commit is not OK")
 
-        img_urls = response.xpath('//*[@href]').re('http://images.craigslist.org/[0-9a-zA-Z_]+[0-9]{2,3}x[0-9]{2,3}.jpg') + response.xpath('//*[@src]').re('http://images.craigslist.org/[0-9a-zA-Z_]+[0-9]{2,3}x[0-9]{2,3}.jpg') 
+        img_urls = response.xpath('//*[@href]')\
+            .re('http://images.craigslist.org/'\
+                +'[0-9a-zA-Z_]+[0-9]{2,3}x[0-9]{2,3}'\
+                +'.(jpg|png|gif|jpeg)')\
+            
+            + response.xpath('//*[@src]')
+                .re('http://images.craigslist.org/'\
+                    +'[0-9a-zA-Z_]+[0-9]{2,3}x[0-9]{2,3}'\
+                    '.(jpg|png|gif|jpeg)') 
         
         img_urls = list(set(img_urls))
         
         for pic_url in img_urls:
-            yield scrapy.Request(pic_url, meta={'idads':ad.idads}, callback=self.parseImage)
+            yield scrapy.Request(pic_url,
+                meta={'idads':ad.idads, 'proxy':proxy},
+                callback=self.parseImage)
 
     def parseImage(self, response):
 
