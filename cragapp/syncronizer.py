@@ -45,22 +45,8 @@ def debug_html_content(response,action_name,step_num):
             f.write("\n###########################################\n")
             f.flush()
 
-#proxy setup
-if 'idads' in dir(args):
-    ad = Ad.query.filter(Ad.idads == args.idads).first()
-    user = User.query.filter(User.idusers == ad.idusers).first()
-    vps = VPS.query.filter(VPS.idvpss == user.idvpss).first()
-    
-    
-elif 'idusers' in dir(args):
-    user = User.query.filter(User.idusers == args.idusers).first()
-    vps = VPS.query.filter(VPS.idvpss == user.idvpss).first()
 
-else:
-    logging.error("Can't work with proxy!")
-    raise Exception("No proxy setted up!")
 
-proxy = 'https://' + ':'.join([str(vps.ip), str(vps.port)])
     
 
 class Synchronizer(scrapy.Spider):
@@ -172,7 +158,8 @@ class Synchronizer(scrapy.Spider):
                     except Exception as e:
                         db_session.rollback()
                         raise Exception("DB commit is not OK\n"+e.message)
-                    
+                else: logging.error('')
+                
                 if url:
                     print "RUNNING OUT AD", ad.idads
                     yield scrapy.Request(
@@ -187,7 +174,7 @@ class Synchronizer(scrapy.Spider):
 
         ad = Ad.query.filter(Ad.idads == response.meta['idads']).first()
         description = response.xpath(".//*[@id='postingbody']/text()").extract()
-        description = [item+'\n' for item in description]
+        description = [item.strip()+'\n' for item in description]
         if description:
             description = reduce(operator.concat, description[1:], description[0])
 
