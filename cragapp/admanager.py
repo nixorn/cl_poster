@@ -121,7 +121,7 @@ class AdManager(scrapy.Spider):
                 "crypt":self.crypt,
                 "go":"delete"},
             method='POST',
-
+            dont_filter=True,
             callback=self.finalize)
 
     def repost1(self, response):
@@ -167,7 +167,7 @@ class AdManager(scrapy.Spider):
                 'go':"Continue",
                 'cryptedStepCheck':cryptedStepCheck},
             method='POST',
-
+            dont_filter=True,
             callback=self.repost3)
 
 
@@ -185,7 +185,7 @@ class AdManager(scrapy.Spider):
                 'continue':"y",
                 'go':"Continue"},
             method='POST',
-
+            dont_filter=True,
             callback=self.finalize)
 
     def add1(self, response):#go button
@@ -232,7 +232,7 @@ class AdManager(scrapy.Spider):
             formdata = {"id":str(self.category.numcode),
                         "cryptedStepCheck":cryptedStepCheck},
             method='POST',
-
+            dont_filter=True,
             callback=self.add4)
 
     def add4(self, response): #title body etc
@@ -263,7 +263,7 @@ class AdManager(scrapy.Spider):
                 'go':"Continue",
                 'cryptedStepCheck':cryptedStepCheck},
             method='POST',
-
+            dont_filter=True,
             callback=self.add5)
 
     def add5(self, response):#images
@@ -350,6 +350,7 @@ class AdManager(scrapy.Spider):
                 'a':'fin',
                 'go':'Done with Images'},
             method='POST',
+            dont_filter=True,
             callback=self.add6)
 
     def add6(self, response):#publish
@@ -364,6 +365,7 @@ class AdManager(scrapy.Spider):
                 'continue':"y",
                 'go':"Continue"},
             method='POST',
+            dont_filter=True,
             callback=self.add7)
 
     def add7(self,response):#get idcrag

@@ -158,7 +158,8 @@ class Synchronizer(scrapy.Spider):
                     except Exception as e:
                         db_session.rollback()
                         raise Exception("DB commit is not OK\n"+e.message)
-                    
+                else: logging.error('')
+                
                 if url:
                     print "RUNNING OUT AD", ad.idads
                     yield scrapy.Request(
@@ -173,7 +174,7 @@ class Synchronizer(scrapy.Spider):
 
         ad = Ad.query.filter(Ad.idads == response.meta['idads']).first()
         description = response.xpath(".//*[@id='postingbody']/text()").extract()
-        description = [item+'\n' for item in description]
+        description = [item.strip()+'\n' for item in description]
         if description:
             description = reduce(operator.concat, description[1:], description[0])
 
