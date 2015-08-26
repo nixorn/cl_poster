@@ -9,7 +9,7 @@ from scrapy.crawler import CrawlerProcess
 from models import Ad, User, VPS, Area, Image, Category
 from database import db_session
 
-logging.basicConfig(filename='cragloop.log',level=logging.ERROR)
+logging.basicConfig(filename='logs/admanager.log',level=logging.DEBUG)
 
 parser = argparse.ArgumentParser(description='Crawl from craiglist ad and store it into database.')
 parser.add_argument('--idads',
@@ -83,7 +83,7 @@ class AdManager(scrapy.Spider):
                 'p':"0",
                 'inputEmailHandle': self.user.username,
                 'inputPassword': self.user.password},
-            meta={'proxy':self.proxy},
+
             callback=callback)
 
 
@@ -99,7 +99,7 @@ class AdManager(scrapy.Spider):
             url='https://post.craigslist.org/manage/'
             +self.ad.idcrag+'/'+self.row_code+'?action=delete&go=delete',
             method='GET',
-            meta={'proxy':self.proxy},
+
             callback=self.delete2)
 
     def delete2(self, response):
@@ -121,7 +121,7 @@ class AdManager(scrapy.Spider):
                 "crypt":self.crypt,
                 "go":"delete"},
             method='POST',
-            meta={'proxy':self.proxy},
+
             callback=self.finalize)
 
     def repost1(self, response):
@@ -137,7 +137,7 @@ class AdManager(scrapy.Spider):
             url='https://post.craigslist.org/manage/'
             +self.ad.idcrag+'/'+self.row_code+'?action=repost&go=repost',
             method='GET',
-            meta={'proxy':self.proxy},
+
             callback=self.repost2)
 
     def repost2(self, response):
@@ -167,7 +167,7 @@ class AdManager(scrapy.Spider):
                 'go':"Continue",
                 'cryptedStepCheck':cryptedStepCheck},
             method='POST',
-            meta={'proxy':self.proxy},
+
             callback=self.repost3)
 
 
@@ -185,7 +185,7 @@ class AdManager(scrapy.Spider):
                 'continue':"y",
                 'go':"Continue"},
             method='POST',
-            meta={'proxy':self.proxy},
+
             callback=self.finalize)
 
     def add1(self, response):#go button
@@ -197,7 +197,7 @@ class AdManager(scrapy.Spider):
             formdata ={"areaabb":self.area.clcode},
             method='POST',
             callback=self.add2,
-            meta={'proxy':self.proxy},
+
             dont_filter=True)
 
     def add2(self, response):# select services offer
@@ -214,7 +214,7 @@ class AdManager(scrapy.Spider):
                         "cryptedStepCheck":cryptedStepCheck},
             method='POST',
             callback=self.add3,
-            meta={'proxy':self.proxy},
+
             dont_filter=True)
 
     def add3(self, response):#select which servise you want to offers. skilled trade for example
@@ -232,7 +232,7 @@ class AdManager(scrapy.Spider):
             formdata = {"id":str(self.category.numcode),
                         "cryptedStepCheck":cryptedStepCheck},
             method='POST',
-            meta={'proxy':self.proxy},
+
             callback=self.add4)
 
     def add4(self, response): #title body etc
@@ -263,7 +263,7 @@ class AdManager(scrapy.Spider):
                 'go':"Continue",
                 'cryptedStepCheck':cryptedStepCheck},
             method='POST',
-            meta={'proxy':self.proxy},
+
             callback=self.add5)
 
     def add5(self, response):#images
@@ -301,7 +301,6 @@ class AdManager(scrapy.Spider):
                        'Cache-Control':"no-cache"}
 
             url = url[0] # WTF? Why string becomes (string,)
-            #req = requests.Request('POST',url,files=files,headers=headers)
             req = requests.Request('POST',url,files=files,headers=headers)
             prepared = req.prepare()
             prepared.body = prepared.body.replace('; filename="name"','')
@@ -321,14 +320,14 @@ class AdManager(scrapy.Spider):
             prepared.body = str(prepared.body)
             prepared.headers["Content-Length"] = len(prepared.body).__str__()
 
-            print '{}\n{}\n{}\n\n{}'.format(
+            '''print '{}\n{}\n{}\n\n{}'.format(
                 '-----------START-----------',
                 prepared.method + ' ' + prepared.url,
                 '\n'.join('{}: {}'.format(k, v)
                           for k, v in prepared.headers.items()),
                 "image"
                 #prepared.body,
-            )
+            )'''
 
             s = requests.Session()
             resp = s.send(prepared,
@@ -365,7 +364,6 @@ class AdManager(scrapy.Spider):
                 'continue':"y",
                 'go':"Continue"},
             method='POST',
-            meta={'proxy':self.proxy},
             callback=self.add7)
 
     def add7(self,response):#get idcrag
@@ -399,18 +397,21 @@ class AdManager(scrapy.Spider):
                 "crypt":self.crypt,
                 "go":"undelete"},
             method='POST',
-            meta={'proxy':self.proxy},
             callback=self.finalize)
         
     def renew1(self, response):
         debug_html_content(response,"renew",1)
         renew_form = filter(lambda x: self.ad.idcrag in x,
             response.xpath("//form[./input[@value='renew']]").extract())[0]
-        
-        self.crypt = response.\
-            xpath("//form[./input[@name='crypt'] and ./input[@value='renew']]"\
-                  +"/input[@name='crypt']/@value").\
-            extract()[0]
+
+        #split renew_form for "<>", get entry of tag wich contains "crypt"
+        #and split for " "
+        atrs = filter(lambda x: "crypt" in x,
+                       renew_form.split("><"))[0].split(" ")
+
+        #get value from "value" attr
+        self.crypt = filter(lambda x: "value" in x, atrs)[0].split('"')[1]
+
         
         self.row_code = renew_form.split(self.ad.idcrag+'/')[1].split('"')[0]
 
@@ -423,7 +424,6 @@ class AdManager(scrapy.Spider):
                 "crypt":self.crypt,
                 "go":"renew"},
             method='POST',
-            meta={'proxy':self.proxy},
             callback=self.finalize)
         
 

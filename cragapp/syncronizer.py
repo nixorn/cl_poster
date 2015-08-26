@@ -45,22 +45,8 @@ def debug_html_content(response,action_name,step_num):
             f.write("\n###########################################\n")
             f.flush()
 
-#proxy setup
-if 'idads' in dir(args):
-    ad = Ad.query.filter(Ad.idads == args.idads).first()
-    user = User.query.filter(User.idusers == ad.idusers).first()
-    vps = VPS.query.filter(VPS.idvpss == user.idvpss).first()
-    
-    
-elif 'idusers' in dir(args):
-    user = User.query.filter(User.idusers == args.idusers).first()
-    vps = VPS.query.filter(VPS.idvpss == user.idvpss).first()
 
-else:
-    logging.error("Can't work with proxy!")
-    raise Exception("No proxy setted up!")
 
-proxy = 'https://' + ':'.join([str(vps.ip), str(vps.port)])
     
 
 class Synchronizer(scrapy.Spider):
