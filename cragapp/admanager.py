@@ -24,13 +24,21 @@ args = parser.parse_args()
 def debug_html_content(response,action_name,step_num):
     with open("logs/"+str(action_name)+"_step_"+str(step_num)+".html", 'w') as f:
             f.write("REQUEST\n")
-            f.write(str(response.request.url)+'\n')
-            f.write(str(response.request.headers)+'\n')
-            f.write(str(response.request.cookies)+'\n')
+            f.write("\nURL: "+str(response.request.url)+'\n')
+            f.write("\nHEADERS:\n")
+            for header in response.request.headers.items():
+                f.write(str(header)+'\n')
+            f.write("\nCOOKIES: "+str(response.request.cookies)+'\n')
+            f.write('\nBODY:\n')
             f.write(str(response.request.body)+'\n')
-            f.write("\nRESPONSE\n")
-            f.write(str(response.headers)+'\n')
+            f.write("\n###########################################\n")
+            f.write("\n\n\nRESPONSE\n")
+            f.write("\nHEADERS:\n")
+            for header in response.headers.items():
+                f.write(str(header)+'\n')
+            f.write('\nBODY:\n')
             f.write(response.body)
+            f.write("\n###########################################\n")
             f.flush()
 
 
@@ -400,7 +408,8 @@ class AdManager(scrapy.Spider):
             response.xpath("//form[./input[@value='renew']]").extract())[0]
         
         self.crypt = response.\
-            xpath("//form[./input[@name='crypt']]/input[@name='crypt']/@value").\
+            xpath("//form[./input[@name='crypt'] and ./input[@value='renew']]"\
+                  +"/input[@name='crypt']/@value").\
             extract()[0]
         
         self.row_code = renew_form.split(self.ad.idcrag+'/')[1].split('"')[0]
