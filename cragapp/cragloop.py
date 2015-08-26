@@ -12,7 +12,7 @@ import subprocess
 from database import db_session
 from models import VPS, Ad
 
-logging.basicConfig(filename='cragloop.log',level=logging.ERROR)
+logging.basicConfig(filename='logs/cragloop.log',level=logging.ERROR)
 
 def loop():
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")

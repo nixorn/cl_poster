@@ -614,6 +614,9 @@ def manage_ad(action, idads):
                          action],env=my_env)
         return "Success"
 
+@app.route('/time')
+def show_time():
+        return datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
 
 if __name__ == '__main__':
     app.run(debug=True)

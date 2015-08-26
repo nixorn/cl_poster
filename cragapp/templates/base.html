@@ -4,7 +4,6 @@
         <meta charset="utf-8">
         <title>CragApp</title>
         <link href="/static/css/cragapp.css" rel="stylesheet">
-
 	
     </head>
     <body>
@@ -12,7 +11,11 @@
           <a href="/ads" {% if menu == 'ad' %}class="active"{% endif %}>Ads</a>
           <a href="/users" {% if menu == 'user' %}class="active"{% endif %}>Users</a>
           <a href="/vps" {% if menu == 'vps' %}class="active"{% endif %}>VPS</a>
-
+	  
+	  <div class="time">
+	    
+	  </div>
+	  
         </div>
         <div class="content">
             {% block content %}

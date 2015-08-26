@@ -180,3 +180,11 @@ table .item:hover {
 .overlay img {
     margin-top: 10px;
 }
+
+
+.time {
+    background-color: #444;
+    padding: 10px 20px;
+    color: white;
+    display: inline-block;
+}
