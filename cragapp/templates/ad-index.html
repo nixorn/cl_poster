@@ -24,9 +24,9 @@
     {% endfor %}
   </select>
 
-  <select id="scheduling_select" class="hidden">
+  <select id="scheduling_select" >
     {% for sch in scheduling %}
-    <option value="{{sch.value}}" {{sch.selected}}>{{sch.name}}</option>
+    <option value="{{sch.value}}" {{sch.selected}}>{{sch.value}}</option>
     {% endfor %}
   </select>
 
@@ -71,5 +71,6 @@
 {% endblock %}
 {% block lastscripts %}
     <script src="/static/js/ad-index.js"></script>
-    <script src="/static/js/datepicker/bootstrap.js"></script>                    
+    <script src="/static/js/datepicker/bootstrap.js"></script>
+    <script src="/static/js/datepicker/moment-with-locales.js"></script>
 {% endblock %}

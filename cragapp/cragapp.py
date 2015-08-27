@@ -17,7 +17,7 @@ from database import db_session
 from models import VPS, User, Image, Ad, Area, Category
 
 
-logging.basicConfig(filename='logs/cragapp.log',level=logging.ERROR)
+logging.basicConfig(filename='logs/cragapp.log',level=logging.DEBUG)
 
 
 app = Flask(__name__)
@@ -183,7 +183,8 @@ def user_update():
 @app.route('/ads/<params>')
 def ads(params=None):
         if params:
-                #if you can write python eval exploit without dots, brackets etc - i want to see it
+                #if you can write python eval exploit without dots, brackets etc -
+                #i want to see it
                 params = params.replace('.','').replace('(','').replace(')','')\
                         .replace('[','').replace(']','').replace('{','')\
                                                         .replace('}','')
@@ -192,9 +193,15 @@ def ads(params=None):
                 params = [tuple(param.split('=')) for param in
                            params.split('&')]
                 
-                ads_db = eval('Ad.query.filter('+', '.join(
+
+                sqlalchemy_expr = 'Ad.query.filter('+', '.join(
                         ['Ad.'+param[0]+'=="'+param[1]+'"'
-                         for param in params])+').all()')
+                         for param in params])+').all()'
+
+                logging.debug('sqlalchemy filter expression is "'\
+                              + sqlalchemy_expr + '"')
+                
+                ads_db = eval(sqlalchemy_expr)
 
         else:
                 params = []
@@ -277,25 +284,26 @@ def ads(params=None):
         else: statuses = [{'status':'all', 'selected':'selected'}] + statuses
 
         scheduling = [{'value': 'all',
-                      'name':'all',
-                      'selected':''},
-                     {'value':'scheduled',
-                      'name':'scheduled',
-                      'selected':''},
-                     {'value': 'not_scheduled',
-                      'name':'not scheduled',
-                      'selected':''}]
+                       'selected':''},
+                      {'value': 'add',
+                       'selected':''},
+                      {'value': 'delete',
+                       'selected':''},
+                      {'value': 'undelete',
+                       'selected':''},
+                      {'value':'renew',
+                       'selected':''},
+                      {'value':'repost',
+                       'selected':''}]
         
-        if 'scheduling' in [p[0] for p in params]:
+        if 'scheduled_action' in [p[0] for p in params]:
                 #p[1] where p[0] == status
-                cur_scheduling = filter(lambda p: p[0] == "scheduling",
-                                    params)[0][1] #p[1]
-                statuses = [{'value':'all', 'name':'all', 'selected':''}]\
-                           + [{'value':cur_scheduling,
-                               'name':cur_scheduling.replace('_',' '),
-                               'selected':'selected'}]\
-                           + filter(lambda s: s['scheduling'] != cur_scheduling,
-                                    scheduling)
+                cur_scheduling = filter(lambda p: p[0] == "scheduled_action",
+                                    params)[0][1] #p[1], value
+                for sch in scheduling:
+                        if sch['value'] == cur_scheduling:
+                                sch['selected'] = 'selected'
+                        
         
         return render_template('ad-index.html', menu='ad', ads=ads
                                ,users=users
@@ -616,7 +624,7 @@ def manage_ad(action, idads):
 
 @app.route('/time')
 def show_time():
-        return datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+        return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 if __name__ == '__main__':
     app.run(debug=True)
