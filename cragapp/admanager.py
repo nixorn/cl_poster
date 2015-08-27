@@ -331,7 +331,8 @@ class AdManager(scrapy.Spider):
 
             s = requests.Session()
             resp = s.send(prepared,
-                          proxies={'https://':self.proxy})
+                          proxies={'https':self.proxy,
+                                   'http':self.proxy.replace('https','http')})
 
             image.craglink = resp.json()['added']['URL']
 

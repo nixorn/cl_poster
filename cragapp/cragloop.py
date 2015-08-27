@@ -44,6 +44,7 @@ def loop():
         
         my_env = os.environ.copy()
         my_env["https_proxy"] = proxy
+        my_env["http_proxy"] = proxy.replace("https", "http")
         
         os_process_code = subprocess.call(
             ["python","cragapp/admanager.py","--idads", idads, "--action", action],

@@ -79,7 +79,12 @@ def vps_delete(vps_id):
 
 @app.route('/vps/update', methods=['POST',])
 def vps_update():
-        vps_id, ip, port, login, password = request.form['idvpss'], request.form['ip'], request.form['port'],request.form['user'], request.form['password']
+        vps_id    = request.form['idvpss']
+        ip        = request.form['ip']
+        port      = request.form['port']
+        login     = request.form['user']
+        password  = request.form['password']
+
         vps = VPS.query.filter(VPS.idvpss==vps_id).first()
 
         vps.ip = ip
@@ -120,9 +125,9 @@ def user_add():
         idvpss    = request.form['idvpss']
         username  = request.form['username']
         password  = request.form['password']
+        mail_pass = request.form['mail_pass']
 
-
-        u = User(idvpss, username, password)
+        u = User(idvpss, username, password, mail_pass)
         db_session.add(u)
         try:db_session.commit()
         except Exception as e:
@@ -164,12 +169,14 @@ def user_update():
         idvpss    = request.form['idvpss']
         username  = request.form['username']
         password  = request.form['password']
-
+        mail_pass = request.form['mail_pass']
+        
         user = User.query.filter(User.idusers==idusers).first()
         user.idvpss = idvpss
         user.username = username
-        if password: user.password = password
-
+        if password: user.password   = password
+        if mail_pass: user.mail_pass = mail_pass
+        
         db_session.add(user)
         try:db_session.commit()
         except Exception as e:
