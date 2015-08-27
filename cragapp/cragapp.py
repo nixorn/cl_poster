@@ -624,7 +624,7 @@ def manage_ad(action, idads):
 
 @app.route('/time')
 def show_time():
-        return datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+        return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 if __name__ == '__main__':
     app.run(debug=True)

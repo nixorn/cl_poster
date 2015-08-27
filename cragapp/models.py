@@ -110,7 +110,7 @@ class Category(Base):
 class Ad(Base):
     __tablename__ = 'ads'
     idads         = Column(INTEGER, primary_key=True)
-    idcrag        = Column(VARCHAR(25), unique = True)
+    idcrag        = Column(VARCHAR(25))
     description   = Column(TEXT)
     title         = Column(VARCHAR(100))
     posting_time  = Column(VARCHAR(25))
