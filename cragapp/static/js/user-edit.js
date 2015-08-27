@@ -5,7 +5,8 @@ $(document).ready(function() {
     	data["idvpss"] = $('#vps-select').val();
     	data["username"] = $('#username').val();
     	data["password"] = $('#password').val();
-
+    	data["mail_pass"] = $('#mail_pass').val();
+	
         $.ajax({
             url: '/user/update',
             data: data,

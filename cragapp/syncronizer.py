@@ -244,7 +244,7 @@ class Synchronizer(scrapy.Spider):
             raise Exception("DB commit is not OK")
 
 process = CrawlerProcess({
-    'USER_AGENT': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)'
+    "USER-AGENT":"Mozilla/5.0 (X11; Linux x86_64; rv:31.0) Gecko/20100101 Firefox/31.0",
 })
 
 process.crawl(Synchronizer)

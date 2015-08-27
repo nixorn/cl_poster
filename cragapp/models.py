@@ -33,12 +33,14 @@ class User(Base):
     idvpss     = Column(INTEGER, ForeignKey('vpss.idvpss'))
     username   = Column(VARCHAR(50), unique = True)
     password   = Column(VARCHAR(50))
+    mail_pass  = Column(VARCHAR(50))
 
 
-    def __init__(self, idvpss,username,password):
+    def __init__(self, idvpss,username,password, mail_pass):
         self.idvpss   = idvpss
         self.username = username
         self.password = password
+        self.mail_pass = mail_pass
 
 
     def __repr__(self):

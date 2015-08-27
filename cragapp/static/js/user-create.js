@@ -1,10 +1,11 @@
 $(document).ready(function() {
     $('#create_user').on('click', function(){
         var data = {};
-    	data["idvpss"] = $('#vps-select').val();
-    	data["username"] = $('#username').val();
-    	data["password"] = $('#password').val();
-
+    	data["idvpss"]    = $('#vps-select').val();
+    	data["username"]  = $('#username').val();
+    	data["password"]  = $('#password').val();
+        data["mail_pass"] = $('#mail_pass').val();
+	
         $.ajax({
             url: '/user/add',
             data: data,
