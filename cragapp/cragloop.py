@@ -49,7 +49,7 @@ def loop():
             ["python","cragapp/admanager.py","--idads", idads, "--action", action],
             env=my_env)
         os_process_code = subprocess.call(
-            ["python","cragapp/syncronizer.py","adscrap","--idads", idads],
+            ["python","cragapp/syncronizer.py","userscrap","--idusers", u.idusers],
             env=my_env)
         
         ad.prev_action = ad.scheduled_action

@@ -7,7 +7,7 @@ from scrapy.crawler import CrawlerProcess
 from models import Ad, Image, User, VPS, Category, Area
 from database import db_session
 
-logging.basicConfig(filename='cragloop.log',level=logging.ERROR)
+logging.basicConfig(filename='logs/sync.log',level=logging.ERROR)
 
 parser = argparse.ArgumentParser(description='Crawl from craiglist ad and store it into database.')
 subparsers = parser.add_subparsers(help='Scrap all user ads or concret ad?')
@@ -108,7 +108,7 @@ class Synchronizer(scrapy.Spider):
                 url = row.xpath('./td[contains(@class,"title")]/a/@href')\
                          .extract_first()
                 idcrag = row.xpath('./td[contains(@class,"postingID")]/text()')\
-                            .extract_first().strip()
+                            .extrac1t_first().strip()
                 title = row.xpath('./td[contains(@class,"title")]/text()')\
                            .extract_first().strip()
                 area_code = row.xpath('./td[contains(@class,"areacat")]/b/text()')\
