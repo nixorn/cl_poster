@@ -108,7 +108,7 @@ class Synchronizer(scrapy.Spider):
                 url = row.xpath('./td[contains(@class,"title")]/a/@href')\
                          .extract_first()
                 idcrag = row.xpath('./td[contains(@class,"postingID")]/text()')\
-                            .extrac1t_first().strip()
+                            .extract_first().strip()
                 title = row.xpath('./td[contains(@class,"title")]/text()')\
                            .extract_first().strip()
                 area_code = row.xpath('./td[contains(@class,"areacat")]/b/text()')\
