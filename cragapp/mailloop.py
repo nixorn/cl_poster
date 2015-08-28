@@ -1,92 +1,42 @@
-import imaplib
+from imbox import Imbox
+import re
 import time
-import getpass
-import email
-import socket
+import logging
+import requests
+from models import Ad, User, VPS
+from database import db_session
 
-from email.parser import HeaderParser
+logging.basicConfig(filename='logs/mailloop.log',level=logging.DEBUG)
 
+def mail_loop(user):
+    username = user.username
+    password = user.mail_pass
+    if   'gmail.com' in username: server = 'imap.gmail.com'
+    elif 'yahoo.com' in username: server = 'imap.mail.yahoo.com'
+    else: raise NotImplementedError("only yahoo.com and gmail.com imaps supported")
 
-def setup():
+    imb = Imbox(server, username, password, ssl=True)
+    msgs = imb.messages(unread=True,sent_from='robot@craigslist.org')
 
-    global PARSER
-    global IMAP_SERVER
-    global MAIL_SERVERS
-
-    IMAP_SERVER = None
-
-    PARSER = HeaderParser()
-
-    MAIL_SERVERS = {'gmail.com':
-                    {'Server': str(socket.gethostbyname('imap.gmail.com'))},
-                    'yahoo.com':
-                    {'Server': str(socket.gethostbyname('imap.mail.yahoo.com'))}
-                }
-
-
-def getLogin():
-    username = raw_input("Email address: ")
-    password = getpass.getpass()
-    return username, password
-
-def getMessages(server):
-    server.select()
-    _, data = server.search(None, 'UnSeen')
+    vps = VPS.query.filter(VPS.idvpss == user.idvpss).first()
+    http_proxy = 'http://' + ':'.join([vps.ip, vps.port])
+    https_proxy = http_proxy.replace('http', 'https')
+    proxies = {'http': http_proxy,'https': http_proxy}
     
-    #server.store(data[0].replace(' ',','),'+FLAGS','\Seen')
+    for uid, msg in msgs:
+        imb.mark_seen(uid)
+        confirm_url = re.findall('https://post.craigslist.org/./.+/.+\r',
+                                  msg.body['plain'][0])[0].replace('\r','')
+        rsp = requests.get(confirm_url,proxies=proxies)
+        logging.debug("confirmation request for url "+rsp.url\
+                      +' have status '+ str(rsp.status_code))
+        with open("logs/mail_confirm_"+username.split('@')[0]+'.html', 'w') as f:
+            f.write(rsp.content)
+            f.flush()
+            f.close()
     
-    return data[0].split()
-
-
-def main():
-
-    setup()
-
-    global PARSER
-    global IMAP_SERVER
-    global MAIL_SERVERS
-
-    print("Please enter in your email account details.")
-    username, password = getLogin()
-    username2 = username.split("@")
-    while len(username2) != 2:
-        print("Please enter a valid email address.")
-        username, password = getLogin()
-        username2 = username.split("@")
-
-    if username2[1] not in MAIL_SERVERS:
-        raise NotImplementedError("Support for your email provider has not been implemented yet")
-
-    IMAP_SERVER = imaplib.IMAP4_SSL(MAIL_SERVERS[username2[1]]["Server"], MAIL_SERVERS[username2[1]].get("Port", 993))
-    IMAP_SERVER.login(username, password)
-    IMAP_SERVER.select('Inbox')
-    
-    read = set()
-
-    while True:
-        ids = getMessages(IMAP_SERVER)
-        print ids
-        print len(ids)
-        for email_id in ids:
-            resp, data = IMAP_SERVER.fetch(email_id, '(RFC822)')
-            mail = email.message_from_string(data[0][1])
-            for part in mail.walk():
-                if part.get_content_maintype() == 'multipart':
-                    continue
-
-                if part.get_content_subtype() != 'plain':
-                    continue
-
-                payload = part.get_payload()
-                if not payload in read:
-                    print "New message"
-                    read.add(payload)
-                    msg = PARSER.parsestr(data[0][1])
-                    
-
-                time.sleep(2)
-
-        time.sleep(1)
-
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    while 1:
+        for user in User.query.all():
+            mail_loop(user)
+            sleep(1200)#every 20 minutes

@@ -26,6 +26,7 @@ pip install tornado
 pip install scrapy
 pip install requests
 pip install service_identity
+pip install imbox
 python2.7 dbinit.py
 ```
 
