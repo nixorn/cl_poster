@@ -11,7 +11,7 @@ from cragapp.cragapp import app
 #run cragloop
 p = subprocess.Popen(['python', './cragapp/cragloop.py'],
                      stdout=subprocess.PIPE,
-                     stderr=subprocess.STDOUT
+                     stderr=subprocess.STDOUT)
 #run mailloop
 p = subprocess.Popen(['python', './cragapp/mailloop.py'],
                      stdout=subprocess.PIPE,
