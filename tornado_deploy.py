@@ -8,8 +8,12 @@ from cragapp.cragapp import app
 
 
 
-#run loop
-p = subprocess.Popen([sys.executable, './cragapp/cragloop.py'],
+#run cragloop
+p = subprocess.Popen(['python', './cragapp/cragloop.py'],
+                     stdout=subprocess.PIPE,
+                     stderr=subprocess.STDOUT
+#run mailloop
+p = subprocess.Popen(['python', './cragapp/mailloop.py'],
                      stdout=subprocess.PIPE,
                      stderr=subprocess.STDOUT)
 

@@ -1,5 +1,3 @@
-#!./bin/python 
-
 #while server manipulate database via GUI, mainloop send ads.
 #statuses of ads changes and tracks here
 
