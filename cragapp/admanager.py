@@ -448,7 +448,7 @@ class AdManager(scrapy.Spider):
 
     def clean_up(self, dummy):
         ads = Ad.query.all()
-        itertools.groupby(ads, lambda x:x.title).
+        ads_by_title = itertools.groupby(ads, lambda x:x.title)
         #ad without scheduling and status with same name but with 
         #
     

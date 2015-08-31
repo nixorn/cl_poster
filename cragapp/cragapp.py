@@ -188,7 +188,7 @@ def user_update():
 
 @app.route('/ads/')
 @app.route('/ads/<params>')
-def ads(params="is_duble='0'"):
+def ads(params="is_duble=0"):
 
         #if you can write python eval exploit without dots, brackets etc -
         #i want to see it
