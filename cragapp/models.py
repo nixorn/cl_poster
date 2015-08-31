@@ -134,7 +134,9 @@ class Ad(Base):
     parent_id         = Column(INTEGER, ForeignKey('ads.idads'))
     haslicense        = Column(VARCHAR(1)) # '1' or '0'
     license_info      = Column(VARCHAR(100))
-
+    #dubles defines by admanager clean_up function
+    is_duble          = Column(VARCHAR(1), default='0')
+    
     def __init__(self,
                  idcrag,
                  description,

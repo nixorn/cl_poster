@@ -188,31 +188,28 @@ def user_update():
 
 @app.route('/ads/')
 @app.route('/ads/<params>')
-def ads(params=None):
-        if params:
-                #if you can write python eval exploit without dots, brackets etc -
-                #i want to see it
-                params = params.replace('.','').replace('(','').replace(')','')\
-                        .replace('[','').replace(']','').replace('{','')\
-                                                        .replace('}','')
+def ads(params="is_duble='0'"):
 
-                #[("idads",1), ("idusers",1) ...]
-                params = [tuple(param.split('=')) for param in
+        #if you can write python eval exploit without dots, brackets etc -
+        #i want to see it
+        params = params.replace('.','')\
+                       .replace('(','').replace(')','')\
+                        .replace('[','').replace(']','')\
+                        .replace('{','').replace('}','')
+
+        #[("idads",1), ("idusers",1) ...]
+        params = [tuple(param.split('=')) for param in
                            params.split('&')]
+
                 
+        sqlalchemy_expr = 'Ad.query.filter('+', '.join(
+                ['Ad.'+param[0]+'=="'+param[1]+'"'
+                 for param in params])+').all()'
 
-                sqlalchemy_expr = 'Ad.query.filter('+', '.join(
-                        ['Ad.'+param[0]+'=="'+param[1]+'"'
-                         for param in params])+').all()'
-
-                logging.debug('sqlalchemy filter expression is "'\
-                              + sqlalchemy_expr + '"')
+        logging.debug('sqlalchemy filter expression is "'\
+                      + sqlalchemy_expr + '"')
                 
-                ads_db = eval(sqlalchemy_expr)
-
-        else:
-                params = []
-                ads_db = Ad.query.all()
+        ads_db = eval(sqlalchemy_expr)
         
         ads = [{'idads'           : ad.idads,
                 'title'           : ad.title,

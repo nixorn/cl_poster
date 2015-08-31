@@ -36,7 +36,7 @@ $(document).ready(function() {
     });
 
     function filter_ads(){
-	var user_param, category_param, status_param, scheduling_param;
+	var user_param, category_param, status_param, scheduling_param,duble_param;
 	if ($('#user_select').val() == 'all') {user_param='';}
 	else {user_param = "idusers="+ $('#user_select').val();};
 	
@@ -48,12 +48,16 @@ $(document).ready(function() {
 
 	if ($('#scheduling_select').val() == 'all') {scheduling_param=''}
 	else {scheduling_param = 'scheduled_action='+$('#scheduling_select').val();};
-
 	
+	duble_param = "is_duble=0"
 	str = window.location.href
 	url = str.slice(0,str.indexOf("ads")+4);
 
-	url_param_arr = [user_param, category_param, status_param,scheduling_param]
+	url_param_arr = [user_param,
+			 category_param,
+			 status_param,
+			 scheduling_param,
+			 duble_param]
 	url_param_arr = url_param_arr.filter(function (e){return e != '';});
 	
 	url = url + url_param_arr.join('&');
