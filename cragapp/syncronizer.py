@@ -1,5 +1,6 @@
 #in fact it is scrapy spider + minimal running logic.
 import scrapy
+import itertools
 import operator
 import argparse
 import logging
@@ -253,5 +254,8 @@ process = CrawlerProcess({
     "USER-AGENT":"Mozilla/5.0 (X11; Linux x86_64; rv:31.0) Gecko/20100101 Firefox/31.0",
 })
 
-process.crawl(Synchronizer)
-process.start()
+
+
+if __name__ == "__main__":
+    process.crawl(Synchronizer)
+    process.start()

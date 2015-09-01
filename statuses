@@ -1,0 +1,55 @@
+COMBO                         WHAT SHOULD I DO 
+Not posted,Future,Add,id+,    Error
+Not posted,Future,Add,id-,    Nothing
+Not posted,Future,Delete,id+, Error
+Not posted,Future,Delete,id-, Error
+Not posted,Future,Repost,id+, Error
+Not posted,Future,Repost,id-, Error
+Not posted,Past,Add,id+,      Error
+Not posted,Past,Add,id-,      Move time to Future
+Not posted,Past,Delete,id+,   Error
+Not posted,Past,Delete,id-,   Error
+Not posted,Past,Repost,id+,   Error
+Not posted,Past,Repost,id-,   Error
+Not posted,Now,Add,id+,	      Error
+Not posted,Now,Add,id-,	      Post!
+Not posted,Now,Delete,id+,    Error
+Not posted,Now,Delete,id-,    Error
+Not posted,Now,Repost,id+,    Error
+Not posted,Now,Repost,id-,    Error
+Posted,Future,Add,id+,	      Error
+Posted,Future,Add,id-,	      Error
+Posted,Future,Delete,id+,     Nothing
+Posted,Future,Delete,id-,     Error
+Posted,Future,Repost,id+,     Nothing
+Posted,Future,Repost,id-,     Error
+Posted,Past,Add,id+,	      Error
+Posted,Past,Add,id-,	      Error
+Posted,Past,Delete,id+,	      Move time to Future
+Posted,Past,Delete,id-,	      Error
+Posted,Past,Repost,id+,	      Move time to Future
+Posted,Past,Repost,id-,	      Error
+Posted,Now,Add,id+,	      Error
+Posted,Now,Add,id-,	      Error
+Posted,Now,Delete,id+,	      Delete
+Posted,Now,Delete,id-,	      Error
+Posted,Now,Repost,id+,	      Repost
+Posted,Now,Repost,id-,	      Error
+Deleted,Future,Add,id+,	      Error
+Deleted,Future,Add,id-,	      Error
+Deleted,Future,Delete,id+,    Error
+Deleted,Future,Delete,id-,    Error
+Deleted,Future,Repost,id+,    Error
+Deleted,Future,Repost,id-,    Error
+Deleted,Past,Add,id+,	      Error
+Deleted,Past,Add,id-,	      Error
+Deleted,Past,Delete,id+,      Error
+Deleted,Past,Delete,id-,      Error
+Deleted,Past,Repost,id+,      Error
+Deleted,Past,Repost,id-,      Error
+Deleted,Now,Add,id+,	      Error
+Deleted,Now,Add,id-,	      Error
+Deleted,Now,Delete,id+,	      Error
+Deleted,Now,Delete,id-,	      Error
+Deleted,Now,Repost,id+,	      Error
+Deleted,Now,Repost,id-	      Error
