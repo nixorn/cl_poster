@@ -188,31 +188,28 @@ def user_update():
 
 @app.route('/ads/')
 @app.route('/ads/<params>')
-def ads(params=None):
-        if params:
-                #if you can write python eval exploit without dots, brackets etc -
-                #i want to see it
-                params = params.replace('.','').replace('(','').replace(')','')\
-                        .replace('[','').replace(']','').replace('{','')\
-                                                        .replace('}','')
+def ads(params="is_duble=0"):
 
-                #[("idads",1), ("idusers",1) ...]
-                params = [tuple(param.split('=')) for param in
+        #if you can write python eval exploit without dots, brackets etc -
+        #i want to see it
+        params = params.replace('.','')\
+                       .replace('(','').replace(')','')\
+                        .replace('[','').replace(']','')\
+                        .replace('{','').replace('}','')
+
+        #[("idads",1), ("idusers",1) ...]
+        params = [tuple(param.split('=')) for param in
                            params.split('&')]
+
                 
+        sqlalchemy_expr = 'Ad.query.filter('+', '.join(
+                ['Ad.'+param[0]+'=="'+param[1]+'"'
+                 for param in params])+').all()'
 
-                sqlalchemy_expr = 'Ad.query.filter('+', '.join(
-                        ['Ad.'+param[0]+'=="'+param[1]+'"'
-                         for param in params])+').all()'
-
-                logging.debug('sqlalchemy filter expression is "'\
-                              + sqlalchemy_expr + '"')
+        logging.debug('sqlalchemy filter expression is "'\
+                      + sqlalchemy_expr + '"')
                 
-                ads_db = eval(sqlalchemy_expr)
-
-        else:
-                params = []
-                ads_db = Ad.query.all()
+        ads_db = eval(sqlalchemy_expr)
         
         ads = [{'idads'           : ad.idads,
                 'title'           : ad.title,
@@ -632,6 +629,27 @@ def manage_ad(action, idads):
 @app.route('/time')
 def show_time():
         return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+#twilio and handle-recording
+#is temporaly(?) things to recieve voice messages from CL via twilio.com
+@app.route("/twilio", methods=['GET', 'POST'])
+def twilio():
+        resp = twilio.twiml.Response()
+        resp.record(maxLength="30", action="/handle-recording")
+        return str(resp)
+        
+        
+@app.route("/handle-recording", methods=['GET', 'POST'])
+def handle_recording():
+        """Play back the caller's recording."""
+        
+        recording_url = request.values.get("RecordingUrl", None)
+        
+        resp = twilio.twiml.Response()
+        #resp.play(recording_url)
+        resp.say("OK, goodbye.")
+        return str(resp)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

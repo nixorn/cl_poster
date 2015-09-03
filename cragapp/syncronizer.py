@@ -1,5 +1,6 @@
 #in fact it is scrapy spider + minimal running logic.
 import scrapy
+import itertools
 import operator
 import argparse
 import logging
@@ -243,9 +244,18 @@ class Synchronizer(scrapy.Spider):
             db_session.rollback()
             raise Exception("DB commit is not OK")
 
+        def clean_up(self, dummy):
+            ads = Ad.query.all()
+            ads_by_title = itertools.groupby(ads, lambda x:x.title)
+            #ad without scheduling and status with same name but with 
+
+            
 process = CrawlerProcess({
     "USER-AGENT":"Mozilla/5.0 (X11; Linux x86_64; rv:31.0) Gecko/20100101 Firefox/31.0",
 })
 
-process.crawl(Synchronizer)
-process.start()
+
+
+if __name__ == "__main__":
+    process.crawl(Synchronizer)
+    process.start()

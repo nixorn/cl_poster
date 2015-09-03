@@ -5,9 +5,32 @@ import logging
 import requests
 from models import Ad, User, VPS
 from database import db_session
+from lxml import etree
+from io import StringIO
+
 
 logging.basicConfig(filename='logs/mailloop.log',level=logging.DEBUG)
 
+
+def debug_html_content(filename, content):
+    with open(filename, "w") as f:
+        f.write(content)
+        f.flush()
+        f.close()
+
+def accept_terms(body):
+    '''body of "accept terms of use" page -> accept request to CL '''
+    tree = etree.parse(StringIO(unicode(body)), etree.HTMLParser())
+    cryptedStepCheck = tree.\
+        xpath("//form[./input[@name='cryptedStepCheck']]"\
+              +"/input[@name='cryptedStepCheck']/@value")[0]
+    confirm_link = tree.xpath("//form/@action")[0]
+    r = requests.post(confirm_link,
+                      data={
+                          "cryptedStepCheck":cryptedStepCheck,
+                          "continue":"y"})
+    debug_html_content("logs/accepting_terms.html",r.content)
+    
 def mail_loop(user):
     username = user.username
     password = user.mail_pass
@@ -30,11 +53,13 @@ def mail_loop(user):
         rsp = requests.get(confirm_url,proxies=proxies)
         logging.debug("confirmation request for url "+rsp.url\
                       +' have status '+ str(rsp.status_code))
-        with open("logs/mail_confirm_"+username.split('@')[0]+'.html', 'w') as f:
-            f.write(rsp.content)
-            f.flush()
-            f.close()
-    
+
+        debug_html_content("logs/mail_confirm_"+username.split('@')[0]+'.html',
+                           rsp.content)
+                    
+            if "Terms of Use" in rsp.content:
+                accept_terms(rsp.content)
+        
 if __name__ == '__main__':
     while 1:
         for user in User.query.all():

@@ -1,4 +1,5 @@
 import scrapy
+import itertools
 import operator
 import argparse
 import time
@@ -125,6 +126,12 @@ class AdManager(scrapy.Spider):
             callback=self.finalize)
 
     def repost1(self, response):
+        if self.ad.status = "Not posted":
+            raise Exception("Looks ad dont posted."+
+                            " Try to sync and reschedule action ")
+        if not ad.idcrag:
+            raise Exception("Ad have no CL id. It is not OK.")
+        
         debug_html_content(response,"repost",1)
 
         repost_form = filter(lambda x: self.ad.idcrag in x ,
@@ -145,7 +152,7 @@ class AdManager(scrapy.Spider):
 
         repost_url = response.xpath("//form[@id='postingForm']/@action").extract()[0]
         cryptedStepCheck = response.\
-                                xpath("//form[./input[@name='cryptedStepCheck']]/input[@name='cryptedStepCheck']/@value").extract()[0]
+            xpath("//form[./input[@name='cryptedStepCheck']]/input[@name='cryptedStepCheck']/@value").extract()[0]
 
         categoryid = response.xpath("//select[@name='CategoryID']/option[@selected]/@value").extract()[0]
 
@@ -428,7 +435,8 @@ class AdManager(scrapy.Spider):
             callback=self.finalize)
         
 
-    def edit1(self, response):
+    
+    def edit1(self, response): #not implemented
         debug_html_content(response,"edit",1)
 
     #testing function which should output in file final response
@@ -438,6 +446,8 @@ class AdManager(scrapy.Spider):
     def none(self, response):#dummy
         pass
 
+
+    
 process = CrawlerProcess({
     "USER-AGENT":"Mozilla/5.0 (X11; Linux x86_64; rv:31.0) Gecko/20100101 Firefox/31.0",
 })
