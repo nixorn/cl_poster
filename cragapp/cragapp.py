@@ -630,5 +630,26 @@ def manage_ad(action, idads):
 def show_time():
         return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+#twilio and handle-recording
+#is temporaly(?) things to recieve voice messages from CL via twilio.com
+@app.route("/twilio", methods=['GET', 'POST'])
+def twilio():
+        resp = twilio.twiml.Response()
+        resp.record(maxLength="30", action="/handle-recording")
+        return str(resp)
+        
+        
+@app.route("/handle-recording", methods=['GET', 'POST'])
+def handle_recording():
+        """Play back the caller's recording."""
+        
+        recording_url = request.values.get("RecordingUrl", None)
+        
+        resp = twilio.twiml.Response()
+        #resp.play(recording_url)
+        resp.say("OK, goodbye.")
+        return str(resp)
+
+
 if __name__ == '__main__':
     app.run(debug=True)
