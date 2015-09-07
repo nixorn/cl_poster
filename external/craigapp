@@ -2,7 +2,7 @@
 #/etc/init.d/craigapp
 
 RETVAL=0
-prog="crond"
+prog=""
 exec=/usr/sbin/crond
 lockfile=/var/lock/subsys/crond
 config=/etc/sysconfig/crond
