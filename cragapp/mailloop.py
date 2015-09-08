@@ -42,7 +42,9 @@ def mail_loop(user):
     msgs = imb.messages(unread=True,sent_from='robot@craigslist.org')
 
     vps = VPS.query.filter(VPS.idvpss == user.idvpss).first()
-    http_proxy = 'http://' + ':'.join([vps.ip, vps.port])
+    http_proxy = 'http://' + '@'.join([
+            ':'.join([str(v.login), str(v.password)]),
+            ':'.join([str(v.ip), str(v.port)])])
     https_proxy = http_proxy.replace('http', 'https')
     proxies = {'http': http_proxy,'https': http_proxy}
     

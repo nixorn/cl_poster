@@ -37,7 +37,9 @@ def loop():
         logging.debug("CL account for this ad is :"+u.__repr__())
         
         v = VPS.query.filter(VPS.idvpss == u.idvpss).first()
-        proxy = 'https://' + ':'.join([str(v.ip), str(v.port)])
+        proxy = 'https://' + '@'.join([
+            ':'.join([str(v.login), str(v.password)]),
+            ':'.join([str(v.ip), str(v.port)])])
         logging.debug("proxy will use:"+proxy)
         
         my_env = os.environ.copy()

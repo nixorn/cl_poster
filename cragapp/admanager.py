@@ -125,7 +125,7 @@ class AdManager(scrapy.Spider):
             callback=self.finalize)
 
     def repost1(self, response):
-        if self.ad.status = "Not posted":
+        if self.ad.status == "Not posted":
             raise Exception("Looks ad dont posted."+
                             " Try to sync and reschedule action ")
         if not ad.idcrag:

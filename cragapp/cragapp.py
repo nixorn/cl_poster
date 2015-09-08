@@ -582,9 +582,13 @@ def delete_image(idimages):
 def scrap_ads(idusers):
         u = User.query.filter(User.idusers == idusers).first()
         v = VPS.query.filter(VPS.idvpss == u.idvpss).first()
-        proxy = 'https://' + ':'.join([str(v.ip), str(v.port)])
+        https_proxy = 'https://'+ '@'.join([
+            ':'.join([str(v.login), str(v.password)]),
+            ':'.join([str(v.ip), str(v.port)])])
+        http_proxy = https_proxy.replace('https', 'http')
         my_env = os.environ.copy()
-        my_env["https_proxy"] = proxy
+        my_env["https_proxy"] = https_proxy
+        my_env["http_proxy"] = http_proxy
         subprocess.call(["python",
                          "cragapp/syncronizer.py",
                          "userscrap",
