@@ -57,7 +57,6 @@ class AdManager(scrapy.Spider):
         elif not getattr(self, 'name', None):
             raise ValueError("%s must have a name" % type(self).__name__)
         self.__dict__.update(kwargs)
-
         self.ad   = Ad.query.filter(Ad.idads == args.idads).first()
         self.user = User.query.filter(User.idusers == self.ad.idusers).first()
         vps  = VPS.query.filter(VPS.idvpss == self.user.idvpss).first()
@@ -71,7 +70,7 @@ class AdManager(scrapy.Spider):
         elif args.action == "delete"   : callback = self.delete1
         elif args.action == "repost"   : callback = self.repost1
         elif args.action == "undelete" : callback = self.undelete1
-        elif args.action == "add"      : callback = self.add1
+        elif args.action == "add"      : callback = self.add_go
         elif args.action == "edit"     : callback = self.edit1
         elif args.action == "None"     : callback = self.none
         else: raise Exception("incorrect action option. must be renew|delete|repost|add")
@@ -195,21 +194,20 @@ class AdManager(scrapy.Spider):
             dont_filter=True,
             callback=self.finalize)
 
-    def add1(self, response):#go button
-        debug_html_content(response,"add",1)
+    def add_go(self, response):#go button
+        debug_html_content(response,"add_go",1)
 
         return scrapy.FormRequest.from_response(
             response=response,
             url="https://accounts.craigslist.org/login/pstrdr",
             formdata ={"areaabb":self.area.clcode},
             method='POST',
-            callback=self.add2,
+            callback=self.add_serv,
 
             dont_filter=True)
 
-    def add2(self, response):# select services offer
-        debug_html_content(response,"add",2)
-
+    def add_serv(self, response):# select services offer
+        debug_html_content(response,"add_serv",2)
 
         cryptedStepCheck = response.\
             xpath("//form[./input[@name='cryptedStepCheck']]/input[@name='cryptedStepCheck']/@value").extract()[0]
@@ -220,18 +218,19 @@ class AdManager(scrapy.Spider):
             formdata = {"id":"so",
                         "cryptedStepCheck":cryptedStepCheck},
             method='POST',
-            callback=self.add3,
+            callback=self.add_sks,
 
             dont_filter=True)
 
-    def add3(self, response):#select which servise you want to offers. skilled trade for example
-        debug_html_content(response,"add",3)
-
+    def add_sks(self, response):#select which servise you want to offers. skilled trade for example
+        debug_html_content(response,"add_sks",3)
 
         cryptedStepCheck = response.\
-            xpath("//form[./input[@name='cryptedStepCheck']]/input[@name='cryptedStepCheck']/@value").extract()[0]
+            xpath("//form[./input[@name='cryptedStepCheck']]"+\
+                  "/input[@name='cryptedStepCheck']/@value").extract()[0]
 
-        url = response.xpath("//form[./input[@name='cryptedStepCheck']]/@action").extract()[0]
+        url = response.xpath("//form[./input[@name='cryptedStepCheck']]"+\
+                             "/@action").extract()[0]
         return scrapy.FormRequest.from_response(
             response=response,
             url=response.request.url.split("?s=")[0],
@@ -240,13 +239,34 @@ class AdManager(scrapy.Spider):
                         "cryptedStepCheck":cryptedStepCheck},
             method='POST',
             dont_filter=True,
-            callback=self.add4)
+            callback=self.add_location)
 
-    def add4(self, response): #title body etc
-        debug_html_content(response,"add",4)
+    #location. long island needed?
+    def add_location(self,response):
+        debug_html_content(response, "add_location", 4)
+        long_i_code = response\
+            .xpath("//label[text()='long island']/input/@value").extract_first()
+        
+        cryptedStepCheck = response.\
+            xpath("//form[./input[@name='cryptedStepCheck']]"+\
+                  "/input[@name='cryptedStepCheck']/@value").extract()[0]
+        
+        return scrapy.FormRequest.from_response(
+            response=response,
+            url=response.request.url,
+            formdata = {"n":long_i_code,
+                        "cryptedStepCheck":cryptedStepCheck},
+            method='POST',
+            dont_filter=True,
+            callback=self.add_body)
+        
+    
+    def add_body(self, response): #title body etc
+        debug_html_content(response,"add_body",4)
 
         cryptedStepCheck = \
-            response.xpath("//form[./input[@name='cryptedStepCheck']]/input[@name='cryptedStepCheck']/@value").extract()[0]
+            response.xpath("//form[./input[@name='cryptedStepCheck']]"+\
+                "/input[@name='cryptedStepCheck']/@value").extract()[0]
 
         url = response.xpath("//form[./input[@name='cryptedStepCheck']]/@action").extract()[0]
 
@@ -271,10 +291,39 @@ class AdManager(scrapy.Spider):
                 'cryptedStepCheck':cryptedStepCheck},
             method='POST',
             dont_filter=True,
-            callback=self.add5)
+            callback=self.add_map)
 
-    def add5(self, response):#images
-        debug_html_content(response,"add",5)
+    def add_map(self, response):#new map menu from CL
+        debug_html_content(response,"add_map",5)
+        return scrapy.FormRequest.from_response(
+            response=response,
+            url = response.request.url.split("?s=")[0],
+            formdata ={
+                "xstreet0":"",
+                "xstreet1":"",
+                "city":"",
+                "region":"",
+                "postal":"",
+                "lat":"0",
+                "lng":"0",
+                "AreaID":"3",
+                "seenmap":"1",
+                "draggedpin":"0",
+                "clickedinclude":"0",
+                "geocoder_latitude":"",
+                "geocoder_longitude":"",
+                "geocoder_accuracy":"",
+                "geocoder_version":"",
+                "cryptedStepCheck":cryptedStepCheck},
+            method='POST',
+            dont_filter=True,
+            callback=self.add_images)
+
+
+        
+
+    def add_images(self, response):#images
+        debug_html_content(response,"add_images",5)
 
         images = Image.query.filter(Image.idads == self.ad.idads).all()
 
@@ -357,12 +406,13 @@ class AdManager(scrapy.Spider):
                 'go':'Done with Images'},
             method='POST',
             dont_filter=True,
-            callback=self.add6)
+            callback=self.add_publish)
 
-    def add6(self, response):#publish
-        debug_html_content(response,"add",6)
+    def add_publish(self, response):#publish
+        debug_html_content(response,"add_publish",6)
         cryptedStepCheck = \
-            response.xpath("//form[./input[@name='cryptedStepCheck']]/input[@name='cryptedStepCheck']/@value").extract()[0]
+            response.xpath("//form[./input[@name='cryptedStepCheck']]"+\
+                "/input[@name='cryptedStepCheck']/@value").extract()[0]
         return scrapy.FormRequest.from_response(
             response=response,
             url = response.request.url.split("?s=")[0],
@@ -372,10 +422,10 @@ class AdManager(scrapy.Spider):
                 'go':"Continue"},
             method='POST',
             dont_filter=True,
-            callback=self.add7)
+            callback=self.add_get_id)
 
-    def add7(self,response):#get idcrag
-        debug_html_content(response,"add",7)
+    def add_get_id(self,response):#get idcrag
+        debug_html_content(response,"add_get_id",7)
         idcrag = response.xpath('//a[@target="_blank"]/@href').extract_first().split('/')[-1].split('.')[0]
         self.ad.idgrag = idcrag
         db_session.add(self.ad)
