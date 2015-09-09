@@ -239,7 +239,8 @@ class AdManager(scrapy.Spider):
                         "cryptedStepCheck":cryptedStepCheck},
             method='POST',
             dont_filter=True,
-            callback=self.add_location)
+            callback=self.add_body)
+            #callback=self.add_location)
 
     #location. long island needed?
     def add_location(self,response):
@@ -268,7 +269,9 @@ class AdManager(scrapy.Spider):
             response.xpath("//form[./input[@name='cryptedStepCheck']]"+\
                 "/input[@name='cryptedStepCheck']/@value").extract()[0]
 
-        url = response.xpath("//form[./input[@name='cryptedStepCheck']]/@action").extract()[0]
+        url = response.\
+              xpath("//form[./input[@name='cryptedStepCheck']]/@action")\
+              .extract()[0]
 
 
         return scrapy.FormRequest.from_response(
@@ -291,7 +294,8 @@ class AdManager(scrapy.Spider):
                 'cryptedStepCheck':cryptedStepCheck},
             method='POST',
             dont_filter=True,
-            callback=self.add_map)
+            callback=self.add_images)
+            #callback=self.add_map)
 
     def add_map(self, response):#new map menu from CL
         debug_html_content(response,"add_map",5)
@@ -318,9 +322,6 @@ class AdManager(scrapy.Spider):
             method='POST',
             dont_filter=True,
             callback=self.add_images)
-
-
-        
 
     def add_images(self, response):#images
         debug_html_content(response,"add_images",5)
@@ -426,7 +427,9 @@ class AdManager(scrapy.Spider):
 
     def add_get_id(self,response):#get idcrag
         debug_html_content(response,"add_get_id",7)
-        idcrag = response.xpath('//a[@target="_blank"]/@href').extract_first().split('/')[-1].split('.')[0]
+        idcrag = response\
+                 .xpath('//a[@target="_blank"]/@href')\
+                 .extract_first().split('/')[-1].split('.')[0]
         self.ad.idgrag = idcrag
         db_session.add(self.ad)
         try:
