@@ -17,7 +17,11 @@ parser.add_argument('--idads',
                     help='id from internal database')
 
 parser.add_argument('--action',
-                    help='renew|delete|repost|add|undelete|edit|None')
+                    help='renew|delete|repost|add|undelete|edit|confirm|None')
+
+parser.add_argument('--confirm_link',
+                    help='Link for mail confirmation. Optional argument,'+\
+                    'needed for confirmation only.')
 
 args = parser.parse_args()
 
@@ -57,12 +61,14 @@ class AdManager(scrapy.Spider):
         elif not getattr(self, 'name', None):
             raise ValueError("%s must have a name" % type(self).__name__)
         self.__dict__.update(kwargs)
-        self.ad   = Ad.query.filter(Ad.idads == args.idads).first()
-        self.user = User.query.filter(User.idusers == self.ad.idusers).first()
-        vps  = VPS.query.filter(VPS.idvpss == self.user.idvpss).first()
-        self.proxy = 'https://' + ':'.join([str(vps.ip), str(vps.port)])
-        self.area = Area.query.filter(Area.idarea == self.ad.idarea).first()
-        self.category = Category.query.filter(Category.idcategory == self.ad.idcategory).first()
+        if "idads" in dir(args):
+            self.ad   = Ad.query.filter(Ad.idads == args.idads).first()
+            self.user = User.query.filter(User.idusers == self.ad.idusers).first()
+            vps  = VPS.query.filter(VPS.idvpss == self.user.idvpss).first()
+            self.proxy = 'https://' + ':'.join([str(vps.ip), str(vps.port)])
+            self.area = Area.query.filter(Area.idarea == self.ad.idarea).first()
+            self.category = Category.query.\
+                filter(Category.idcategory == self.ad.idcategory).first()
 
 
     def parse(self, response):
@@ -72,6 +78,7 @@ class AdManager(scrapy.Spider):
         elif args.action == "undelete" : callback = self.undelete1
         elif args.action == "add"      : callback = self.add_go
         elif args.action == "edit"     : callback = self.edit1
+        elif args.action == "confirm"  : callback = self.confirm1
         elif args.action == "None"     : callback = self.none
         else: raise Exception("incorrect action option. must be renew|delete|repost|add")
         return scrapy.FormRequest.from_response(
@@ -83,7 +90,6 @@ class AdManager(scrapy.Spider):
                 'p':"0",
                 'inputEmailHandle': self.user.username,
                 'inputPassword': self.user.password},
-
             callback=callback)
 
 
@@ -461,7 +467,7 @@ class AdManager(scrapy.Spider):
             callback=self.finalize)
         
     def renew1(self, response):
-        debug_html_content(response,"renew",1)
+         debug_html_content(response,"renew",1)
         renew_form = filter(lambda x: self.ad.idcrag in x,
             response.xpath("//form[./input[@value='renew']]").extract())[0]
 
@@ -487,8 +493,32 @@ class AdManager(scrapy.Spider):
             method='POST',
             callback=self.finalize)
         
-
+    def confirm1(self, response):#go into confirmation
+        debug_html_content(response,"confirm",1)
+        url = args.confirm_link
+        return scrapy.Request(url=url
+            ,method='GET',
+            ,callback=self.confirm2)
     
+    def confirm2(self, response):#accept terms if need
+        debug_html_content(response,"confirm",2)
+        if "Terms of Use" in response.body:
+            cryptedStepCheck = \
+                    response.xpath("//form[./input[@name='cryptedStepCheck']]"+\
+                    "/input[@name='cryptedStepCheck']/@value").extract_first()
+
+            confirm_link = response.xpath("//form/@action").extract_first()
+            return scrapy.FormRequest.from_response(
+                response=response,
+                url=confirm_link,
+                formdata ={
+                    "cryptedStepCheck":cryptedStepCheck,
+                    "continue":"y"})
+        #nothing to confirm
+        else: return None
+        
+
+        
     def edit1(self, response): #not implemented
         debug_html_content(response,"edit",1)
 

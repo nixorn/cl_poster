@@ -10,26 +10,6 @@ from io import StringIO
 
 
 logging.basicConfig(filename='logs/mailloop.log',level=logging.DEBUG)
-
-
-def debug_html_content(filename, content):
-    with open(filename, "w") as f:
-        f.write(content)
-        f.flush()
-        f.close()
-
-def accept_terms(body):
-    '''body of "accept terms of use" page -> accept request to CL '''
-    tree = etree.parse(StringIO(unicode(body)), etree.HTMLParser())
-    cryptedStepCheck = tree.\
-        xpath("//form[./input[@name='cryptedStepCheck']]"\
-              +"/input[@name='cryptedStepCheck']/@value")[0]
-    confirm_link = tree.xpath("//form/@action")[0]
-    r = requests.post(confirm_link,
-                      data={
-                          "cryptedStepCheck":cryptedStepCheck,
-                          "continue":"y"})
-    debug_html_content("logs/accepting_terms.html",r.content)
     
 def mail_loop(user):
     username = user.username
@@ -46,21 +26,21 @@ def mail_loop(user):
             ':'.join([str(v.login), str(v.password)]),
             ':'.join([str(v.ip), str(v.port)])])
     https_proxy = http_proxy.replace('http', 'https')
-    proxies = {'http': http_proxy,'https': http_proxy}
+
+    my_env = os.environ.copy()
+    my_env["https_proxy"] = https_proxy
+    my_env["http_proxy"] = http_proxy
     
     for uid, msg in msgs:
         imb.mark_seen(uid)
         confirm_url = re.findall('https://post.craigslist.org/./.+/.+\r',
-                                  msg.body['plain'][0])[0].replace('\r','')
-        rsp = requests.get(confirm_url,proxies=proxies)
-        logging.debug("confirmation request for url "+rsp.url\
-                      +' have status '+ str(rsp.status_code))
-
-        debug_html_content("logs/mail_confirm_"+username.split('@')[0]+'.html',
-                           rsp.content)
-                    
-        if "Terms of Use" in rsp.content:
-            accept_terms(rsp.content)
+            msg.body['plain'][0])[0].replace('\r','')
+        
+        subprocess.call(
+            ["python","cragapp/admanager.py",
+             "--action", "confirm",
+             "--confirm_link", confirm_url],
+            env=my_env)
         
 if __name__ == '__main__':
     while 1:
