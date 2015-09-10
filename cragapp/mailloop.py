@@ -59,8 +59,8 @@ def mail_loop(user):
         debug_html_content("logs/mail_confirm_"+username.split('@')[0]+'.html',
                            rsp.content)
                     
-            if "Terms of Use" in rsp.content:
-                accept_terms(rsp.content)
+        if "Terms of Use" in rsp.content:
+            accept_terms(rsp.content)
         
 if __name__ == '__main__':
     while 1:
