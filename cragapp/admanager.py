@@ -475,7 +475,8 @@ class AdManager(scrapy.Spider):
     def renew1(self, response):
          debug_html_content(response,"renew",1)
         renew_form = filter(lambda x: self.ad.idcrag in x,
-            response.xpath("//form[./input[@value='renew']]").extract())[0]
+                            response.xpath("//form[./input[@value='renew']]")\
+                            .extract())[0]
 
         #split renew_form for "<>", get entry of tag wich contains "crypt"
         #and split for " "
