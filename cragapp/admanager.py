@@ -23,6 +23,9 @@ parser.add_argument('--confirm_link',
                     help='Link for mail confirmation. Optional argument,'+\
                     'needed for confirmation only.')
 
+parser.add_argument('--username',
+                    help='user for login. needed if operation is confirm')
+
 args = parser.parse_args()
 
 #output grabed html page to see what happens
@@ -61,6 +64,7 @@ class AdManager(scrapy.Spider):
         elif not getattr(self, 'name', None):
             raise ValueError("%s must have a name" % type(self).__name__)
         self.__dict__.update(kwargs)
+        
         if "idads" in dir(args):
             self.ad   = Ad.query.filter(Ad.idads == args.idads).first()
             self.user = User.query.filter(User.idusers == self.ad.idusers).first()
@@ -70,6 +74,8 @@ class AdManager(scrapy.Spider):
             self.category = Category.query.\
                 filter(Category.idcategory == self.ad.idcategory).first()
 
+        elif "username" in dir(args):
+            self.user = User.query.filter(User.username == args.username).first()
 
     def parse(self, response):
         if   args.action == "renew"    : callback = self.renew1
@@ -504,8 +510,8 @@ class AdManager(scrapy.Spider):
         debug_html_content(response,"confirm",2)
         if "Terms of Use" in response.body:
             cryptedStepCheck = \
-                    response.xpath("//form[./input[@name='cryptedStepCheck']]"+\
-                    "/input[@name='cryptedStepCheck']/@value").extract_first()
+                response.xpath("//form[./input[@name='cryptedStepCheck']]"+\
+                "/input[@name='cryptedStepCheck']/@value").extract_first()
 
             confirm_link = response.xpath("//form/@action").extract_first()
             return scrapy.FormRequest.from_response(
