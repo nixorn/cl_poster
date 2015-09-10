@@ -41,7 +41,7 @@ def mail_loop(user):
     imb = Imbox(server, username, password, ssl=True)
     msgs = imb.messages(unread=True,sent_from='robot@craigslist.org')
 
-    vps = VPS.query.filter(VPS.idvpss == user.idvpss).first()
+    v = VPS.query.filter(VPS.idvpss == user.idvpss).first()
     http_proxy = 'http://' + '@'.join([
             ':'.join([str(v.login), str(v.password)]),
             ':'.join([str(v.ip), str(v.port)])])
