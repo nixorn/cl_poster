@@ -66,4 +66,4 @@ if __name__ == '__main__':
     while 1:
         for user in User.query.all():
             mail_loop(user)
-            sleep(1200)#every 20 minutes
+            time.sleep(1200)#every 20 minutes
