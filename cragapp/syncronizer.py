@@ -244,11 +244,14 @@ class Synchronizer(scrapy.Spider):
             db_session.rollback()
             raise Exception("DB commit is not OK")
 
-    def clean_up(self, dummy):
+        #self.clean_up()
+
+    def clean_up(self):
         #crop dubles
         ads = Ad.query.filter(Ad.is_duble == "0").all()
         ads_by_title = itertools.filter(
             itertools.groupby(ads, lambda x:x.title))
+        
         #ad without scheduling but with same name and cragID
         #should be marked as duble. status and cragID should be transfered into
         #ad with scheduling
