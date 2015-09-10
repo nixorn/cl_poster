@@ -216,6 +216,7 @@ def ads(params="is_duble=0"):
                 'posting_time'    : ad.posting_time,
                 'scheduled_action': ad.scheduled_action,
                 'status'          : ad.status,
+                'idcrag'          : ad.idcrag,
                 'user'            : User.query.\
                 filter(User.idusers == ad.idusers).first().username,
                 'category'        : Category.query.\
