@@ -473,7 +473,7 @@ class AdManager(scrapy.Spider):
             callback=self.finalize)
         
     def renew1(self, response):
-         debug_html_content(response,"renew",1)
+        debug_html_content(response,"renew",1)
         renew_form = filter(lambda x: self.ad.idcrag in x,
                             response.xpath("//form[./input[@value='renew']]")\
                             .extract())[0]
