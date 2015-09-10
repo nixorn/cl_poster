@@ -504,7 +504,7 @@ class AdManager(scrapy.Spider):
         debug_html_content(response,"confirm",1)
         url = args.confirm_link
         return scrapy.Request(url=url
-            ,method='GET',
+            ,method='GET'
             ,callback=self.confirm2)
     
     def confirm2(self, response):#accept terms if need
