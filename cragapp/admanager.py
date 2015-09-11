@@ -255,23 +255,26 @@ class AdManager(scrapy.Spider):
             #callback=self.add_location)
 
     #location. long island needed?
+    # if "choose the location that fits best" in 
     def add_location(self,response):
         debug_html_content(response, "add_location", 4)
-        long_i_code = response\
-            .xpath("//label[text()='long island']/input/@value").extract_first()
+        if "choose the location that fits best" in response.body:
+            long_i_code = response\
+                .xpath("//label[text()='long island']/input/@value")\
+                .extract_first()
         
-        cryptedStepCheck = response.\
-            xpath("//form[./input[@name='cryptedStepCheck']]"+\
-                  "/input[@name='cryptedStepCheck']/@value").extract()[0]
+            cryptedStepCheck = response.\
+                xpath("//form[./input[@name='cryptedStepCheck']]"+\
+                "/input[@name='cryptedStepCheck']/@value").extract()[0]
         
-        return scrapy.FormRequest.from_response(
-            response=response,
-            url=response.request.url,
-            formdata = {"n":long_i_code,
-                        "cryptedStepCheck":cryptedStepCheck},
-            method='POST',
-            dont_filter=True,
-            callback=self.add_body)
+            return scrapy.FormRequest.from_response(
+                response=response,
+                url=response.request.url,
+                formdata = {"n":long_i_code,
+                    "cryptedStepCheck":cryptedStepCheck},
+                method='POST',
+                dont_filter=True,
+                callback=self.add_body)
         
     
     def add_body(self, response): #title body etc
@@ -302,38 +305,19 @@ class AdManager(scrapy.Spider):
                 'PostingBody':self.ad.description,
                 'has_license':str(self.ad.haslicense),#1 if has
                 'license_info':self.ad.license_info,
+                'xstreet0':"",
+                'xstreet1':"",
+                'city':"",
+                'region':"",
+                'postal':"",
                 'go':"Continue",
                 'cryptedStepCheck':cryptedStepCheck},
             method='POST',
             dont_filter=True,
             callback=self.add_images)
-            #callback=self.add_map)
 
-    def add_map(self, response):#new map menu from CL
-        debug_html_content(response,"add_map",5)
-        return scrapy.FormRequest.from_response(
-            response=response,
-            url = response.request.url.split("?s=")[0],
-            formdata ={
-                "xstreet0":"",
-                "xstreet1":"",
-                "city":"",
-                "region":"",
-                "postal":"",
-                "lat":"0",
-                "lng":"0",
-                "AreaID":"3",
-                "seenmap":"1",
-                "draggedpin":"0",
-                "clickedinclude":"0",
-                "geocoder_latitude":"",
-                "geocoder_longitude":"",
-                "geocoder_accuracy":"",
-                "geocoder_version":"",
-                "cryptedStepCheck":cryptedStepCheck},
-            method='POST',
-            dont_filter=True,
-            callback=self.add_images)
+
+
 
     def add_images(self, response):#images
         debug_html_content(response,"add_images",5)
