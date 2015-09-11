@@ -65,7 +65,7 @@ class AdManager(scrapy.Spider):
             raise ValueError("%s must have a name" % type(self).__name__)
         self.__dict__.update(kwargs)
         
-        if "idads" in dir(args):
+        if args.idads:
             self.ad   = Ad.query.filter(Ad.idads == args.idads).first()
             self.user = User.query.filter(User.idusers == self.ad.idusers).first()
             vps  = VPS.query.filter(VPS.idvpss == self.user.idvpss).first()
@@ -74,7 +74,7 @@ class AdManager(scrapy.Spider):
             self.category = Category.query.\
                 filter(Category.idcategory == self.ad.idcategory).first()
 
-        elif "username" in dir(args):
+        elif args.username:
             self.user = User.query.filter(User.username == args.username).first()
 
     def parse(self, response):
