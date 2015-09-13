@@ -217,9 +217,9 @@ class AdManager(scrapy.Spider):
             url="https://accounts.craigslist.org/login/pstrdr",
             formdata ={"areaabb":self.area.clcode},
             method='POST',
-            headers={"Host":"accounts.craigslist.org",
-                     #'Referer':'https://accounts.craigslist.org/login/home',
-                     'Connection':'keep-alive'},
+            #headers={"Host":"accounts.craigslist.org",
+            #         #'Referer':'https://accounts.craigslist.org/login/home',
+            #         'Connection':'keep-alive'},
             callback=self.add_serv)
 
     def add_serv(self, response):# select services offer
