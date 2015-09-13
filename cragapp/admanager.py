@@ -251,8 +251,8 @@ class AdManager(scrapy.Spider):
                         "cryptedStepCheck":cryptedStepCheck},
             method='POST',
             dont_filter=True,
-            callback=self.add_body)
-            #callback=self.add_location)
+            #callback=self.add_body)
+            callback=self.add_location)
 
     #location. long island needed?
     # if "choose the location that fits best" in 
@@ -276,12 +276,14 @@ class AdManager(scrapy.Spider):
                 dont_filter=True,
                 callback=self.add_body)
         #if response not contain location info
-        #just skip this step and parse body
+        #just skip this step and send body
         else: return self.add_body(response)
     
     def add_body(self, response): #title body etc
         debug_html_content(response,"add_body",5)
 
+        #body will add 2 minutes
+        time.sleep(120)
         cryptedStepCheck = \
             response.xpath("//form[./input[@name='cryptedStepCheck']]"+\
                 "/input[@name='cryptedStepCheck']/@value").extract()[0]
