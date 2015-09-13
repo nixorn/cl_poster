@@ -275,10 +275,12 @@ class AdManager(scrapy.Spider):
                 method='POST',
                 dont_filter=True,
                 callback=self.add_body)
-        
+        #if response not contain location info
+        #just skip this step and parse body
+        else: return self.add_body(response)
     
     def add_body(self, response): #title body etc
-        debug_html_content(response,"add_body",4)
+        debug_html_content(response,"add_body",5)
 
         cryptedStepCheck = \
             response.xpath("//form[./input[@name='cryptedStepCheck']]"+\

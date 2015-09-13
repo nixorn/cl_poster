@@ -247,16 +247,53 @@ class Synchronizer(scrapy.Spider):
         #self.clean_up()
 
     def clean_up(self):
-        #crop dubles
-        ads = Ad.query.filter(Ad.is_duble == "0").all()
-        ads_by_title = itertools.filter(
-            itertools.groupby(ads, lambda x:x.title))
+        '''ads with clid usualy scrapped, and if having duble titles in
+        ads without clid(created) - need to hide scrapped,
+        and transfer data from scraped to created'''
         
-        #ad without scheduling but with same name and cragID
-        #should be marked as duble. status and cragID should be transfered into
-        #ad with scheduling
-        for t, grp in ads_by_title:
-            ad = itertools.ifilter(lambda x: x.id)
+        #get ads which added in the past
+        now = datetime.datetime.now()
+        ads = Ad.query.filter(Ad.is_duble == "0"
+            and datetime.datetime.\
+                strptime(posting_time,"%Y-%m-%d %H:%M") < now
+            and Ad.scheduled_action == "add" ).all()
+
+        ads_with_clid    = filter(lambda x: x.idcrag != '', ads)
+        #app was add the ad,
+        #but dont know about that
+        ads_not_updated = filter(lambda x: x.idcrag == '', ads)
+        titles_not_updated = [x.title for x in ads_not_updated]
+        
+        for duble in ads_with_clid:
+            if duble.title in titles_not_updated:
+                duble.is_duble = "1"
+                db_session.add(duble)
+                try:
+                    db_session.commit()
+                except:
+                    db_session.rollback()
+
+        #update every not duble ad (created) 
+        #from duble ad with same name and max id(scraped)
+
+        for ad in ads_not_updated:
+            try: same_ad_from_cl = filter(lambda x: x.title = ad.title,
+                        ads_with_clid)\
+                        .sort(key=lambda x:x.idcrag).pop()
+            except: same_ad_from_cl = ad
+
+            ad.idcrag = same_ad_from_cl .idcrag
+            ad.allowed_actions = same_ad_from_cl.allowed_actions
+            ad.status = same_ad_from_cl.status
+            db_session.add(ad)
+            try:
+                db_session.commit()
+            except:
+                db_session.rollback()
+
+
+        
+        
 
             
 process = CrawlerProcess({
