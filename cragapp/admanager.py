@@ -334,32 +334,32 @@ class AdManager(scrapy.Spider):
             dont_filter=True,
             callback=self.add_map)
 
-def add_map(self, response):#new map menu from CL
-    debug_html_content(response,"add_map",5)
-    if "do not show on maps" in response.body:
-        return scrapy.FormRequest.from_response(
-            response=response,
-            url = response.request.url.split("?s=")[0],
-            formdata ={
-                "xstreet0":"",
-                "xstreet1":"",
-                "city":"",
-                "region":"",
-                "postal":"",
-                "lat":"0",
-                "lng":"0",
-                "AreaID":"3",
-                "seenmap":"1",
-                "draggedpin":"0",
-                "clickedinclude":"0",
-                "geocoder_latitude":"",
-                "geocoder_longitude":"",
-                "geocoder_accuracy":"",
-                "geocoder_version":"",
-                "cryptedStepCheck":cryptedStepCheck},
-            method='POST',
-            callback=self.add_images)
-    else: self.add_images(response)
+    def add_map(self, response):#new map menu from CL
+        debug_html_content(response,"add_map",5)
+        if "do not show on maps" in response.body:
+            return scrapy.FormRequest.from_response(
+                response=response,
+                url = response.request.url.split("?s=")[0],
+                formdata ={
+                    "xstreet0":"",
+                    "xstreet1":"",
+                    "city":"",
+                    "region":"",
+                    "postal":"",
+                    "lat":"0",
+                    "lng":"0",
+                    "AreaID":"3",
+                    "seenmap":"1",
+                    "draggedpin":"0",
+                    "clickedinclude":"0",
+                    "geocoder_latitude":"",
+                    "geocoder_longitude":"",
+                    "geocoder_accuracy":"",
+                    "geocoder_version":"",
+                    "cryptedStepCheck":cryptedStepCheck},
+                method='POST',
+                callback=self.add_images)
+        else: return self.add_images(response)
 
 
     def add_images(self, response):#images
