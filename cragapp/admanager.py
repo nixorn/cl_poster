@@ -312,6 +312,7 @@ class AdManager(scrapy.Spider):
                 'PostingBody':self.ad.description,
                 'has_license':str(self.ad.haslicense),#1 if has
                 'license_info':self.ad.license_info,
+                'wantamap':"on",#
                 'xstreet0':"",
                 'xstreet1':"",
                 'city':"",
