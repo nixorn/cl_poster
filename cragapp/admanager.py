@@ -136,7 +136,7 @@ class AdManager(scrapy.Spider):
                 "crypt":self.crypt,
                 "go":"delete"},
             method='POST',
-            dont_filter=True,
+
             callback=self.finalize)
 
     def repost1(self, response):
@@ -188,7 +188,7 @@ class AdManager(scrapy.Spider):
                 'go':"Continue",
                 'cryptedStepCheck':cryptedStepCheck},
             method='POST',
-            dont_filter=True,
+
             callback=self.repost3)
 
 
@@ -206,7 +206,7 @@ class AdManager(scrapy.Spider):
                 'continue':"y",
                 'go':"Continue"},
             method='POST',
-            dont_filter=True,
+
             callback=self.finalize)
 
     def add_go(self, response):#go button
@@ -236,9 +236,7 @@ class AdManager(scrapy.Spider):
             method='POST',
             callback=self.add_sks,
             headers={"Host":"post.craigslist.org",
-                     'Connection':'keep-alive'},
-
-            dont_filter=True)
+                     'Connection':'keep-alive'})
 
     def add_sks(self, response):#select which servise you want to offers. skilled trade for example
         debug_html_content(response,"add_sks",3)
@@ -258,7 +256,7 @@ class AdManager(scrapy.Spider):
             headers={"Host":"post.craigslist.org",
                      'Connection':'keep-alive'},
             method='POST',
-            dont_filter=True,
+
             #callback=self.add_body)
             callback=self.add_location)
 
@@ -283,7 +281,7 @@ class AdManager(scrapy.Spider):
                 method='POST',
                 headers={"Host":"post.craigslist.org",
                          'Connection':'keep-alive'},
-                dont_filter=True,
+
                 callback=self.add_body)
         #if response not contain location info
         #just skip this step and send body
@@ -331,7 +329,7 @@ class AdManager(scrapy.Spider):
             headers={"Host":"post.craigslist.org",
                      'Connection':'keep-alive'},
 
-            dont_filter=True,
+
             callback=self.add_map)
 
     def add_map(self, response):#new map menu from CL
@@ -449,7 +447,7 @@ class AdManager(scrapy.Spider):
                 'a':'fin',
                 'go':'Done with Images'},
             method='POST',
-            dont_filter=True,
+
             callback=self.add_publish)
 
     def add_publish(self, response):#publish
@@ -467,7 +465,7 @@ class AdManager(scrapy.Spider):
             method='POST',
             headers={"Host":"post.craigslist.org",
                      'Connection':'keep-alive'},
-            dont_filter=True,
+
             callback=self.add_get_id)
 
     def add_get_id(self,response):#get idcrag
