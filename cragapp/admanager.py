@@ -336,6 +336,10 @@ class AdManager(scrapy.Spider):
 
     def add_map(self, response):#new map menu from CL
         debug_html_content(response,"add_map",5)
+        cryptedStepCheck = \
+            response.xpath("//form[./input[@name='cryptedStepCheck']]"+\
+                "/input[@name='cryptedStepCheck']/@value").extract()[0]
+
         if "do not show on maps" in response.body:
             return scrapy.FormRequest.from_response(
                 response=response,
