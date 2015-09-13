@@ -317,7 +317,7 @@ class AdManager(scrapy.Spider):
                 'xstreet1':"",
                 'city':"",
                 'region':"",
-                'postal':"",
+                #'postal':"",
                 'go':"Continue",
                 'cryptedStepCheck':cryptedStepCheck},
             method='POST',
