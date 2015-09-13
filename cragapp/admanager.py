@@ -218,7 +218,7 @@ class AdManager(scrapy.Spider):
             formdata ={"areaabb":self.area.clcode},
             method='POST',
             headers={"Host":"accounts.craigslist.org",
-                     'Referer':'https://accounts.craigslist.org/login/home',
+                     #'Referer':'https://accounts.craigslist.org/login/home',
                      'Connection':'keep-alive'},
             callback=self.add_serv)
 
