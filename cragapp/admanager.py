@@ -217,9 +217,10 @@ class AdManager(scrapy.Spider):
             url="https://accounts.craigslist.org/login/pstrdr",
             formdata ={"areaabb":self.area.clcode},
             method='POST',
-            callback=self.add_serv,
-
-            dont_filter=True)
+            headers={"Host":"accounts.craigslist.org",
+                     'Referer':'https://accounts.craigslist.org/login/home',
+                     'Connection':'keep-alive'},
+            callback=self.add_serv)
 
     def add_serv(self, response):# select services offer
         debug_html_content(response,"add_serv",2)
@@ -234,6 +235,8 @@ class AdManager(scrapy.Spider):
                         "cryptedStepCheck":cryptedStepCheck},
             method='POST',
             callback=self.add_sks,
+            headers={"Host":"post.craigslist.org",
+                     'Connection':'keep-alive'},
 
             dont_filter=True)
 
@@ -252,6 +255,8 @@ class AdManager(scrapy.Spider):
 
             formdata = {"id":str(self.category.numcode),
                         "cryptedStepCheck":cryptedStepCheck},
+            headers={"Host":"post.craigslist.org",
+                     'Connection':'keep-alive'},
             method='POST',
             dont_filter=True,
             #callback=self.add_body)
@@ -276,6 +281,8 @@ class AdManager(scrapy.Spider):
                 formdata = {"n":long_i_code,
                     "cryptedStepCheck":cryptedStepCheck},
                 method='POST',
+                headers={"Host":"post.craigslist.org",
+                         'Connection':'keep-alive'},
                 dont_filter=True,
                 callback=self.add_body)
         #if response not contain location info
@@ -286,7 +293,7 @@ class AdManager(scrapy.Spider):
         debug_html_content(response,"add_body",5)
 
         #body will add 2 minutes
-        time.sleep(120)
+        time.sleep(30)
         cryptedStepCheck = \
             response.xpath("//form[./input[@name='cryptedStepCheck']]"+\
                 "/input[@name='cryptedStepCheck']/@value").extract()[0]
@@ -321,6 +328,9 @@ class AdManager(scrapy.Spider):
                 'go':"Continue",
                 'cryptedStepCheck':cryptedStepCheck},
             method='POST',
+            headers={"Host":"post.craigslist.org",
+                     'Connection':'keep-alive'},
+
             dont_filter=True,
             callback=self.add_images)
 
@@ -426,6 +436,8 @@ class AdManager(scrapy.Spider):
                 'continue':"y",
                 'go':"Continue"},
             method='POST',
+            headers={"Host":"post.craigslist.org",
+                     'Connection':'keep-alive'},
             dont_filter=True,
             callback=self.add_get_id)
 
