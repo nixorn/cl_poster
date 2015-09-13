@@ -39,6 +39,9 @@ def debug_html_content(response,action_name,step_num):
             f.write("\nCOOKIES: "+str(response.request.cookies)+'\n')
             f.write('\nBODY:\n')
             f.write(str(response.request.body)+'\n')
+            try:
+                f.write("\nFORM_DATA: "+str(response.request.formdata)+'\n')
+            except: pass
             f.write("\n###########################################\n")
             f.write("\n\n\nRESPONSE\n")
             f.write("\nHEADERS:\n")
