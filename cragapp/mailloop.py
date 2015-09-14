@@ -8,6 +8,8 @@ from database import db_session
 from lxml import etree
 from io import StringIO
 import os
+import subprocess
+
 
 
 logging.basicConfig(filename='logs/mailloop.log',level=logging.DEBUG)
