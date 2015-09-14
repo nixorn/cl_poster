@@ -7,6 +7,7 @@ from models import Ad, User, VPS
 from database import db_session
 from lxml import etree
 from io import StringIO
+import os
 
 
 logging.basicConfig(filename='logs/mailloop.log',level=logging.DEBUG)
