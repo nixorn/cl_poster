@@ -55,7 +55,7 @@ class Synchronizer(scrapy.Spider):
     allowed_domains = ['craigslist.org']
     start_urls = ['https://accounts.craigslist.org/login']
     download_delay = 2
-        custom_settings = {'USER_AGENT':"Mozilla/5.0 (X11; Linux x86_64; rv:31.0) Gecko/20100101 Firefox/31.0",}
+    custom_settings = {'USER_AGENT':"Mozilla/5.0 (X11; Linux x86_64; rv:31.0) Gecko/20100101 Firefox/31.0",}
     
     def parse(self, response):
         
@@ -198,7 +198,7 @@ class Synchronizer(scrapy.Spider):
 
         img_urls =\
             response.xpath('//*[@href or @src]')\
-                .re('http://images.craigslist.org/'\
+                 .re('http://images.craigslist.org/'\
                     +'[0-9a-zA-Z_]+[0-9]{2,3}x[0-9]{2,3}'\
                     +'.(?:jpg|png|jpeg|gif)')
 
@@ -277,7 +277,7 @@ class Synchronizer(scrapy.Spider):
         #from duble ad with same name and max id(scraped)
 
         for ad in ads_not_updated:
-            try: same_ad_from_cl = filter(lambda x: x.title = ad.title,
+            try: same_ad_from_cl = filter(lambda x: x.title == ad.title,
                         ads_with_clid)\
                         .sort(key=lambda x:x.idcrag).pop()
             except: same_ad_from_cl = ad
