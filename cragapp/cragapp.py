@@ -11,7 +11,7 @@ import subprocess
 import sys
 import os
 import sqlalchemy
-
+from sqlalchemy import desc
 
 from database import db_session
 from models import VPS, User, Image, Ad, Area, Category
@@ -204,7 +204,8 @@ def ads(params="is_duble=0"):
                 
         sqlalchemy_expr = 'Ad.query.filter('+', '.join(
                 ['Ad.'+param[0]+'=="'+param[1]+'"'
-                 for param in params])+').all()'
+                 for param in params])+')'+\
+                     '.order_by(desc(Ad.idads)).all()'
 
         logging.debug('sqlalchemy filter expression is "'\
                       + sqlalchemy_expr + '"')

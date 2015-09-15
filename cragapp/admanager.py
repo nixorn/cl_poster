@@ -554,7 +554,7 @@ class AdManager(scrapy.Spider):
                     "continue":"y"})
         #nothing to confirm
         else: return None
-        
+    
 
         
     def edit1(self, response): #not implemented

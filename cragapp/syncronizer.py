@@ -4,6 +4,8 @@ import itertools
 import operator
 import argparse
 import logging
+import datetime
+import subprocess
 from scrapy.crawler import CrawlerProcess
 from models import Ad, Image, User, VPS, Category, Area
 from database import db_session
@@ -86,7 +88,6 @@ class Synchronizer(scrapy.Spider):
                     'inputEmailHandle': self.user.username,
                     'inputPassword': self.user.password},
                 callback=self.parse_home)
-
 
     def parse_home(self, response):
         debug_html_content(response,"parse_home",1)
@@ -244,61 +245,12 @@ class Synchronizer(scrapy.Spider):
             db_session.rollback()
             raise Exception("DB commit is not OK")
 
-        #self.clean_up()
-
-    def clean_up(self):
-        '''ads with clid usualy scrapped, and if having duble titles in
-        ads without clid(created) - need to hide scrapped,
-        and transfer data from scraped to created'''
-        
-        #get ads which added in the past
-        now = datetime.datetime.now()
-        ads = Ad.query.filter(Ad.is_duble == "0"
-            and datetime.datetime.\
-                strptime(posting_time,"%Y-%m-%d %H:%M") < now
-            and Ad.scheduled_action == "add" ).all()
-
-        ads_with_clid    = filter(lambda x: x.idcrag != '', ads)
-        #app was add the ad,
-        #but dont know about that
-        ads_not_updated = filter(lambda x: x.idcrag == '', ads)
-        titles_not_updated = [x.title for x in ads_not_updated]
-        
-        for duble in ads_with_clid:
-            if duble.title in titles_not_updated:
-                duble.is_duble = "1"
-                db_session.add(duble)
-                try:
-                    db_session.commit()
-                except:
-                    db_session.rollback()
-
-        #update every not duble ad (created) 
-        #from duble ad with same name and max id(scraped)
-
-        for ad in ads_not_updated:
-            try: same_ad_from_cl = filter(lambda x: x.title == ad.title,
-                        ads_with_clid)\
-                        .sort(key=lambda x:x.idcrag).pop()
-            except: same_ad_from_cl = ad
-
-            ad.idcrag = same_ad_from_cl .idcrag
-            ad.allowed_actions = same_ad_from_cl.allowed_actions
-            ad.status = same_ad_from_cl.status
-            db_session.add(ad)
-            try:
-                db_session.commit()
-            except:
-                db_session.rollback()
+        #subprocess.call(['python', 'cragapp/duple_handle.py',])
 
 
-        
-        
 
-            
-process = CrawlerProcess({
-    "USER-AGENT":"Mozilla/5.0 (X11; Linux x86_64; rv:31.0) Gecko/20100101 Firefox/31.0",
-})
+process = CrawlerProcess()
+
 
 
 
