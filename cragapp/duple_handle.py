@@ -10,6 +10,22 @@ def save_thing(thing):
         db_session.commit()
     except:
         db_session.rollback()
+
+def calc_posting_time(ad):
+    #cases when not need to change something
+    if ad.repost_timeout == '' or ad.posting_time == '': return ad.posting_time
+    elif datetime.datetime.strptime(ad.posting_time, "%Y-%m-%d %H:%M")\
+         > datetime.datetime.now():
+        return ad.posting_time
+    elif not ad.repost_timeout.isdigit(): return ad.posting_time
+
+    timeout = int(ad.repost_timeout)*60*60#seconds
+    posting_time = datetime.datetime.strptime(ad.posting_time, "%Y-%m-%d %H:%M")
+    
+    while posting_time < datetime.datetime.now():
+        posting_time = posting_time\
+            + datetime.timedelta(seconds = timeout)
+    return posting_time.strftime("%Y-%m-%d %H:%M")
     
 
 def add_sync_handle():
@@ -62,13 +78,20 @@ def add_sync_handle():
                 ad.idcrag = duble_from_cl.idcrag
                 ad.allowed_actions = duble_from_cl.allowed_actions
                 ad.status = duble_from_cl.status
-                #ad.scheduled_action = repost/renew from ad.allowed_actions
-                #ad.posting time = to_datetime(ad.posting_time) + to_datetime(ad.repost_timeout)
-                save_thing(ad)
-                print "updated ad id:", ad.idcrag, ad
-            
+                
+                if 'repost' in ad.allowed_actions and ad.repost_timeout:
+                    ad.scheduled_action = 'repost'
+                elif 'renew' in ad.allowed_actions and ad.repost_timeout:
+                    ad.scheduled_action = 'renew'
+                else:
+                    ad.scheduled_action = ''
+                    
+                print "POSTING_TIME", ad.posting_time
+                ad.posting_time = calc_posting_time(ad)
+            save_thing(ad)
+                
         except Exception as e:
-            print e.message
+            print 'EXCEPTION!',e.message
     #debug info
     return {"for_update": ads_for_update,
             "now": now,

@@ -45,7 +45,8 @@ def loop():
         my_env = os.environ.copy()
         my_env["https_proxy"] = proxy
         my_env["http_proxy"] = proxy.replace("https", "http")
-        
+
+        #posting
         os_process_code = subprocess.call(
             ["python","cragapp/admanager.py","--idads", idads, "--action", action],
             env=my_env)
@@ -55,7 +56,8 @@ def loop():
         
         ad.prev_action = ad.scheduled_action
         ad.prev_act_time = ad.posting_time
-        
+
+
         if os_process_code == 2:
             logging.error(' command "python cragapp/admanager.py --idads '\
                           +idads+' --action '+ action\
@@ -67,6 +69,7 @@ def loop():
             logging.debug('admanager and synchronizer worked OK?')
             ad.prev_act_stat = 'OK'
 
+        #post-posting processing
         ad.scheduled_action = ''
         ad.posting_time     = ''
 
@@ -89,15 +92,13 @@ def loop():
                 while posting_time < datetime.datetime.now():
                     posting_time = posting_time\
                         + datetime.timedelta(seconds = timeout)
-                return posting_time
+                return posting_time.strftime("%Y-%m-%d %H:%M")
             
             if action:
                 ad.scheduled_action = action
                 logging.debug('the next scheduled action is '+ action)
-                ad.posting_time = calc_posting_time(posting_time).\
-                    strftime("%Y-%m-%d %H:%M")
+                ad.posting_time = calc_posting_time(posting_time)
                 logging.debug('the time when action will is'+ ad.posting_time)
-            
         db_session.add(ad)
         
         try:

@@ -45,6 +45,10 @@ def mail_loop(user):
              "--confirm_link", confirm_url,
              "--username",username],
             env=my_env)
+    #grab current ads state after confirmation
+    subprocess.call(['python', 'cragapp/syncronizer.py',
+                     'userscrap', '--iduser', user.idusers]
+                    ,env=my_env)
         
 if __name__ == '__main__':
     while 1:

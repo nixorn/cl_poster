@@ -239,13 +239,14 @@ class Synchronizer(scrapy.Spider):
                             
 
         db_session.add(img)
+        
         try:
             db_session.commit()
         except:
             db_session.rollback()
             raise Exception("DB commit is not OK")
-
-        #subprocess.call(['python', 'cragapp/duple_handle.py',])
+        #clean dubles
+        subprocess.call(['python', 'cragapp/duple_handle.py',])
 
 
 
