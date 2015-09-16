@@ -197,6 +197,10 @@ class Synchronizer(scrapy.Spider):
             db_session.rollback()
             raise Exception("DB commit is not OK")
 
+        
+        #clean dubles
+        subprocess.call(['python', 'cragapp/duple_handle.py',])
+
         img_urls =\
             response.xpath('//*[@href or @src]')\
                  .re('http://images.craigslist.org/'\
@@ -206,13 +210,15 @@ class Synchronizer(scrapy.Spider):
 
         
         img_urls = list(set(img_urls))
-
+        
         for pic_url in img_urls:
             yield scrapy.Request(pic_url,
                 meta={'idads':ad.idads},
                 callback=self.parseImage)
 
     def parseImage(self, response):
+
+
 
         idads = response.meta['idads']
 
@@ -245,8 +251,6 @@ class Synchronizer(scrapy.Spider):
         except:
             db_session.rollback()
             raise Exception("DB commit is not OK")
-        #clean dubles
-        subprocess.call(['python', 'cragapp/duple_handle.py',])
 
 
 
