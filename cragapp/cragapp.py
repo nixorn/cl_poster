@@ -50,7 +50,10 @@ def vps_create():
 
 @app.route('/vps/add', methods=['POST',])
 def vps_add():
-        ip, port, user, password = request.form['ip'], request.form['port'],request.form['user'], request.form['password']
+        ip       = request.form['ip'].strip()
+        port     = request.form['port'].strip()
+        user     = request.form['user'].strip()
+        password = request.form['password']
         v = VPS(ip, port, user, password)
         db_session.add(v)
         
@@ -79,10 +82,10 @@ def vps_delete(vps_id):
 
 @app.route('/vps/update', methods=['POST',])
 def vps_update():
-        vps_id    = request.form['idvpss']
-        ip        = request.form['ip']
-        port      = request.form['port']
-        login     = request.form['user']
+        vps_id    = request.form['idvpss'].strip()
+        ip        = request.form['ip'].strip()
+        port      = request.form['port'].strip()
+        login     = request.form['user'].strip()
         password  = request.form['password']
 
         vps = VPS.query.filter(VPS.idvpss==vps_id).first()
@@ -122,8 +125,8 @@ def user_create():
 @app.route('/user/add', methods=['POST',])
 def user_add():
 
-        idvpss    = request.form['idvpss']
-        username  = request.form['username']
+        idvpss    = request.form['idvpss'].strip()
+        username  = request.form['username'].strip()
         password  = request.form['password']
         mail_pass = request.form['mail_pass']
 
@@ -165,9 +168,9 @@ def user_edit(user_id):
 
 @app.route('/user/update', methods=['POST',])
 def user_update():
-        idusers   = request.form['idusers']
-        idvpss    = request.form['idvpss']
-        username  = request.form['username']
+        idusers   = request.form['idusers'].strip()
+        idvpss    = request.form['idvpss'].strip()
+        username  = request.form['username'].strip()
         password  = request.form['password']
         mail_pass = request.form['mail_pass']
         
@@ -337,27 +340,27 @@ def ad_create():
 @app.route('/ad/add', methods=['POST',])
 def ad_add():
 
-        idcrag            = request.form['idcrag']
-        description       = request.form['description']
-        title             = request.form['title']
-        posting_time      = request.form['posting_time']
-        scheduled_action  = request.form['scheduled_action']
-        repost_timeout    = request.form['repost_timeout']
+        idcrag            = request.form['idcrag'].strip()
+        description       = request.form['description'].strip()
+        title             = request.form['title'].strip()
+        posting_time      = request.form['posting_time'].strip()
+        scheduled_action  = request.form['scheduled_action'].strip()
+        repost_timeout    = request.form['repost_timeout'].strip()
         prev_action       = ""
         prev_act_time     = ""
         prev_act_stat     = ""
         status            = "Not posted"
-        idusers           = request.form['idusers']
-        idcategory        = request.form['category']
-        idarea            = request.form['area']
+        idusers           = request.form['idusers'].strip()
+        idcategory        = request.form['category'].strip()
+        idarea            = request.form['area'].strip()
         replymail         = None #request.form['replymail']
         allowed_actions   = "None,add"
-        contact_phone     = request.form['contact_phone']
-        contact_name      = request.form['contact_name']
-        postal            = request.form['postal']
-        specific_location = request.form['specific_location']
-        haslicense        = request.form['has_license']
-        license_info      = request.form['license']
+        contact_phone     = request.form['contact_phone'].strip()
+        contact_name      = request.form['contact_name'].strip()
+        postal            = request.form['postal'].strip()
+        specific_location = request.form['specific_location'].strip()
+        haslicense        = request.form['has_license'].strip()
+        license_info      = request.form['license'].strip()
 
         a = Ad(idcrag,
                description,
