@@ -17,6 +17,7 @@ logging.basicConfig(filename='logs/mailloop.log',level=logging.DEBUG)
 def mail_loop(user):
     username = user.username
     password = user.mail_pass
+    logging.debug("user is "+username+" password is "+password)
     if   'gmail.com' in username: server = 'imap.gmail.com'
     elif 'yahoo.com' in username: server = 'imap.mail.yahoo.com'
     else: raise NotImplementedError("only yahoo.com and gmail.com imaps supported")
@@ -38,7 +39,7 @@ def mail_loop(user):
         imb.mark_seen(uid)
         confirm_url = re.findall('https://post.craigslist.org/./.+/.+\r',
             msg.body['plain'][0])[0].replace('\r','')
-        print my_env
+        logging.debug("confirm link is "+confirm_url)
         subprocess.call(
             ["python","cragapp/admanager.py",
              "--action", "confirm",
