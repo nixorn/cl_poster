@@ -57,7 +57,7 @@ class Synchronizer(scrapy.Spider):
     allowed_domains = ['craigslist.org']
     start_urls = ['https://accounts.craigslist.org/login']
     download_delay = 2
-    custom_settings = {'USER_AGENT':"Mozilla/5.0 (X11; Linux x86_64; rv:31.0) Gecko/20100101 Firefox/31.0",}
+    custom_settings = {'USER_AGENT':"Mozilla/5.0 (Windows NT 6.1; rv:41.0) Gecko/20100101 Firefox/41.0",}
     
     def parse(self, response):
         

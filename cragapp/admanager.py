@@ -59,7 +59,7 @@ class AdManager(scrapy.Spider):
     download_delay = 2
     start_urls = ['https://accounts.craigslist.org/login']
     handle_httpstatus_list = [404]
-    custom_settings = {'USER_AGENT':"Mozilla/5.0 (X11; Linux x86_64; rv:31.0) Gecko/20100101 Firefox/31.0",}
+    custom_settings = {'USER_AGENT':"Mozilla/5.0 (Windows NT 6.1; rv:41.0) Gecko/20100101 Firefox/41.0",}
 
     def __init__(self, name=None, **kwargs):
         if name is not None:
@@ -570,7 +570,7 @@ class AdManager(scrapy.Spider):
 
     
 process = CrawlerProcess({
-    "USER-AGENT":"Mozilla/5.0 (X11; Linux x86_64; rv:31.0) Gecko/20100101 Firefox/31.0",
+    "USER-AGENT":"Mozilla/5.0 (Windows NT 6.1; rv:41.0) Gecko/20100101 Firefox/41.0",
 })
 
 process.crawl(AdManager)
