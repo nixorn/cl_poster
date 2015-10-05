@@ -33,12 +33,12 @@ def mail_loop(user):
     my_env = os.environ.copy()
     my_env["https_proxy"] = https_proxy
     my_env["http_proxy"] = http_proxy
-    
+
     for uid, msg in msgs:
         imb.mark_seen(uid)
         confirm_url = re.findall('https://post.craigslist.org/./.+/.+\r',
             msg.body['plain'][0])[0].replace('\r','')
-        
+        print my_env
         subprocess.call(
             ["python","cragapp/admanager.py",
              "--action", "confirm",
@@ -47,7 +47,7 @@ def mail_loop(user):
             env=my_env)
     #grab current ads state after confirmation
     subprocess.call(['python', 'cragapp/syncronizer.py',
-                     'userscrap', '--iduser', user.idusers]
+                     'userscrap', '--iduser', str(user.idusers)]
                     ,env=my_env)
         
 if __name__ == '__main__':
