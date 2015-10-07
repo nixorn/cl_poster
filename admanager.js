@@ -66,13 +66,13 @@ function submitNewPosting(){
 function selectServices1(){
     page.evaluate(
 	function (){
-	    document.querySelectorAll("input[value=so]").checked = true});
+	    document.querySelectorAll("input[value=so]")[0].checked = true});
     page.render('3_services.png')}
 
 function selectServices2(){
     page.evaluate(
 	function (service_code){
-	    document.querySelectorAll("input[value="+service_code+"]").checked = true}, service_code);
+	    document.querySelectorAll("input[value='"+service_code+"']")[0].checked = true}, service_code);
     page.render('4_services.png')}
 
 
@@ -90,7 +90,7 @@ function fillAdBody(){
 	    document.getElementById('GeographicArea').value = specific_location;
 	    document.getElementById('postal_code').value = postal;
 
-	    if (is_licensed == yes) {
+	    if (is_licensed == 'yes') {
 		document.getElementById('lic').checked = true;
 		document.getElementById('license_info').value = license_info;
 		
@@ -137,7 +137,7 @@ steps = [loadLoginForm,
 	 selectServices2,
 	 submitServices,
 	 fillAdBody,
-	 
+	 publish,
 	 finalize]
 
 interval = setInterval(function() {
@@ -150,7 +150,7 @@ interval = setInterval(function() {
     console.log("test complete!");
     phantom.exit();
   }
-}, 1500);
+}, 3000);
 
 
 
