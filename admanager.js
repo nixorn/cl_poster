@@ -2,6 +2,7 @@
 
 var page   = require('webpage').create(),
     system = require('system'),
+    sqlite = require('./sql.js'),
     loadInProgress = false,
     crawlIndex = 0,
     CLlogin,
