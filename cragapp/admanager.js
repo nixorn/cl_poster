@@ -1,8 +1,6 @@
-//
-
 var page   = require('webpage').create(),
     system = require('system'),
-    sqlite = require('./sql.js'),
+    fs = require('fs'),
     loadInProgress = false,
     crawlIndex = 0,
     CLlogin,
@@ -42,7 +40,7 @@ function fillLoginData(){
 	    document.getElementById('inputEmailHandle').value = CLlogin;
 	    document.getElementById('inputPassword').value = CLpassword;
 	}, CLlogin, CLpassword);
-    page.render('1_login_form.png');
+    page.render('../logs/1_login_form.png');
 }
 
 function submitLoginData(){
@@ -54,7 +52,7 @@ function setAreaSelect(){
     page.evaluate(
 	function(area_shortcode){
 	    document.getElementsByName('areaabb')[0].value = area_shortcode}, area_shortcode);
-    page.render('2_area_select.png');}
+    page.render('../logs/2_area_select.png');}
 
 function submitNewPosting(){
     page.evaluate(
@@ -68,13 +66,13 @@ function selectServices1(){
     page.evaluate(
 	function (){
 	    document.querySelectorAll("input[value=so]")[0].checked = true});
-    page.render('3_services.png')}
+    page.render('../logs/3_services.png')}
 
 function selectServices2(){
     page.evaluate(
 	function (service_code){
 	    document.querySelectorAll("input[value='"+service_code+"']")[0].checked = true}, service_code);
-    page.render('4_services.png')}
+    page.render('../logs/4_services.png')}
 
 
 function submitServices(){
@@ -98,22 +96,27 @@ function fillAdBody(){
 	    } else{document.getElementById('nolic').checked = true;}
 	    
 	},title,body,specific_location,	postal,is_licensed,license_info);
-    page.render('5_ad_body.png');}
+    page.render('../logs/5_ad_body.png');}
 
 function submitAdBody(){
     page.evaluate(
 	function(){
 	    document.getElementById('postingForm').submit()})}
 
+function handleImages(){
+    page.render('../logs/6_pre_image.png');
+    page.evaluate(
+	function(){
+	    document.getElementsByTagName('form')[1].submit();   })}
 
 function publish(){
-    page.render('6_pre_publish.png');
+    page.render('../logs/7_pre_publish.png');
     page.evaluate(
 	function(){
 	    document.getElementsByTagName('form')[0].submit()})}
 
 function finalize(){
-    page.render('finalize.png')};
+    page.render('../logs/finalize.png')};
 
 
 
@@ -138,6 +141,8 @@ steps = [loadLoginForm,
 	 selectServices2,
 	 submitServices,
 	 fillAdBody,
+	 submitAdBody,
+	 handleImages,
 	 publish,
 	 finalize]
 
