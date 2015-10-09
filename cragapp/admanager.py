@@ -1,3 +1,5 @@
+
+#TODO: phantomjs proxy support
 import os
 import itertools
 import operator
@@ -9,34 +11,46 @@ import tempfile
 import json
 from models import Ad, User, VPS, Area, Image, Category
 
-
 logging.basicConfig(filename='logs/admanager.log',level=logging.DEBUG)
 
-
 # definitions
-
 def add(area, service, category,
         username, password, contact_phone, title, specific_location,
         postal, body, haslicense,license_info, proxy, images):
 
-    config = tempfile.NamedTemporaryFile()
-    config.write (
-        json.dumps(
-            {'service':service,
+    json_config_dump = json.dumps(
+            {'area':area,
+             'service':service,
              'category':category,
              'username':username,
-             'passwoed':password,
+             'password':password,
              'contact_phone':contact_phone,
              'title':title,
              'specific_location':specific_location,
              'postal':postal,
              'body':body,
              'haslicense':haslicense,
-             'license_info':license_info}))
-    config.flush()
-
-    out = subprocess.check_output(['./phantomjs', './add_ad.js', config.name])
+             'license_info':license_info})
     
+    config = tempfile.NamedTemporaryFile(suffix='.json')
+    
+    config.write (json_config_dump)
+    config.flush()
+    
+    with open('logs/last_config.json', 'w') as f:
+        f.write(json_config_dump)
+        f.flush()
+
+
+    try:
+        out = subprocess.check_output(['./phantomjs', './cragapp/add_ad.js', config.name])
+        print out
+    except Exception as e:
+        print e
+        print e.message
+        #print e.output
+
+
 
 def delete()  : pass
 def repost()  : pass
@@ -66,7 +80,7 @@ args = parser.parse_args()
 
 my_env = os.environ.copy()
 
-print 'enviropment', my_env
+
 
 if args.idads:
     ad       = Ad.query.filter(Ad.idads == args.idads).first()
@@ -93,7 +107,7 @@ if args.action == "add":
         body=ad.description,
         haslicense=ad.haslicense,
         license_info=ad.license_info,
-        proxy='@'.join(':'.join([VPS.login, VPS.password]), ':'.join([VPS.ip,VPS.port]))
+        proxy='@'.join([':'.join([vps.login, vps.password]), ':'.join([vps.ip, vps.port])]),
         images=images)
     
 elif args.action == "delete"   : delete()
