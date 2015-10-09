@@ -1,0 +1,17 @@
+.gitignore
+bin/*
+*~
+lib*
+*.pyc
+*pip*
+include/*
+logs/*
+venv*
+server*
+finalize.html
+test/*
+*.db
+*.log
+detail_comparsion
+.~lock.10_PVAs_Sept_19_2015.ods#
+oldadmanager.py

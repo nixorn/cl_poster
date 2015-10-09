@@ -12,152 +12,165 @@ var page   = require('webpage').create(),
     specific_location,
     postal,           
     is_licensed,      
-    license_info;
-
-
+    license_info,
+    config;
 
 
 page.settings.userAgent = "Mozilla/5.0 (Windows NT 6.1; rv:41.0) Gecko/20100101 Firefox/41.0"
 
-CLlogin    = 'murchendaizer@gmail.com';
-CLpassword = 'ltybcxtge';
-area_shortcode = 'isp'; //long island
-service_code = 83; //skilled trade
-title = 'Haskeller';            
-body = 'Good (or bad?) haskell programmer at your service';             
-specific_location = 'Babylon';
-postal = '11930';          
-is_licensed = 'no';
-license_info = 'Where I can take a haskell license, guys?';
-
-
-function loadLoginForm(){
-    page.open('https://accounts.craigslist.org/login');};
-
-function fillLoginData(){
-    page.evaluate(
-	function(CLlogin, CLpassword){
-	    document.getElementById('inputEmailHandle').value = CLlogin;
-	    document.getElementById('inputPassword').value = CLpassword;
-	}, CLlogin, CLpassword);
-    page.render('../logs/1_login_form.png');
+if (system.args.length < 2){
+    console.log("Give at least name of the config file!\n" +
+	       "Call should be like\n" +
+		"phantomjs add_ad.js config.json");
+    phantom.exit(1);
 }
-
-function submitLoginData(){
-    page.evaluate(
-	function(){
-	    document.getElementsByName('login')[0].submit()});}
+else{
+    try{config = JSON.parse(fs.readFile(system.args[1]))}
+    catch(err){
+	system.stderr.write("config file is not a valid!");
+	phantom.exit(1);
+    };
     
-function setAreaSelect(){
-    page.evaluate(
-	function(area_shortcode){
-	    document.getElementsByName('areaabb')[0].value = area_shortcode}, area_shortcode);
-    page.render('../logs/2_area_select.png');}
-
-function submitNewPosting(){
-    page.evaluate(
-	function(){
-	    document.getElementsByClassName('new_posting_thing')[0].submit()});
-
-}
-
-
-function selectServices1(){
-    page.evaluate(
-	function (){
-	    document.querySelectorAll("input[value=so]")[0].checked = true});
-    page.render('../logs/3_services.png')}
-
-function selectServices2(){
-    page.evaluate(
-	function (service_code){
-	    document.querySelectorAll("input[value='"+service_code+"']")[0].checked = true}, service_code);
-    page.render('../logs/4_services.png')}
+    CLlogin    = config["username"];
+    CLpassword = config["password"];
+    area_shortcode = config["area"]; //long island for example
+    service = config["service"];
+    service_code = config["category"]; //skilled trade
+    title = config["title"];            
+    body = config["body"];
+    specific_location = config["specific_location"];
+    postal = config["postal"];          
+    is_licensed = config["no"];
+    license_info = config["license_info"];
 
 
-function submitServices(){
-    page.evaluate(
-    function(){
-	document.querySelectorAll('form[class="catpick picker"]')[0].submit()})}
+    function loadLoginForm(){
+	page.open('https://accounts.craigslist.org/login');};
 
-function fillAdBody(){
-    page.evaluate(
-	function(title, body, specific_location, postal, is_licensed, license_info){
-	    
-	    document.getElementById('PostingTitle').value = title;
-	    document.getElementById('PostingBody').value = body;
-	    document.getElementById('GeographicArea').value = specific_location;
-	    document.getElementById('postal_code').value = postal;
+    function fillLoginData(){
+	page.evaluate(
+	    function(CLlogin, CLpassword){
+		document.getElementById('inputEmailHandle').value = CLlogin;
+		document.getElementById('inputPassword').value = CLpassword;
+	    }, CLlogin, CLpassword);
+	page.render('../logs/1_login_form.png');
+    }
 
-	    if (is_licensed == 'yes') {
-		document.getElementById('lic').checked = true;
-		document.getElementById('license_info').value = license_info;
+    function submitLoginData(){
+	page.evaluate(
+	    function(){
+		document.getElementsByName('login')[0].submit()});}
+    
+    function setAreaSelect(){
+	page.evaluate(
+	    function(area_shortcode){
+		document.getElementsByName('areaabb')[0].value = area_shortcode}, area_shortcode);
+	page.render('../logs/2_area_select.png');}
+
+    function submitNewPosting(){
+	page.evaluate(
+	    function(){
+		document.getElementsByClassName('new_posting_thing')[0].submit()});
+
+    }
+
+
+    function selectServices1(){
+	page.evaluate(
+	    function (){
+		document.querySelectorAll("input[value="+service+"]")[0].checked = true});
+	page.render('../logs/3_services.png')}
+
+    function selectServices2(){
+	page.evaluate(
+	    function (service_code){
+		document.querySelectorAll("input[value='"+service_code+"']")[0].checked = true}, service_code);
+	page.render('../logs/4_services.png')}
+
+
+    function submitServices(){
+	page.evaluate(
+	    function(){
+		document.querySelectorAll('form[class="catpick picker"]')[0].submit()})}
+
+    function fillAdBody(){
+	page.evaluate(
+	    function(title, body, specific_location, postal, is_licensed, license_info){
 		
-	    } else{document.getElementById('nolic').checked = true;}
-	    
-	},title,body,specific_location,	postal,is_licensed,license_info);
-    page.render('../logs/5_ad_body.png');}
+		document.getElementById('PostingTitle').value = title;
+		document.getElementById('PostingBody').value = body;
+		document.getElementById('GeographicArea').value = specific_location;
+		document.getElementById('postal_code').value = postal;
 
-function submitAdBody(){
-    page.evaluate(
-	function(){
-	    document.getElementById('postingForm').submit()})}
+		if (is_licensed == 'yes') {
+		    document.getElementById('lic').checked = true;
+		    document.getElementById('license_info').value = license_info;
+		    
+		} else{document.getElementById('nolic').checked = true;}
+		
+	    },title,body,specific_location,	postal,is_licensed,license_info);
+	page.render('../logs/5_ad_body.png');}
 
-function handleImages(){
-    page.render('../logs/6_pre_image.png');
-    page.evaluate(
-	function(){
-	    document.getElementsByTagName('form')[1].submit();   })}
+    function submitAdBody(){
+	page.evaluate(
+	    function(){
+		document.getElementById('postingForm').submit()})}
 
-function publish(){
-    page.render('../logs/7_pre_publish.png');
-    page.evaluate(
-	function(){
-	    document.getElementsByTagName('form')[0].submit()})}
+    function handleImages(){
+	page.render('../logs/6_pre_image.png');
+	page.evaluate(
+	    function(){
+		document.getElementsByTagName('form')[1].submit();   })}
 
-function finalize(){
-    page.render('../logs/finalize.png')};
+    function publish(){
+	page.render('../logs/7_pre_publish.png');
+	page.evaluate(
+	    function(){
+		document.getElementsByTagName('form')[0].submit()})}
 
-
-
-page.onLoadStarted = function() {
-  loadInProgress = true;
-  console.log("load started");
-};
-
-page.onLoadFinished = function() {
-  loadInProgress = false;
-  console.log("load finished");
-};
+    function finalize(){
+	page.render('../logs/finalize.png')};
 
 
-steps = [loadLoginForm,
-	 fillLoginData,
-	 submitLoginData,
-	 setAreaSelect,
-	 submitNewPosting,
-	 selectServices1,
-	 submitServices,
-	 selectServices2,
-	 submitServices,
-	 fillAdBody,
-	 submitAdBody,
-	 handleImages,
-	 publish,
-	 finalize]
 
-interval = setInterval(function() {
-  if (!loadInProgress && typeof steps[crawlIndex] == "function") {
-    console.log("step " + (crawlIndex + 1));
-    steps[crawlIndex]();
-    crawlIndex++;
-  }
-  if (typeof steps[crawlIndex] != "function") {
-    console.log("test complete!");
-    phantom.exit();
-  }
-}, 3000);
+    page.onLoadStarted = function() {
+	loadInProgress = true;
+	console.log("load started");
+    };
 
+    page.onLoadFinished = function() {
+	loadInProgress = false;
+	console.log("load finished");
+    };
+
+
+    steps = [loadLoginForm,
+	     fillLoginData,
+	     submitLoginData,
+	     setAreaSelect,
+	     submitNewPosting,
+	     selectServices1,
+	     submitServices,
+	     selectServices2,
+	     submitServices,
+	     fillAdBody,
+	     submitAdBody,
+	     handleImages,
+	     publish,
+	     finalize]
+
+    interval = setInterval(function() {
+	if (!loadInProgress && typeof steps[crawlIndex] == "function") {
+	    console.log("step " + (crawlIndex + 1));
+	    steps[crawlIndex]();
+	    crawlIndex++;
+	}
+	if (typeof steps[crawlIndex] != "function") {
+	    console.log("test complete!");
+	    phantom.exit();
+	}
+    }, 3000);
+}
 
 
 
