@@ -41,9 +41,12 @@ def add(area, service, category,
         f.write(json_config_dump)
         f.flush()
 
+    env = os.environ.copy()
+    env["http_proxy"] = proxy
+    env['https_prox'] = proxy.replace('http', 'https')
 
     try:
-        out = subprocess.check_output(['./phantomjs', './cragapp/add_ad.js', config.name])
+        out = subprocess.check_output(['./phantomjs', './cragapp/add_ad.js', config.name], env=env)
         print out
     except Exception as e:
         print e
@@ -107,7 +110,7 @@ if args.action == "add":
         body=ad.description,
         haslicense=ad.haslicense,
         license_info=ad.license_info,
-        proxy='@'.join([':'.join([vps.login, vps.password]), ':'.join([vps.ip, vps.port])]),
+        proxy='http://'+'@'.join([':'.join([vps.login, vps.password]), ':'.join([vps.ip, vps.port])]),
         images=images)
     
 elif args.action == "delete"   : delete()
