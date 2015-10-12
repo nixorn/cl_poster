@@ -38,8 +38,8 @@ function sumbitTOU(){
     fs.write('./logs/confirmPreSubmitTOU.html', page.content, 'w');
     page.evaluate(
 	function(){
-	    if (document.findElementsByTagName("form").length > 0 ){
-		document.findElementsByTagName("form")[0].submit()
+	    if (document.getElementsByTagName("form").length > 0 ){
+		document.getElementsByTagName("form")[0].submit()
 	    }
 	}
     )
