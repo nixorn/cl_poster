@@ -35,7 +35,7 @@ function loadConfirnPage(){
     page.open(url_to_confirm);};
 
 
-function finalizeConfitm(){
+function finalizeConfirm(){
         fs.write('./logs/confirm.html', page.content, 'w');};
 
 
