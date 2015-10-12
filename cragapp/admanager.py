@@ -111,7 +111,7 @@ if args.username:
     proxy='http://'+'@'.join([':'.join([vps.login, vps.password]), ':'.join([vps.ip, vps.port])])
 
 if args.action == 'add':
-    if ad.haslicense = '1':
+    if ad.haslicense == '1':
         haslicense='yes'
         license_info = ad.license_info
     else:

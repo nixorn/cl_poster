@@ -83,8 +83,8 @@ def loop():
             if "renew" in ad.allowed_actions: action = "renew"
             elif "repost" in ad.allowed_actions: action = "repost"
             else:
-                logging.error('repost/renew not aviable for '+
-                              +ad.__repr__())
+                logging.error('repost/renew not aviable for '\
+                    +ad.__repr__())
                 action = ""
             
             #(posting_time > now) must be True. 
