@@ -43,18 +43,28 @@ def add(area, service, category,
 
     env = os.environ.copy()
     env["http_proxy"] = proxy
-    env['https_prox'] = proxy.replace('http', 'https')
+    env['https_proxy'] = proxy.replace('http', 'https')
 
     try:
         out = subprocess.check_output(['./phantomjs', './cragapp/add_ad.js', config.name], env=env)
         print out
+        logging.debug(out)
     except Exception as e:
         print e
         print e.message
+        logging.error(e)
         #print e.output
 
-def confirm(confirm_url) :
-    pass
+def confirm(confirm_url,proxy) :
+    env = os.environ.copy()
+    env["http_proxy"] = proxy
+    env['https_proxy'] = proxy.replace('http', 'https')
+
+    out = subprocess.check_output(['./phantomjs',
+                                   './cragapp/add_ad.js',
+                                   config.name], env=env)
+
+    
 def delete()  : pass
 def repost()  : pass
 def undelete(): pass
@@ -90,12 +100,15 @@ if args.idads:
     images   = Image.query.filter(Image.idads == ad.idads).all()
     user     = User.query.filter(User.idusers == ad.idusers).first()
     vps      = VPS.query.filter(VPS.idvpss == user.idvpss).first()
+    proxy='http://'+'@'.join([':'.join([vps.login, vps.password]), ':'.join([vps.ip, vps.port])])
     area     = Area.query.filter(Area.idarea == ad.idarea).first()
     category = Category.query.\
         filter(Category.idcategory == ad.idcategory).first()
 
 if args.username:
     user = User.query.filter(User.username == args.username).first()
+    vps      = VPS.query.filter(VPS.idvpss == user.idvpss).first()
+    proxy='http://'+'@'.join([':'.join([vps.login, vps.password]), ':'.join([vps.ip, vps.port])])
 
 if args.action == 'add':
     if ad.haslicense = '1':
@@ -117,11 +130,11 @@ if args.action == 'add':
         body=ad.description,
         haslicense=haslicense,
         license_info=license_info,
-        proxy='http://'+'@'.join([':'.join([vps.login, vps.password]), ':'.join([vps.ip, vps.port])]),
+        proxy=proxy,
         images=images)
 
 elif args.action == "confirm"  :
-    confirm(args.confirm_url)
+    confirm(args.confirm_url, proxy)
 
 elif args.action == "repost"   :
     repost()
