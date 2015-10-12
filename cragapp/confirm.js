@@ -35,6 +35,7 @@ function loadConfirnPage(){
     page.open(url_to_confirm);};
 
 function sumbitTOU(){
+    fs.write('./logs/confirmPreSubmitTOU.html', page.content, 'w');
     page.evaluate(
 	function(){
 	    if (document.findElementsByTagName("form").length > 0 ){
@@ -42,11 +43,12 @@ function sumbitTOU(){
 	    }
 	}
     )
+    
 }
 
 
 function finalizeConfirm(){
-        fs.write('./logs/confirm.html', page.content, 'w');};
+        fs.write('./logs/confirmFInalize.html', page.content, 'w');};
 
 
 page.onLoadStarted = function() {
