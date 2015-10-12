@@ -70,6 +70,7 @@ function fillLoginData(){
 	    document.getElementById('inputPassword').value = CLpassword;
 	}, CLlogin, CLpassword);
     page.render('./logs/1_login_form.png');
+    fs.write('./logs/1_login_form.html', page.content, "w");
 }
 
 function submitLoginData(){
@@ -81,7 +82,8 @@ function setAreaSelect(){
     page.evaluate(
 	function(area_shortcode){
 	    document.getElementsByName('areaabb')[0].value = area_shortcode}, area_shortcode);
-    page.render('./logs/2_area_select.png');}
+    page.render('./logs/2_area_select.png');
+    fs.write('./logs/2_area_select.html', page.content, 'w');}
 
 function submitNewPosting(){
     page.evaluate(
@@ -95,13 +97,16 @@ function selectServices1(){
     page.evaluate(
 	function (service){
 	    document.querySelectorAll("input[value="+service+"]")[0].checked = true}, service);
-    page.render('./logs/3_services.png')}
+    page.render('./logs/3_services.png')
+    fs.write('./logs/3_services.html', page.content, 'w');
+}
 
 function selectServices2(){
     page.evaluate(
 	function (service_code){
 	    document.querySelectorAll("input[value='"+service_code+"']")[0].checked = true}, service_code);
-    page.render('./logs/4_services.png')}
+    page.render('./logs/4_services.png');
+    fs.write('./logs/4_services.html', page.content, 'w');}
 
 
 function submitServices(){
@@ -125,7 +130,8 @@ function fillAdBody(){
 	    } else{document.getElementById('nolic').checked = true;}
 	    
 	},title,body,specific_location,	postal,is_licensed,license_info);
-    page.render('./logs/5_ad_body.png');}
+    page.render('./logs/5_ad_body.png');
+    fs.write('./logs/5_body.html', page.content, 'w');}
 
 function submitAdBody(){
     page.evaluate(
@@ -133,19 +139,23 @@ function submitAdBody(){
 	    document.getElementById('postingForm').submit()})}
 
 function handleImages(){
-    page.render('./logs/6_pre_image.png');
+    fs.write('./logs/6_pre_image.html', page.content, 'w');
+
     page.evaluate(
 	function(){
 	    document.getElementsByTagName('form')[1].submit();   })}
 
 function publish(){
-    page.render('./logs/7_pre_publish.png');
+    fs.write('./logs/7_pre_publish.html', page.content, 'w');
+
     page.evaluate(
 	function(){
 	    document.getElementsByTagName('form')[0].submit()})}
 
 function finalize(){
-    page.render('./logs/finalize.png')};
+    page.render('./logs/finalize.png');
+    fs.write('./logs/finalize.html', page.content, 'w');
+};
 
 
 

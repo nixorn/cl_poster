@@ -53,14 +53,14 @@ def add(area, service, category,
         print e.message
         #print e.output
 
-
-
+def confirm(confirm_url) :
+    pass
 def delete()  : pass
 def repost()  : pass
 def undelete(): pass
 def renew()   : pass
 def edit()    : pass
-def confirm() : pass
+
     
 #
 parser = argparse.ArgumentParser(description='Crawl from craiglist ad and store it into database.')
@@ -70,7 +70,7 @@ parser.add_argument('--idads',
 parser.add_argument('--action', required=True,
                     help='renew|delete|repost|add|undelete|edit|confirm|None')
 
-parser.add_argument('--confirm_link',
+parser.add_argument('--confirm_url',
                     help='Link for mail confirmation. Optional argument,'+\
                     'needed for confirmation only.')
 
@@ -97,7 +97,14 @@ if args.idads:
 if args.username:
     user = User.query.filter(User.username == args.username).first()
 
-if args.action == "add":
+if args.action == 'add':
+    if ad.haslicense = '1':
+        haslicense='yes'
+        license_info = ad.license_info
+    else:
+        haslicense='no'
+        license_info = ''
+        
     add(area=area.clcode,
         service="so", #sevice offered
         category=category.numcode,
@@ -108,17 +115,21 @@ if args.action == "add":
         specific_location=ad.specific_location,
         postal=ad.postal,
         body=ad.description,
-        haslicense=ad.haslicense,
-        license_info=ad.license_info,
+        haslicense=haslicense,
+        license_info=license_info,
         proxy='http://'+'@'.join([':'.join([vps.login, vps.password]), ':'.join([vps.ip, vps.port])]),
         images=images)
-    
-elif args.action == "delete"   : delete()
-elif args.action == "repost"   : repost()
-elif args.action == "undelete" : undelete()
+
+elif args.action == "confirm"  :
+    confirm(args.confirm_url)
+
+elif args.action == "repost"   :
+    repost()
+
 elif args.action == "renew"    : renew()
+elif args.action == "delete"   : delete()
+elif args.action == "undelete" : undelete()
 elif args.action == "edit"     : edit()
-elif args.action == "confirm"  : confirm()
 elif args.action == "None"     : pass
     
 
