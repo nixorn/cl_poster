@@ -34,6 +34,16 @@ url_to_confirm = system.args[1];
 function loadConfirnPage(){
     page.open(url_to_confirm);};
 
+function sumbitTOU(){
+    page.evaluate(
+	function(){
+	    if (document.findElementsByTagName("form").length > 0 ){
+		document.findElementsByTagName("form")[0].submit()
+	    }
+	}
+    )
+}
+
 
 function finalizeConfirm(){
         fs.write('./logs/confirm.html', page.content, 'w');};
