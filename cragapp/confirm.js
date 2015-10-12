@@ -50,7 +50,7 @@ page.onLoadFinished = function() {
 };
 
 
-steps = [loadConfirnPage]
+steps = [loadConfirnPage,finalizeConfirm]
 
 interval = setInterval(function() {
     if (!loadInProgress && typeof steps[crawlIndex] == "function") {
