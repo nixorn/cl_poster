@@ -62,7 +62,7 @@ page.onLoadFinished = function() {
 };
 
 
-steps = [loadConfirnPage,finalizeConfirm]
+steps = [loadConfirnPage,sumbitTOU,finalizeConfirm]
 
 interval = setInterval(function() {
     if (!loadInProgress && typeof steps[crawlIndex] == "function") {
