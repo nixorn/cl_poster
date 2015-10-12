@@ -59,12 +59,19 @@ def confirm(confirm_url,proxy) :
     env = os.environ.copy()
     env["http_proxy"] = proxy
     env['https_proxy'] = proxy.replace('http', 'https')
+    try:
+        out = subprocess.check_output(['./phantomjs',
+            './cragapp/confirm.js',
+            confirm_url], env=env)
+        print out
+        logging.debug(out)
+        
+    except Exception as e:
+        print e
+        print e.message
+        logging.error(e)
 
-    out = subprocess.check_output(['./phantomjs',
-                                   './cragapp/add_ad.js',
-                                   config.name], env=env)
-
-    
+        
 def delete()  : pass
 def repost()  : pass
 def undelete(): pass

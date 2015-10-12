@@ -43,7 +43,7 @@ def mail_loop(user):
         subprocess.call(
             ["python","cragapp/admanager.py",
              "--action", "confirm",
-             "--confirm_link", confirm_url,
+             "--confirm_url", confirm_url,
              "--username",username],
             env=my_env)
     #grab current ads state after confirmation
