@@ -13,7 +13,8 @@ var page   = require('webpage').create(),
     postal,           
     is_licensed,      
     license_info,
-    config;
+    config,
+    imagename_array;
 
 
 page.settings.userAgent = "Mozilla/5.0 (Windows NT 6.1; rv:41.0) Gecko/20100101 Firefox/41.0"
@@ -34,15 +35,16 @@ phantom.onError = function(msg, trace) {
 if (system.args.length < 2){
     console.log("Give at least name of the config file!\n" +
 	       "Call should be like\n" +
-		"phantomjs add_ad.js config.json");
+		"phantomjs add_ad.js config.json\n"+
+		"Images filenames can be after separated by space.");
     phantom.exit(1);
 }
 
-
+console.log(system.args)
 //read config
 
 config = JSON.parse(fs.open(system.args[1], "r").read());
-
+imagename_array = system.args.slice(1, system.args)
 
 
 
@@ -64,13 +66,16 @@ function loadLoginForm(){
     page.open('https://accounts.craigslist.org/login');};
 
 function fillLoginData(){
-    page.evaluate(
-	function(CLlogin, CLpassword){
-	    document.getElementById('inputEmailHandle').value = CLlogin;
-	    document.getElementById('inputPassword').value = CLpassword;
-	}, CLlogin, CLpassword);
-    page.render('./logs/1_login_form.png');
+    
+	page.evaluate(
+	    function(CLlogin, CLpassword){
+		document.getElementById('inputEmailHandle').value = CLlogin;
+		document.getElementById('inputPassword').value = CLpassword;
+	    }, CLlogin, CLpassword);
+
     fs.write('./logs/1_login_form.html', page.content, "w");
+    
+
 }
 
 function submitLoginData(){
@@ -82,7 +87,6 @@ function setAreaSelect(){
     page.evaluate(
 	function(area_shortcode){
 	    document.getElementsByName('areaabb')[0].value = area_shortcode}, area_shortcode);
-    page.render('./logs/2_area_select.png');
     fs.write('./logs/2_area_select.html', page.content, 'w');}
 
 function submitNewPosting(){
@@ -97,7 +101,6 @@ function selectServices1(){
     page.evaluate(
 	function (service){
 	    document.querySelectorAll("input[value="+service+"]")[0].checked = true}, service);
-    page.render('./logs/3_services.png')
     fs.write('./logs/3_services.html', page.content, 'w');
 }
 
@@ -105,7 +108,6 @@ function selectServices2(){
     page.evaluate(
 	function (service_code){
 	    document.querySelectorAll("input[value='"+service_code+"']")[0].checked = true}, service_code);
-    page.render('./logs/4_services.png');
     fs.write('./logs/4_services.html', page.content, 'w');}
 
 
@@ -115,35 +117,88 @@ function submitServices(){
 	    document.querySelectorAll('form[class="catpick picker"]')[0].submit()})}
 
 function fillAdBody(){
-    page.evaluate(
-	function(title, body, specific_location, postal, is_licensed, license_info){
-	    
-	    document.getElementById('PostingTitle').value = title;
-	    document.getElementById('PostingBody').value = body;
-	    document.getElementById('GeographicArea').value = specific_location;
-	    document.getElementById('postal_code').value = postal;
-
-	    if (is_licensed == 'yes') {
-		document.getElementById('lic').checked = true;
-		document.getElementById('license_info').value = license_info;
-		
-	    } else{document.getElementById('nolic').checked = true;}
-	    
-	},title,body,specific_location,	postal,is_licensed,license_info);
-    page.render('./logs/5_ad_body.png');
-    fs.write('./logs/5_body.html', page.content, 'w');}
+    
+    	    page.evaluate(
+		function(title, body, specific_location, postal, is_licensed, license_info){
+		    document.getElementById('PostingTitle').value = title;
+		    document.getElementById('PostingBody').value = body;
+		    document.getElementById('GeographicArea').value = specific_location;
+		    document.getElementById('postal_code').value = postal;
+		    if (is_licensed == 'yes') {
+			document.getElementById('lic').checked = true;
+			document.getElementById('license_info').value = license_info;
+		    } else{document.getElementById('nolic').checked = true;}
+	    },title,body,specific_location,	postal,is_licensed,license_info);
+	    fs.write('./logs/5_body.html', page.content, 'w')
+}
 
 function submitAdBody(){
     page.evaluate(
 	function(){
 	    document.getElementById('postingForm').submit()})}
 
-function handleImages(){
+function switchToClassicImageUploader(){
     fs.write('./logs/6_pre_image.html', page.content, 'w');
 
+    
+    page.open(
+	page.evaluate(
+	    function(){
+		CL.cookies.setItem('cl_upl', 'classic', {
+                    expires: 1 / 0,
+                    path: '/',
+                    domain: CL.url.baseDomain});
+		return document.getElementById('classic').href;
+	    }));
+    fs.write('./logs/6_image_classic_uploader.html', page.content, 'w');
+}
+
+function uploadImages(){
+    for (var i = 0; i < imagename_array.length; i++) {
+	page.uploadFile('input[name=file]', imagename_array[i])};
     page.evaluate(
 	function(){
-	    document.getElementsByTagName('form')[1].submit();   })}
+	    /*function l(a) {
+                var b = "----moxieboundary" + (new Date).getTime(),
+                    c = "--",
+                    d = "\r\n",
+                    e = "",
+                    g = this.getRuntime();
+                if (!g.can("send_binary_string")) throw new h.RuntimeError(h.RuntimeError.NOT_SUPPORTED_ERR);
+                return m.setRequestHeader("Content-Type", "multipart/form-data; boundary=" + b),
+		a.each(function(a, g) {
+                    e += a instanceof f ? c
+			+ b
+			+ d
+			+ 'Content-Disposition: form-data; name="'
+			+ g
+			+ '"; filename="'
+			+ unescape(encodeURIComponent(a.name || "blob"))
+			+ '"'
+			+ d
+			+ "Content-Type: "
+			+ (a.type || "application/octet-stream")
+			+ d
+			+ d
+			+ a.getSource()
+			+ d : c
+			+ b
+			+ d
+			+ 'Content-Disposition: form-data; name="'
+			+ g
+			+ '"'
+			+ d
+			+ d
+			+ unescape(encodeURIComponent(a))
+			+ d
+                }), e += c + b + c + d
+                }*/
+	    
+	    document.getElementsByTagName('form')[2].submit();
+	});
+    fs.write('./logs/6_uploaded_images.html', page.content, 'w');
+}
+ 
 
 function publish(){
     fs.write('./logs/7_pre_publish.html', page.content, 'w');
@@ -152,9 +207,9 @@ function publish(){
 	function(){
 	    document.getElementsByTagName('form')[0].submit()})}
 
-function finalize(){
-    page.render('./logs/finalize.png');
-    fs.write('./logs/finalize.html', page.content, 'w');
+function post_publish(){
+
+    fs.write('./logs/8_post_publish.html', page.content, 'w');
 };
 
 
@@ -170,6 +225,7 @@ page.onLoadFinished = function() {
 };
 
 
+
 steps = [loadLoginForm,
 	 fillLoginData,
 	 submitLoginData,
@@ -181,9 +237,12 @@ steps = [loadLoginForm,
 	 submitServices,
 	 fillAdBody,
 	 submitAdBody,
-	 handleImages,
+	 switchToClassicImageUploader,
+	 uploadImages,
 	 publish,
-	 finalize]
+	 post_publish]
+
+
 
 interval = setInterval(function() {
     if (!loadInProgress && typeof steps[crawlIndex] == "function") {
@@ -195,7 +254,7 @@ interval = setInterval(function() {
 	console.log("test complete!");
 	phantom.exit();
     }
-}, 3000);
+}, 5000);
 
 
 

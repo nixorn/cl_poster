@@ -10,9 +10,22 @@ import logging
 import tempfile
 import json
 from models import Ad, User, VPS, Area, Image, Category
+from StringIO import StringIO
+
 
 logging.basicConfig(filename='logs/admanager.log',level=logging.DEBUG)
 
+
+def dump_image_on_disk(image):
+    extension = image.extension
+    blob      = image.image #image itself
+    tmpimg    = tempfile.NamedTemporaryFile(suffix='.'+extension)
+    print type(blob)
+    tmpimg.write(StringIO(blob).getvalue())
+    tmpimg.flush()
+    return tmpimg
+
+    
 # definitions
 def add(area, service, category,
         username, password, contact_phone, title, specific_location,
@@ -34,7 +47,7 @@ def add(area, service, category,
     
     config = tempfile.NamedTemporaryFile(suffix='.json')
     
-    config.write (json_config_dump)
+    config.write(json_config_dump)
     config.flush()
     
     with open('logs/last_config.json', 'w') as f:
@@ -42,11 +55,16 @@ def add(area, service, category,
         f.flush()
 
     env = os.environ.copy()
-    env["http_proxy"] = proxy
+    env['http_proxy'] = proxy
     env['https_proxy'] = proxy.replace('http', 'https')
 
+    images = map(dump_image_on_disk, images)
+    images_filepaths = [i.name for i in images]
+
     try:
-        out = subprocess.check_output(['./phantomjs', './cragapp/add_ad.js', config.name], env=env)
+        out = subprocess.check_output(
+            ['./phantomjs', './cragapp/add_ad.js', config.name] + images_filepaths
+            ,env=env)
         print out
         logging.debug(out)
     except Exception as e:
@@ -57,7 +75,7 @@ def add(area, service, category,
 
 def confirm(confirm_url,proxy) :
     env = os.environ.copy()
-    env["http_proxy"] = proxy
+    env['http_proxy'] = proxy
     env['https_proxy'] = proxy.replace('http', 'https')
     try:
         out = subprocess.check_output(['./phantomjs',
@@ -71,9 +89,27 @@ def confirm(confirm_url,proxy) :
         print e.message
         logging.error(e)
 
+
+
+def repost(username, password, idcrag):
+    env = os.environ.copy()
+    env['http_proxy'] = proxy
+    env['https_proxy'] = proxy.replace('http', 'https')
+    
+    try:
+        out = subprocess.check_output(
+            ['./phantomjs', './cragapp/repost.js',
+             username, password, idcrag],
+            env=env)
+        print out
+        logging.debug(out)
         
+    except Exception as e:
+        print e
+        print e.message
+        logging.error(e)
+
 def delete()  : pass
-def repost()  : pass
 def undelete(): pass
 def renew()   : pass
 def edit()    : pass
@@ -143,8 +179,10 @@ if args.action == 'add':
 elif args.action == "confirm"  :
     confirm(args.confirm_url, proxy)
 
-elif args.action == "repost"   :
-    repost()
+elif args.action == "repost":
+    repost(username,
+           password,
+           idcrag=ad.idcrag)
 
 elif args.action == "renew"    : renew()
 elif args.action == "delete"   : delete()
