@@ -3,8 +3,9 @@ var page   = require('webpage').create(),
     fs = require('fs'),
     loadInProgress = false,
     crawlIndex = 0,
-    url_to_confirm;
-
+    url_to_confirm,
+    CLlogin, 
+    CLpassword ;
 
 page.settings.userAgent = "Mozilla/5.0 (Windows NT 6.1; rv:41.0) Gecko/20100101 Firefox/41.0"
 
@@ -29,8 +30,8 @@ if (system.args.length < 2){
 }
 
 url_to_confirm = system.args[1]
-username       = system.args[2];
-password       = system.args[3];
+CLlogin        = system.args[2];
+CLpassword     = system.args[3];
 
 
 function loadConfirmPage(){
