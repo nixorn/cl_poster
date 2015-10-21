@@ -54,5 +54,8 @@ def mail_loop(user):
 if __name__ == '__main__':
     while 1:
         for user in User.query.all():
-            mail_loop(user)
+            try:
+                mail_loop(user)
+            except Exception as e:
+                logging.error(e)
             time.sleep(1200)#every 20 minutes

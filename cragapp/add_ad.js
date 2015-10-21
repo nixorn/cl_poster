@@ -137,9 +137,20 @@ function submitAdBody(){
 	function(){
 	    document.getElementById('postingForm').submit()})}
 
+
+function skipMap(){
+    page.injectJs('jquery-2.1.4.min.js');
+    page.evaluate(
+	function () {
+	    $(".skipmap").trigger("click");
+	}
+    )
+
+}
+
 function switchToClassicImageUploader(){
     fs.write('./logs/6_pre_image.html', page.content, 'w');
-
+    
     
     page.open(
 	page.evaluate(
@@ -237,6 +248,7 @@ steps = [loadLoginForm,
 	 submitServices,
 	 fillAdBody,
 	 submitAdBody,
+	 skipMap,
 	 switchToClassicImageUploader,
 	 uploadImages,
 	 publish,
