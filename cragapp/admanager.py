@@ -73,14 +73,16 @@ def add(area, service, category,
         logging.error(e)
         #print e.output
 
-def confirm(confirm_url,proxy) :
+def confirm(confirm_url,username, password,proxy) :
     env = os.environ.copy()
     env['http_proxy'] = proxy
     env['https_proxy'] = proxy.replace('http', 'https')
     try:
         out = subprocess.check_output(['./phantomjs',
             './cragapp/confirm.js',
-            confirm_url], env=env)
+            confirm_url,
+            username,
+            password], env=env)
         print out
         logging.debug(out)
         
@@ -143,15 +145,15 @@ if args.idads:
     images   = Image.query.filter(Image.idads == ad.idads).all()
     user     = User.query.filter(User.idusers == ad.idusers).first()
     vps      = VPS.query.filter(VPS.idvpss == user.idvpss).first()
-    proxy='http://'+'@'.join([':'.join([vps.login, vps.password]), ':'.join([vps.ip, vps.port])])
+    proxy    = 'http://'+'@'.join([':'.join([vps.login, vps.password]), ':'.join([vps.ip, vps.port])])
     area     = Area.query.filter(Area.idarea == ad.idarea).first()
     category = Category.query.\
         filter(Category.idcategory == ad.idcategory).first()
 
 if args.username:
-    user = User.query.filter(User.username == args.username).first()
-    vps      = VPS.query.filter(VPS.idvpss == user.idvpss).first()
-    proxy='http://'+'@'.join([':'.join([vps.login, vps.password]), ':'.join([vps.ip, vps.port])])
+    user  = User.query.filter(User.username == args.username).first()
+    vps   = VPS.query.filter(VPS.idvpss == user.idvpss).first()
+    proxy ='http://'+'@'.join([':'.join([vps.login, vps.password]), ':'.join([vps.ip, vps.port])])
 
 if args.action == 'add':
     if ad.haslicense == '1':
@@ -177,11 +179,11 @@ if args.action == 'add':
         images=images)
 
 elif args.action == "confirm"  :
-    confirm(args.confirm_url, proxy)
+    confirm(args.confirm_url,user.username, user.password, proxy)
 
 elif args.action == "repost":
-    repost(username,
-           password,
+    repost(user.username,
+           user.password,
            idcrag=ad.idcrag)
 
 elif args.action == "renew"    : renew()

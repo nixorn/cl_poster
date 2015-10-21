@@ -22,29 +22,33 @@ phantom.onError = function(msg, trace) {
 
 
 if (system.args.length < 2){
-    console.log("Give the confirmation url!\n" +
+    console.log("Give the confirmation url, username and password!\n" +
 	       "Call should be like\n" +
-		"phantomjs confirm.js http://craigslist.org/confirmation/url");
+		"phantomjs confirm.js http://craigslist.org/confirmation/url user password");
     phantom.exit(1);
 }
 
-url_to_confirm = system.args[1];
+url_to_confirm = system.args[1]
+username       = system.args[2];
+password       = system.args[3];
 
 
-function loadConfirnPage(){
+function loadConfirmPage(){
     page.open(url_to_confirm);};
 
-function sumbitTOU(){
-    fs.write('./logs/confirmPreSubmitTOU.html', page.content, 'w');
+function fillLoginData(){
+    
+	page.evaluate(
+	    function(CLlogin, CLpassword){
+		document.getElementById('inputEmailHandle').value = CLlogin;
+		document.getElementById('inputPassword').value = CLpassword;
+	    }, CLlogin, CLpassword);
+    fs.write('./logs/confirm_fillLogin_data.html', page.content, "w")}
+
+function submitLoginData(){
     page.evaluate(
 	function(){
-	    if (document.getElementsByTagName("form").length > 0 ){
-		document.getElementsByTagName("form")[0].submit()
-	    }
-	}
-    )
-    
-}
+	    document.getElementsByName('login')[0].submit()});}
 
 
 function finalizeConfirm(){
@@ -62,7 +66,10 @@ page.onLoadFinished = function() {
 };
 
 
-steps = [loadConfirnPage,sumbitTOU,finalizeConfirm]
+steps = [loadConfirmPage,
+	 fillLoginData,
+	 submitLoginData,
+	 finalizeConfirm]
 
 interval = setInterval(function() {
     if (!loadInProgress && typeof steps[crawlIndex] == "function") {
