@@ -58,4 +58,4 @@ if __name__ == '__main__':
                 mail_loop(user)
             except Exception as e:
                 logging.error(e)
-            time.sleep(1200)#every 20 minutes
+        time.sleep(1200)#every 20 minutes
