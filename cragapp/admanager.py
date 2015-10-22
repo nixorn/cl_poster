@@ -84,6 +84,7 @@ def confirm(confirm_url,username, password,proxy) :
             username,
             password], env=env)
         print out
+        logging.debug('used enviropment is '+ str(env))
         logging.debug(out)
         
     except Exception as e:
