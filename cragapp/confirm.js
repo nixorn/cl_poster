@@ -63,19 +63,6 @@ function loadConfirmPage(){
     page.open(url_to_confirm);};
 
 
-function fillLoginData(){
-    
-	page.evaluate(
-	    function(CLlogin, CLpassword){
-		document.getElementById('inputEmailHandle').value = CLlogin;
-		document.getElementById('inputPassword').value = CLpassword;
-	    }, CLlogin, CLpassword);
-}
-
-function submitLoginData(){
-    page.evaluate(
-	function(){
-	    document.getElementsByName('login')[0].submit()});}
 
 
 
@@ -97,10 +84,6 @@ steps = [loadLoginForm,
 	 submitLoginData,
 	 logChanges,
 	 loadConfirmPage,
-	 logChanges,
-	 fillLoginData,
-	 logChanges,
-	 submitLoginData,
 	 logChanges]
 
 interval = setInterval(function() {
