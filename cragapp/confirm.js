@@ -35,7 +35,7 @@ url_to_confirm = system.args[1]
 CLlogin        = system.args[2];
 CLpassword     = system.args[3];
 
-
+console.log("url: "+ url_to_confirm)
 function logChanges(){
     fs.write('./logs/confirm_'+crawlIndex+'.html', page.content, "w")
 }
