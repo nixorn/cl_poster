@@ -56,7 +56,7 @@ def add(area, service, category,
 
     env = os.environ.copy()
     env['http_proxy'] = proxy
-    env['https_proxy'] = proxy.replace('http', 'https')
+    env['https_proxy'] = proxy
 
     images = map(dump_image_on_disk, images)
     images_filepaths = [i.name for i in images]
@@ -76,7 +76,7 @@ def add(area, service, category,
 def confirm(confirm_url,username, password,proxy) :
     env = os.environ.copy()
     env['http_proxy'] = proxy
-    env['https_proxy'] = proxy.replace('http', 'https')
+    env['https_proxy'] = proxy
     try:
         out = subprocess.check_output(['./phantomjs',
             './cragapp/confirm.js',
@@ -97,7 +97,7 @@ def confirm(confirm_url,username, password,proxy) :
 def repost(username, password, idcrag):
     env = os.environ.copy()
     env['http_proxy'] = proxy
-    env['https_proxy'] = proxy.replace('http', 'https')
+    env['https_proxy'] = proxy
     
     try:
         out = subprocess.check_output(

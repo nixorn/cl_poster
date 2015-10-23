@@ -9,6 +9,8 @@ var page   = require('webpage').create(),
 
 page.settings.userAgent = "Mozilla/5.0 (Windows NT 6.1; rv:41.0) Gecko/20100101 Firefox/41.0"
 
+page.customHeaders = {"Referer": "https://mail.google.com"}
+
 phantom.onError = function(msg, trace) {
   var msgStack = ['PHANTOM ERROR: ' + msg];
   if (trace && trace.length) {
@@ -34,8 +36,34 @@ CLlogin        = system.args[2];
 CLpassword     = system.args[3];
 
 
+function loadLoginForm(){
+    page.open('https://accounts.craigslist.org/login');};
+
+function fillLoginData(){
+    
+	page.evaluate(
+	    function(CLlogin, CLpassword){
+		document.getElementById('inputEmailHandle').value = CLlogin;
+		document.getElementById('inputPassword').value = CLpassword;
+	    }, CLlogin, CLpassword);
+
+    fs.write('./logs/configm_1_login_form.html', page.content, "w");
+    
+
+}
+
+function submitLoginData(){
+    page.evaluate(
+	function(){
+	    document.getElementsByName('login')[0].submit()});}
+
+
 function loadConfirmPage(){
     page.open(url_to_confirm);};
+
+function showConfirmPage(){
+    fs.write('./logs/confirm_confirm_page.html', page.content, "w")
+}
 
 function fillLoginData(){
     
@@ -67,7 +95,11 @@ page.onLoadFinished = function() {
 };
 
 
-steps = [loadConfirmPage,
+steps = [loadLoginForm,
+	 fillLoginData,
+	 submitLoginData,
+	 loadConfirmPage,
+	 showConfirmPage,
 	 fillLoginData,
 	 submitLoginData,
 	 finalizeConfirm]

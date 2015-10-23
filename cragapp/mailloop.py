@@ -29,10 +29,10 @@ def mail_loop(user):
     http_proxy = 'http://' + '@'.join([
             ':'.join([str(v.login), str(v.password)]),
             ':'.join([str(v.ip), str(v.port)])])
-    https_proxy = http_proxy.replace('http', 'https')
+    
 
     my_env = os.environ.copy()
-    my_env["https_proxy"] = https_proxy
+    my_env["http_proxy"] = http_proxy
     my_env["http_proxy"] = http_proxy
 
     for uid, msg in msgs:
