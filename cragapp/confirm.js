@@ -5,7 +5,8 @@ var page   = require('webpage').create(),
     crawlIndex = 0,
     url_to_confirm,
     CLlogin, 
-    CLpassword ;
+    CLpassword,
+    requestIndex = 0;
 
 page.settings.userAgent = "Mozilla/5.0 (Windows NT 6.1; rv:41.0) Gecko/20100101 Firefox/41.0"
 
@@ -24,7 +25,8 @@ phantom.onError = function(msg, trace) {
 };
 
 page.onResourceRequested = function(request) {
-    fs.write('./logs/confirm_request_'+crawlIndex,  JSON.stringify(request, undefined, 4), "w")
+    fs.write('./logs/confirm_request_'+crawlIndex+'_'+requestIndex,  JSON.stringify(request, undefined, 4), "w");
+    requestIndex++;
 
 };
 
