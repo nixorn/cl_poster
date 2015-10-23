@@ -9,7 +9,7 @@ var page   = require('webpage').create(),
 
 page.settings.userAgent = "Mozilla/5.0 (Windows NT 6.1; rv:41.0) Gecko/20100101 Firefox/41.0"
 
-page.customHeaders = {"Referer": "https://mail.google.com"}
+
 
 phantom.onError = function(msg, trace) {
   var msgStack = ['PHANTOM ERROR: ' + msg];
@@ -36,6 +36,10 @@ CLlogin        = system.args[2];
 CLpassword     = system.args[3];
 
 
+function logChanges(){
+    fs.write('./logs/confirm_'+crawlIndex+'.html', page.content, "w")
+}
+
 function loadLoginForm(){
     page.open('https://accounts.craigslist.org/login');};
 
@@ -46,9 +50,6 @@ function fillLoginData(){
 		document.getElementById('inputEmailHandle').value = CLlogin;
 		document.getElementById('inputPassword').value = CLpassword;
 	    }, CLlogin, CLpassword);
-
-    fs.write('./logs/configm_1_login_form.html', page.content, "w");
-    
 
 }
 
@@ -61,9 +62,6 @@ function submitLoginData(){
 function loadConfirmPage(){
     page.open(url_to_confirm);};
 
-function showConfirmPage(){
-    fs.write('./logs/confirm_confirm_page.html', page.content, "w")
-}
 
 function fillLoginData(){
     
@@ -72,16 +70,13 @@ function fillLoginData(){
 		document.getElementById('inputEmailHandle').value = CLlogin;
 		document.getElementById('inputPassword').value = CLpassword;
 	    }, CLlogin, CLpassword);
-    fs.write('./logs/confirm_fillLogin_data.html', page.content, "w")}
+}
 
 function submitLoginData(){
     page.evaluate(
 	function(){
 	    document.getElementsByName('login')[0].submit()});}
 
-
-function finalizeConfirm(){
-        fs.write('./logs/confirmFInalize.html', page.content, 'w');};
 
 
 page.onLoadStarted = function() {
@@ -96,13 +91,17 @@ page.onLoadFinished = function() {
 
 
 steps = [loadLoginForm,
+	 logChanges,
 	 fillLoginData,
+	 logChanges,
 	 submitLoginData,
+	 logChanges,
 	 loadConfirmPage,
-	 showConfirmPage,
+	 logChanges,
 	 fillLoginData,
+	 logChanges,
 	 submitLoginData,
-	 finalizeConfirm]
+	 logChanges]
 
 interval = setInterval(function() {
     if (!loadInProgress && typeof steps[crawlIndex] == "function") {
