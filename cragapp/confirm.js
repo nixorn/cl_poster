@@ -24,7 +24,7 @@ phantom.onError = function(msg, trace) {
   phantom.exit(1);
 };
 
-page.onResourceRequested = function(request) {
+/*page.onResourceRequested = function(request) {
     fs.write('./logs/confirm_request_'+crawlIndex+'_'+requestIndex,  JSON.stringify(request, undefined, 4), "w");
     requestIndex++;
 
@@ -32,7 +32,7 @@ page.onResourceRequested = function(request) {
 
 page.onResourceReceived = function(response) {
     fs.write('./logs/confirm_response_'+crawlIndex,  JSON.stringify(response, undefined, 4), "w");
-};
+};*/
 
 if (system.args.length < 2){
     console.log("Give the confirmation url, username and password!\n" +
